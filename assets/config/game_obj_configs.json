@@ -1,0 +1,47 @@
+{
+    "player_tank": {
+        "image": "player_tank",
+        "size": [60.0, 60.0],
+        "z": 0.0,
+        "obj_type": "Tank",
+        "side": "Player",
+        "speed": 100.0,
+        "collide_span": 30.0
+    },
+    "steel_tile": {
+        "image": "steel_tile",
+        "size": [40.0, 40.0],
+        "z": -1.0,
+        "obj_type": "Tile",
+        "side": "Neutral",
+        "speed": 0.0,
+        "collide_span": 20.0
+    },
+    "ai_tank": {
+        "image": "ai_tank",
+        "size": [60.0, 60.0],
+        "z": 0.0,
+        "obj_type": "Tank",
+        "side": "AI",
+        "speed": 80.0,
+        "collide_span": 30.0
+    },
+    "green_missile": {
+        "image": "green_missile",
+        "size": [10.0, 10.0],
+        "z": 1.0,
+        "obj_type": "Missile",
+        "side": "Player",
+        "speed": 120.0,
+        "collide_span": 5.0
+    },
+    "orange_missile": {
+        "image": "orange_missile",
+        "size": [10.0, 10.0],
+        "z": 1.0,
+        "obj_type": "Missile",
+        "side": "AI",
+        "speed": 80.0,
+        "collide_span": 5.0
+    }
+}

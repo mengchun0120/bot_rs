@@ -1,4 +1,4 @@
-use crate::res::config::*;
+use crate::res::game_config::*;
 use crate::res::game_lib::*;
 use crate::utils::*;
 use bevy::prelude::*;

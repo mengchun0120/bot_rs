@@ -53,3 +53,8 @@ pub fn setup_log<P: AsRef<Path>>(log_path: P) -> WorkerGuard {
 
     guard
 }
+
+#[inline]
+pub fn join_path(components: &Vec<String>) -> PathBuf {
+    components.iter().collect()
+}
