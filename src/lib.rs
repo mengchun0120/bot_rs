@@ -6,6 +6,7 @@ pub mod res {
 
 pub mod game {
     pub mod game_map;
+    pub mod game_obj;
 }
 
 pub mod systems {

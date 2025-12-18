@@ -8,4 +8,7 @@ pub enum MyError {
 
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
+
+    #[error("Duplicate Key {0}")]
+    DuplicateKey(String),
 }

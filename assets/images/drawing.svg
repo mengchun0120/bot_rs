@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   sodipodi:docname="drawing.svg"
+   inkscape:export-filename="drawing.png"
+   inkscape:export-xdpi="83.143616"
+   inkscape:export-ydpi="83.143616"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="1.5465208"
+     inkscape:cx="328.47925"
+     inkscape:cy="538.95169"
+     inkscape:window-width="1920"
+     inkscape:window-height="1111"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       id="grid5"
+       units="mm"
+       originx="0"
+       originy="0"
+       spacingx="0.99999998"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <linearGradient
+       id="swatch1"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#878600;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#0000e0;fill-opacity:1;stroke-width:0.176725"
+       d="M 69.971884,40.021145 V 25.028012 H 84.988639 100.0054 v 14.993133 14.99313 H 84.988639 69.971884 Z"
+       id="path5" />
+    <path
+       style="fill:#0000e0;fill-opacity:1;stroke:#00dfdc;stroke-width:0.265249;stroke-opacity:1"
+       d="M 70.042315,25.283907 99.952433,54.800825"
+       id="path6" />
+    <path
+       style="fill:#0000e0;fill-opacity:1;stroke:#00dfdc;stroke-width:0.261224;stroke-opacity:1"
+       d="M 70.228259,54.790376 99.785707,25.190902"
+       id="path7" />
+    <ellipse
+       style="fill:#6cff00;stroke:#00a000;stroke-width:0.424752;fill-opacity:1;stroke-opacity:1"
+       id="path1"
+       cx="100.2546"
+       cy="75.190964"
+       rx="4.8318629"
+       ry="5.0884876"
+       inkscape:export-filename="green_missile.png"
+       inkscape:export-xdpi="83.143616"
+       inkscape:export-ydpi="83.143616" />
+    <ellipse
+       style="fill:#ffaa00;fill-opacity:1;stroke:#986200;stroke-width:0.424752;stroke-opacity:1"
+       id="path1-8"
+       cx="110.61299"
+       cy="106.90086"
+       rx="4.8318629"
+       ry="5.0884876"
+       inkscape:export-filename="orange_missile.png"
+       inkscape:export-xdpi="83.143616"
+       inkscape:export-ydpi="83.143616" />
+    <ellipse
+       style="fill:#04d300;fill-opacity:1;stroke:#006900;stroke-width:0.278084;stroke-opacity:1"
+       id="path2"
+       cx="47.3008"
+       cy="107.42484"
+       rx="32.293289"
+       ry="32.414249"
+       inkscape:export-filename="player_bot.png"
+       inkscape:export-xdpi="83.143616"
+       inkscape:export-ydpi="83.143616" />
+    <path
+       style="fill:#9eff49;fill-opacity:1;stroke:#007600;stroke-width:0.264583;stroke-opacity:1"
+       d="M 50.469466,92.726951 65.182601,107.269 50.640551,122.3243 Z"
+       id="path3" />
+    <ellipse
+       style="fill:#ffaa00;fill-opacity:1;stroke:#746900;stroke-width:0.278084;stroke-opacity:1"
+       id="path2-8"
+       cx="145.16663"
+       cy="145.12051"
+       rx="32.293289"
+       ry="32.414249"
+       inkscape:export-filename="ai_bot.png"
+       inkscape:export-xdpi="83.143616"
+       inkscape:export-ydpi="83.143616" />
+    <path
+       style="fill:#ff6000;fill-opacity:1;stroke:#595900;stroke-width:0.264583;stroke-opacity:1"
+       d="m 148.3353,130.42263 14.71313,14.54205 -14.54205,15.0553 z"
+       id="path3-2" />
+  </g>
+</svg>

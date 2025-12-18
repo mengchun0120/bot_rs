@@ -28,6 +28,12 @@ pub struct GameMapObjConfig {
     pub direction: [f32; 2],
 }
 
+#[derive(Component, Clone, Copy, Eq, PartialEq)]
+pub struct MapPos {
+    pub row: usize,
+    pub col: usize,
+}
+
 impl GameMap {
     pub fn new(cell_size: f32, row_count: usize, col_count: usize) -> Self {
         Self {

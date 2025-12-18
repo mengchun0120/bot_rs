@@ -1,9 +1,9 @@
 {
-    "player_tank": {
-        "image": "player_tank",
+    "player_bot": {
+        "image": "player_bot",
         "size": [60.0, 60.0],
         "z": 0.0,
-        "obj_type": "Tank",
+        "obj_type": "Bot",
         "side": "Player",
         "speed": 100.0,
         "collide_span": 30.0
@@ -17,11 +17,11 @@
         "speed": 0.0,
         "collide_span": 20.0
     },
-    "ai_tank": {
-        "image": "ai_tank",
+    "ai_bot": {
+        "image": "ai_bot",
         "size": [60.0, 60.0],
         "z": 0.0,
-        "obj_type": "Tank",
+        "obj_type": "Bot",
         "side": "AI",
         "speed": 80.0,
         "collide_span": 30.0
