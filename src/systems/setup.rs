@@ -1,3 +1,4 @@
+use crate::game::game_map::*;
 use crate::res::game_config::*;
 use crate::res::game_lib::*;
 use crate::utils::*;
@@ -16,7 +17,16 @@ pub fn setup_game(
 
     init_window(&game_lib.game_config, window.as_mut());
 
+    let Some(game_map) = load_game_map(
+        args.map_path.as_path(),
+        game_lib.game_config.cell_size,
+        &mut exit_app,
+    ) else {
+        return;
+    };
+
     commands.insert_resource(game_lib);
+    commands.insert_resource(game_map);
 
     info!("Finished setup")
 }
@@ -41,4 +51,21 @@ fn init_window(game_config: &GameConfig, window: &mut Window) {
     window
         .resolution
         .set(game_config.window_width(), game_config.window_height());
+}
+
+fn load_game_map<P: AsRef<Path>>(
+    map_path: P,
+    cell_size: f32,
+    exit_app: &mut MessageWriter<AppExit>,
+) -> Option<GameMap> {
+    let game_map = match GameMap::load(map_path, cell_size) {
+        Ok(map) => map,
+        Err(err) => {
+            error!("Failed to load GameMap: {}", err);
+            exit_app.write(AppExit::error());
+            return None;
+        }
+    };
+
+    Some(game_map)
 }

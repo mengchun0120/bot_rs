@@ -4,6 +4,10 @@ pub mod res {
     pub mod game_obj_config;
 }
 
+pub mod game {
+    pub mod game_map;
+}
+
 pub mod systems {
     pub mod setup;
 

@@ -6,6 +6,7 @@ use std::path::PathBuf;
 pub struct GameConfig {
     window_size: [f32; 2],
     game_obj_config_file: Vec<String>,
+    pub cell_size: f32,
 }
 
 impl GameConfig {

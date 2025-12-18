@@ -1,4 +1,5 @@
 {
     "window_size": [800.0, 800.0],
+    "cell_size": 40.0,
     "game_obj_config_file": ["assets", "config", "game_obj_configs.json"]
 }
