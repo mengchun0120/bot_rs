@@ -1,4 +1,4 @@
-use crate::my_error::*;
+use crate::misc::my_error::*;
 use bevy::prelude::*;
 use clap::Parser;
 use serde::de::DeserializeOwned;

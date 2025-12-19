@@ -1,5 +1,5 @@
-use crate::game::game_map::*;
-use crate::res::game_obj_config::*;
+use crate::game_utils::game_map::*;
+use crate::config::game_obj_config::*;
 use bevy::prelude::*;
 
 #[derive(Clone, Resource)]

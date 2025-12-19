@@ -1,10 +1,11 @@
-use crate::my_error::*;
-use crate::res::game_config::*;
-use crate::res::game_obj_config::*;
-use crate::utils::*;
+use crate::config::game_config::*;
+use crate::config::game_obj_config::*;
+use crate::misc::my_error::*;
+use crate::misc::utils::*;
 use bevy::prelude::*;
 use std::collections::HashMap;
 use std::path::Path;
+use std::io::{Error, ErrorKind};
 
 #[derive(Resource)]
 pub struct GameLib {
@@ -47,6 +48,12 @@ impl GameLib {
             }
 
             let image_file = image_dir.join(file_path);
+            if !image_file.exists() {
+                let err_msg = format!("File {:?} doesn't exist", image_file);
+                error!(err_msg);
+                return Err(Error::new(ErrorKind::NotFound, err_msg).into());
+            }
+
             let image = asset_server.load(image_file);
             images.insert(name.clone(), image);
         }

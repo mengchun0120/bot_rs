@@ -1,7 +1,6 @@
-use crate::game::game_map::*;
-use crate::res::game_config::*;
-use crate::res::game_lib::*;
-use crate::utils::*;
+use crate::config::game_config::*;
+use crate::game_utils::{game_map::*, game_lib::*};
+use crate::misc::utils::*;
 use bevy::prelude::*;
 use std::path::Path;
 

@@ -1,5 +1,5 @@
-use crate::my_error::*;
-use crate::utils::*;
+use crate::misc::my_error::*;
+use crate::misc::utils::*;
 use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashSet;
@@ -50,5 +50,14 @@ impl GameMap {
         let map = Self::new(cell_size, map_config.row_count, map_config.col_count);
 
         Ok(map)
+    }
+
+    pub fn add_obj(
+        map_obj_config: &GameMapObjConfig,
+        commands: &mut Commands,
+    ) -> Result<Entity, MyError> {
+        
+
+        todo!()
     }
 }
