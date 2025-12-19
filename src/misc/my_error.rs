@@ -11,4 +11,10 @@ pub enum MyError {
 
     #[error("Duplicate Key {0}")]
     DuplicateKey(String),
+
+    #[error("Cannot find {0}")]
+    NotFound(String),
+
+    #[error("{0}")]
+    Other(String),
 }

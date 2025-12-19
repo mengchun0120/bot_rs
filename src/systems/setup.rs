@@ -1,5 +1,5 @@
 use crate::config::game_config::*;
-use crate::game_utils::{game_map::*, game_lib::*};
+use crate::game_utils::{game_lib::*, game_map::*};
 use crate::misc::utils::*;
 use bevy::prelude::*;
 use std::path::Path;
@@ -20,15 +20,27 @@ pub fn setup_game(
     };
 
     init_window(&game_lib.game_config, window.as_mut());
+    commands.spawn(Camera2d);
+
+    let mut game_obj_lib = GameObjLib::new();
+    let mut screen_coord = ScreenCoord::new(&game_lib.game_config);
 
     let game_map_path = game_lib.game_config.map_dir().join(&args.map_path);
-    let Some(game_map) =
-        load_game_map(game_map_path, game_lib.game_config.cell_size, &mut exit_app)
-    else {
+    let Some(game_map) = load_game_map(
+        game_map_path,
+        game_lib.game_config.cell_size,
+        &game_lib,
+        &mut game_obj_lib,
+        &screen_coord,
+        &mut commands,
+        &mut exit_app,
+    ) else {
         return;
     };
 
     commands.insert_resource(game_lib);
+    commands.insert_resource(game_obj_lib);
+    commands.insert_resource(screen_coord);
     commands.insert_resource(game_map);
 
     info!("Finished setup")
@@ -60,9 +72,20 @@ fn init_window(game_config: &GameConfig, window: &mut Window) {
 fn load_game_map<P: AsRef<Path>>(
     map_path: P,
     cell_size: f32,
+    game_lib: &GameLib,
+    game_obj_lib: &mut GameObjLib,
+    screen_coord: &ScreenCoord,
+    commands: &mut Commands,
     exit_app: &mut MessageWriter<AppExit>,
 ) -> Option<GameMap> {
-    let game_map = match GameMap::load(map_path, cell_size) {
+    let game_map = match GameMap::load(
+        map_path,
+        cell_size,
+        game_lib,
+        game_obj_lib,
+        screen_coord,
+        commands,
+    ) {
         Ok(map) => map,
         Err(err) => {
             error!("Failed to load GameMap: {}", err);

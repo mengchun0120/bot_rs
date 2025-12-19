@@ -1,6 +1,6 @@
 use bevy::{log::LogPlugin, prelude::*};
-use bot_rs::systems::*;
 use bot_rs::misc::utils::*;
+use bot_rs::systems::*;
 use clap::Parser;
 
 fn main() {

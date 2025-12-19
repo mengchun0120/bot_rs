@@ -58,3 +58,14 @@ pub fn setup_log<P: AsRef<Path>>(log_path: P) -> WorkerGuard {
 pub fn join_path(components: &Vec<String>) -> PathBuf {
     components.iter().collect()
 }
+
+#[inline]
+pub fn arr_to_vec2(v: &[f32; 2]) -> Vec2 {
+    Vec2 { x: v[0], y: v[1] }
+}
+
+#[inline]
+pub fn get_rotation(d: &Vec2) -> Quat {
+    let from = Vec2::new(1.0, 0.0);
+    Quat::from_rotation_arc_2d(from, d.clone())
+}

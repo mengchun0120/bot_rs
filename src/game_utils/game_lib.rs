@@ -1,17 +1,24 @@
-use crate::config::game_config::*;
-use crate::config::game_obj_config::*;
-use crate::misc::my_error::*;
-use crate::misc::utils::*;
+use crate::config::{game_config::*, game_obj_config::*};
+use crate::game::game_obj::*;
+use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 use std::collections::HashMap;
-use std::path::Path;
 use std::io::{Error, ErrorKind};
+use std::path::Path;
 
 #[derive(Resource)]
 pub struct GameLib {
     pub game_config: GameConfig,
     pub game_obj_configs: HashMap<String, GameObjConfig>,
     pub images: HashMap<String, Handle<Image>>,
+}
+
+#[derive(Resource, Deref, DerefMut)]
+pub struct GameObjLib(pub HashMap<Entity, GameObj>);
+
+#[derive(Resource)]
+pub struct ScreenCoord {
+    origin: Vec2,
 }
 
 impl GameLib {
@@ -59,5 +66,27 @@ impl GameLib {
         }
 
         Ok(images)
+    }
+}
+
+impl GameObjLib {
+    pub fn new() -> Self {
+        Self(HashMap::new())
+    }
+}
+
+impl ScreenCoord {
+    pub fn new(game_config: &GameConfig) -> Self {
+        Self {
+            origin: Vec2::new(
+                game_config.window_width() / 2.0,
+                game_config.window_height() / 2.0,
+            ),
+        }
+    }
+
+    #[inline]
+    pub fn screen_pos(&self, pos: &Vec2) -> Vec2 {
+        pos - self.origin
     }
 }

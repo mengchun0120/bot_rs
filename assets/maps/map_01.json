@@ -8,17 +8,17 @@
             "direction": [1.0, 0.0]
         },
         {
-            "config_name": "ai_tank",
+            "config_name": "ai_bot",
             "pos": [200.0, 100.0],
             "direction": [0.0, 1.0]
         },
         {
-            "config_name": "player_tank",
+            "config_name": "player_bot",
             "pos": [300.0, 100.0],
             "direction": [-1.0, 0.0]
         },
         {
-            "config_name": "ai_tank",
+            "config_name": "ai_bot",
             "pos": [400.0, 120.0],
             "direction": [1.0, 0.0]
         }

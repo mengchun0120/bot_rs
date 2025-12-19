@@ -1,0 +1,1 @@
+RUST_LOG="bot_rs=info" cargo run -- -c assets/config/game_config.json -l game.log -m map_01.json
