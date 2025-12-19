@@ -3,7 +3,7 @@
     "cell_size": 40.0,
     "config_dir": ["assets", "config"],
     "map_dir": ["assets", "maps"],
-    "image_dir": ["assets", "images"],
+    "image_dir": ["images"],
     "game_obj_config_file": "game_obj_configs.json",
     "image_config_file": "image_configs.json"
 }

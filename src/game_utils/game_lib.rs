@@ -4,7 +4,7 @@ use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[derive(Resource)]
 pub struct GameLib {
@@ -44,6 +44,7 @@ impl GameLib {
         game_config: &GameConfig,
         asset_server: &AssetServer,
     ) -> Result<HashMap<String, Handle<Image>>, MyError> {
+        let assets_dir = PathBuf::from("assets");
         let image_dir = game_config.image_dir();
         let image_configs: HashMap<String, String> = read_json(game_config.image_config_file())?;
         let mut images: HashMap<String, Handle<Image>> = HashMap::new();
@@ -54,14 +55,15 @@ impl GameLib {
                 return Err(MyError::DuplicateKey(name.clone()));
             }
 
-            let image_file = image_dir.join(file_path);
-            if !image_file.exists() {
-                let err_msg = format!("File {:?} doesn't exist", image_file);
+            let image_relative_path = image_dir.join(file_path);
+            let image_abs_path = assets_dir.join(image_relative_path.clone());
+            if !image_abs_path.exists() {
+                let err_msg = format!("File {:?} doesn't exist", image_abs_path);
                 error!(err_msg);
                 return Err(Error::new(ErrorKind::NotFound, err_msg).into());
             }
 
-            let image = asset_server.load(image_file);
+            let image = asset_server.load(image_relative_path);
             images.insert(name.clone(), image);
         }
 

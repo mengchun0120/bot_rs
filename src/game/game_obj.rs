@@ -60,8 +60,6 @@ impl GameObj {
         let size = arr_to_vec2(&obj_config.size);
         let screen_pos = screen_coord.screen_pos(&self.pos);
 
-        info!("create_entity: {:?} {:?}", screen_pos, self.pos);
-
         let mut entity = commands.spawn((
             Sprite {
                 image,
