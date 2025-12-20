@@ -44,13 +44,11 @@ impl GameLib {
         &self.game_obj_configs[index]
     }
 
-    fn load_images(
-        &mut self,
-        asset_server: &AssetServer,
-    ) -> Result<(), MyError> {
+    fn load_images(&mut self, asset_server: &AssetServer) -> Result<(), MyError> {
         let assets_dir = PathBuf::from("assets");
         let image_dir = self.game_config.image_dir();
-        let image_configs: HashMap<String, String> = read_json(self.game_config.image_config_file())?;
+        let image_configs: HashMap<String, String> =
+            read_json(self.game_config.image_config_file())?;
 
         for (name, file_path) in image_configs.iter() {
             if self.images.contains_key(name) {

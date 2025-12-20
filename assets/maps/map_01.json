@@ -1,6 +1,11 @@
 {
     "row_count": 80,
     "col_count": 80,
+    "player": {
+        "config_name": "player_bot",
+        "pos": [300.0, 100.0],
+        "direction": [-1.0, 0.0]
+    },
     "objs": [
         {
             "config_name": "steel_tile",
@@ -11,11 +16,6 @@
             "config_name": "ai_bot",
             "pos": [200.0, 100.0],
             "direction": [0.0, 1.0]
-        },
-        {
-            "config_name": "player_bot",
-            "pos": [300.0, 100.0],
-            "direction": [-1.0, 0.0]
         },
         {
             "config_name": "ai_bot",

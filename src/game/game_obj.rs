@@ -1,4 +1,4 @@
-use crate::game_utils::{game_lib::*, game_map::*, screen_coord::*};
+use crate::game_utils::{game_lib::*, game_map::*};
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 
@@ -14,20 +14,19 @@ impl GameObj {
     pub fn new(
         config_index: usize,
         pos: &Vec2,
-        map_pos: &MapPos,
         direction: &Vec2,
+        map: &GameMap,
         game_lib: &GameLib,
-        screen_coord: &ScreenCoord,
         commands: &mut Commands,
     ) -> Result<(Self, Entity), MyError> {
         let obj = Self {
             config_index,
             pos: pos.clone(),
-            map_pos: map_pos.clone(),
+            map_pos: map.get_map_pos(pos),
             direction: direction.clone(),
         };
 
-        let entity = obj.create_entity(config_index, game_lib, screen_coord, commands)?;
+        let entity = obj.create_entity(config_index, game_lib, map, commands)?;
 
         Ok((obj, entity))
     }
@@ -36,7 +35,7 @@ impl GameObj {
         &self,
         config_index: usize,
         game_lib: &GameLib,
-        screen_coord: &ScreenCoord,
+        map: &GameMap,
         commands: &mut Commands,
     ) -> Result<Entity, MyError> {
         let obj_config = game_lib.get_game_obj_config(config_index);
@@ -45,7 +44,7 @@ impl GameObj {
             return Err(MyError::NotFound(obj_config.image.clone()));
         };
         let size = arr_to_vec2(&obj_config.size);
-        let screen_pos = screen_coord.screen_pos(&self.pos);
+        let screen_pos = map.get_screen_pos(&self.pos);
 
         let entity = commands.spawn((
             Sprite {
