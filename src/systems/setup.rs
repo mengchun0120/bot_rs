@@ -1,5 +1,5 @@
 use crate::config::game_config::*;
-use crate::game_utils::{game_lib::*, game_map::*};
+use crate::game_utils::{game_lib::*, game_map::*, screen_coord::*, game_obj_lib::*};
 use crate::misc::utils::*;
 use bevy::prelude::*;
 use std::path::Path;
@@ -23,7 +23,7 @@ pub fn setup_game(
     commands.spawn(Camera2d);
 
     let mut game_obj_lib = GameObjLib::new();
-    let mut screen_coord = ScreenCoord::new(&game_lib.game_config);
+    let screen_coord = ScreenCoord::new(&game_lib.game_config);
 
     let game_map_path = game_lib.game_config.map_dir().join(&args.map_path);
     let Some(game_map) = load_game_map(

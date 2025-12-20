@@ -18,6 +18,7 @@ pub enum GameObjSide {
 
 #[derive(Debug, Resource, Deserialize)]
 pub struct GameObjConfig {
+    pub name: String,
     pub image: String,
     pub size: [f32; 2],
     pub z: f32,

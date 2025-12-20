@@ -1,5 +1,6 @@
-{
-    "player_bot": {
+[
+    {
+        "name": "player_bot",
         "image": "player_bot",
         "size": [60.0, 60.0],
         "z": 0.0,
@@ -8,7 +9,8 @@
         "speed": 100.0,
         "collide_span": 30.0
     },
-    "steel_tile": {
+    {
+        "name": "steel_tile",
         "image": "steel_tile",
         "size": [40.0, 40.0],
         "z": -1.0,
@@ -17,7 +19,8 @@
         "speed": 0.0,
         "collide_span": 20.0
     },
-    "ai_bot": {
+    {
+        "name": "ai_bot",
         "image": "ai_bot",
         "size": [60.0, 60.0],
         "z": 0.0,
@@ -26,7 +29,8 @@
         "speed": 80.0,
         "collide_span": 30.0
     },
-    "green_missile": {
+    {
+        "name": "green_missile",
         "image": "green_missile",
         "size": [10.0, 10.0],
         "z": 1.0,
@@ -35,7 +39,8 @@
         "speed": 120.0,
         "collide_span": 5.0
     },
-    "orange_missile": {
+    {
+        "name": "orange_missile",
         "image": "orange_missile",
         "size": [10.0, 10.0],
         "z": 1.0,
@@ -44,4 +49,4 @@
         "speed": 80.0,
         "collide_span": 5.0
     }
-}
+]

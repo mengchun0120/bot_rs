@@ -1,6 +1,6 @@
 use crate::config::game_map_config::*;
 use crate::game::game_obj::*;
-use crate::game_utils::game_lib::*;
+use crate::game_utils::{game_lib::*, screen_coord::*, game_obj_lib::*};
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 
@@ -45,10 +45,15 @@ impl GameMap {
         let mut map = Self::new(cell_size, map_config.row_count, map_config.col_count);
 
         for map_obj_config in map_config.objs.iter() {
+            let Some(config_index) = game_lib.get_game_obj_config_index(&map_obj_config.config_name) else {
+                error!("Cannot find GameObjConfig {}", map_obj_config.config_name);
+                return Err(MyError::NotFound(map_obj_config.config_name.clone()));
+            };
             let pos = arr_to_vec2(&map_obj_config.pos);
             let direction = arr_to_vec2(&map_obj_config.direction).normalize();
+
             map.add_obj(
-                &map_obj_config.config_name,
+                config_index,
                 &pos,
                 &direction,
                 game_lib,
@@ -63,7 +68,7 @@ impl GameMap {
 
     pub fn add_obj(
         &mut self,
-        config_name: &String,
+        config_index: usize,
         pos: &Vec2,
         direction: &Vec2,
         game_lib: &GameLib,
@@ -71,10 +76,7 @@ impl GameMap {
         screen_coord: &ScreenCoord,
         commands: &mut Commands,
     ) -> Result<(), MyError> {
-        let Some(obj_config) = game_lib.game_obj_configs.get(config_name) else {
-            error!("Cannot find {} in game_obj_configs", config_name);
-            return Err(MyError::NotFound(config_name.clone()));
-        };
+        let obj_config = game_lib.get_game_obj_config(config_index);
 
         if !self.is_inside(pos, obj_config.collide_span) {
             let err_msg = format!("Position {:?} is outside of map", pos);
@@ -84,7 +86,7 @@ impl GameMap {
 
         let map_pos = self.get_map_pos(pos);
         let (obj, entity) = GameObj::new(
-            config_name,
+            config_index,
             pos,
             &map_pos,
             direction,
