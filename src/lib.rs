@@ -2,6 +2,7 @@ pub mod config {
     pub mod game_config;
     pub mod game_map_config;
     pub mod game_obj_config;
+    pub mod gun_config;
 }
 
 pub mod game_utils {

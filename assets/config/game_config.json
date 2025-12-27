@@ -5,5 +5,6 @@
     "map_dir": ["assets", "maps"],
     "image_dir": ["images"],
     "game_obj_config_file": "game_obj_configs.json",
-    "image_config_file": "image_configs.json"
+    "image_config_file": "image_configs.json",
+    "gun_config_file": "gun_configs.json"
 }

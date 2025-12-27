@@ -3,5 +3,6 @@
     "ai_bot": "ai_bot.png",
     "steel_tile": "steel_tile.png",
     "green_missile": "green_missile.png",
-    "orange_missile": "orange_missile.png"
+    "orange_missile": "orange_missile.png",
+    "green_standard_gun": "green_standard_gun.png"
 }

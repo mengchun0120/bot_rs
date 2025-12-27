@@ -1,4 +1,4 @@
-use crate::config::{game_config::*, game_obj_config::*};
+use crate::config::{game_config::*, game_obj_config::*, gun_config::*};
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 use std::collections::HashMap;
@@ -11,6 +11,7 @@ pub struct GameLib {
     game_obj_configs: Vec<GameObjConfig>,
     game_obj_config_indices: HashMap<String, usize>,
     pub images: HashMap<String, Handle<Image>>,
+    pub gun_configs: HashMap<String, GunConfig>,
 }
 
 impl GameLib {
@@ -24,10 +25,12 @@ impl GameLib {
             images: HashMap::new(),
             game_obj_configs: Vec::new(),
             game_obj_config_indices: HashMap::new(),
+            gun_configs: HashMap::new(),
         };
 
         game_lib.load_images(asset_server)?;
         game_lib.load_game_obj_configs()?;
+        game_lib.load_gun_configs()?;
 
         info!("GameLib initialized");
 
@@ -85,6 +88,11 @@ impl GameLib {
             self.game_obj_config_indices.insert(name.clone(), i);
         }
 
+        Ok(())
+    }
+
+    fn load_gun_configs(&mut self) -> Result<(), MyError> {
+        self.gun_configs = read_json(self.game_config.gun_config_file())?;
         Ok(())
     }
 }
