@@ -10,8 +10,8 @@ pub struct GameLib {
     pub game_config: GameConfig,
     game_obj_configs: Vec<GameObjConfig>,
     game_obj_config_indices: HashMap<String, usize>,
-    pub images: HashMap<String, Handle<Image>>,
-    pub gun_configs: HashMap<String, GunConfig>,
+    images: HashMap<String, Handle<Image>>,
+    gun_configs: HashMap<String, GunConfig>,
 }
 
 impl GameLib {
@@ -38,13 +38,41 @@ impl GameLib {
     }
 
     #[inline]
-    pub fn get_game_obj_config_index(&self, name: &String) -> Option<usize> {
-        self.game_obj_config_indices.get(name).copied()
+    pub fn get_game_obj_config_index(&self, name: &String) -> Result<usize, MyError> {
+        match self.game_obj_config_indices.get(name) {
+            Some(index) => Ok(index.clone()),
+            None => {
+                error!("Cannot find GameObjConfig {}", name);
+                Err(MyError::NotFound(name.clone()))
+            }
+        }
     }
 
     #[inline]
     pub fn get_game_obj_config(&self, index: usize) -> &GameObjConfig {
         &self.game_obj_configs[index]
+    }
+
+    #[inline]
+    pub fn get_image(&self, name: &String) -> Result<Handle<Image>, MyError> {
+        match self.images.get(name) {
+            Some(img) => Ok(img.clone()),
+            None => {
+                error!("Cannot find image {}", name);
+                Err(MyError::NotFound(name.clone()))
+            }
+        }
+    }
+
+    #[inline]
+    pub fn get_gun_config(&self, name: &String) -> Result<&GunConfig, MyError> {
+        match self.gun_configs.get(name) {
+            Some(gun_config) => Ok(gun_config),
+            None => {
+                error!("Cannot find GunConfig {}", name);
+                Err(MyError::NotFound(name.clone()))
+            }
+        }
     }
 
     fn load_images(&mut self, asset_server: &AssetServer) -> Result<(), MyError> {

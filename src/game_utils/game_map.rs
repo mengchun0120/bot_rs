@@ -77,11 +77,7 @@ impl GameMap {
         game_obj_lib: &mut GameObjLib,
         commands: &mut Commands,
     ) -> Result<(), MyError> {
-        let Some(config_index) = game_lib.get_game_obj_config_index(&map_obj_config.config_name)
-        else {
-            error!("Cannot find GameObjConfig {}", map_obj_config.config_name);
-            return Err(MyError::NotFound(map_obj_config.config_name.clone()));
-        };
+        let config_index = game_lib.get_game_obj_config_index(&map_obj_config.config_name)?;
         let pos = arr_to_vec2(&map_obj_config.pos);
         let direction = arr_to_vec2(&map_obj_config.direction).normalize();
 

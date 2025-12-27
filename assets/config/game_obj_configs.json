@@ -7,7 +7,14 @@
         "obj_type": "Bot",
         "side": "Player",
         "speed": 100.0,
-        "collide_span": 30.0
+        "collide_span": 30.0,
+        "gun_configs": [
+            {
+                "config_name": "green_standard_gun",
+                "pos": [30.0, 0.0],
+                "direction": [1.0, 0.0]
+            }
+        ]
     },
     {
         "name": "steel_tile",
@@ -27,7 +34,8 @@
         "obj_type": "Bot",
         "side": "AI",
         "speed": 80.0,
-        "collide_span": 30.0
+        "collide_span": 30.0,
+        "gun_configs": []
     },
     {
         "name": "green_missile",
