@@ -74,13 +74,7 @@ fn load_game_map<P: AsRef<Path>>(
     commands: &mut Commands,
     exit_app: &mut MessageWriter<AppExit>,
 ) -> Option<GameMap> {
-    let game_map = match GameMap::load(
-        map_path,
-        cell_size,
-        game_lib,
-        game_obj_lib,
-        commands,
-    ) {
+    let game_map = match GameMap::load(map_path, cell_size, game_lib, game_obj_lib, commands) {
         Ok(map) => map,
         Err(err) => {
             error!("Failed to load GameMap: {}", err);

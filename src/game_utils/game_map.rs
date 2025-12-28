@@ -51,20 +51,10 @@ impl GameMap {
 
         map.setup_origin(&game_lib.game_config, &map_config);
 
-        map.add_obj_by_config(
-            &map_config.player,
-            game_lib,
-            game_obj_lib,
-            commands,
-        )?;
+        map.add_obj_by_config(&map_config.player, game_lib, game_obj_lib, commands)?;
 
         for map_obj_config in map_config.objs.iter() {
-            map.add_obj_by_config(
-                map_obj_config,
-                game_lib,
-                game_obj_lib,
-                commands,
-            )?;
+            map.add_obj_by_config(map_obj_config, game_lib, game_obj_lib, commands)?;
         }
 
         Ok(map)
@@ -110,14 +100,7 @@ impl GameMap {
             return Err(MyError::Other(err_msg));
         }
 
-        let (obj, entity) = GameObj::new(
-            config_index,
-            pos,
-            direction,
-            self,
-            game_lib,
-            commands,
-        )?;
+        let (obj, entity) = GameObj::new(config_index, pos, direction, self, game_lib, commands)?;
 
         self.map[obj.map_pos.row][obj.map_pos.col].insert(entity);
         if self.max_collide_span < obj_config.collide_span {
@@ -148,6 +131,11 @@ impl GameMap {
     #[inline]
     pub fn get_screen_pos(&self, pos: &Vec2) -> Vec2 {
         pos - self.origin
+    }
+
+    #[inline]
+    pub fn viewport_to_world(&self, pos: &Vec2) -> Vec2 {
+        pos + self.origin
     }
 
     fn setup_origin(&mut self, game_config: &GameConfig, map_config: &GameMapConfig) {
