@@ -69,3 +69,8 @@ pub fn get_rotation(d: &Vec2) -> Quat {
     let from = Vec2::new(1.0, 0.0);
     Quat::from_rotation_arc_2d(from, d.clone())
 }
+
+#[inline]
+pub fn is_close(pos1: &Vec2, pos2: &Vec2) -> bool {
+    (pos1.x - pos2.x).abs() <= 0.1 && (pos1.y - pos2.y).abs() <= 0.1
+}

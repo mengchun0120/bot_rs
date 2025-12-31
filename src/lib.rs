@@ -24,7 +24,9 @@ pub mod misc {
 pub mod systems {
     pub mod process_input;
     pub mod setup;
+    pub mod update_player;
 
     pub use process_input::process_input;
     pub use setup::setup_game;
+    pub use update_player::update_player;
 }

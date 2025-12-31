@@ -12,6 +12,7 @@ pub struct GameConfig {
     image_config_file: String,
     gun_config_file: String,
     pub cell_size: f32,
+    pub window_ext_size: f32,
 }
 
 impl GameConfig {

@@ -22,7 +22,6 @@ pub fn process_input(
         };
 
         q_player.1.dest = Some(cursor_pos);
-        q_player.1.move_enabled = true;
 
         let direction = (cursor_pos - obj.pos).normalize();
         obj.direction = direction.clone();
