@@ -17,6 +17,7 @@ pub mod game {
 }
 
 pub mod misc {
+    pub mod collide;
     pub mod my_error;
     pub mod utils;
 }

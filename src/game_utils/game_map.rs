@@ -1,7 +1,7 @@
-use crate::config::{game_config::*, game_map_config::*};
+use crate::config::{game_config::*, game_map_config::*, game_obj_config::*};
 use crate::game::game_obj::*;
 use crate::game_utils::{game_lib::*, game_obj_lib::*};
-use crate::misc::{my_error::*, utils::*};
+use crate::misc::{collide::*, my_error::*, utils::*};
 use bevy::prelude::*;
 
 use std::collections::HashSet;
@@ -156,16 +156,35 @@ impl GameMap {
         self.visible_region.contains(pos)
     }
 
-    pub fn get_bot_pos_after_collide(
+    pub fn get_bot_new_pos(
         &self,
-        pos: &Vec2,
-        direction: &Vec2,
-        collide_span: f32,
+        entity: &Entity,
+        obj: &GameObj,
+        game_obj_lib: &GameObjLib,
+        game_lib: &GameLib,
+        time: &Time,
     ) -> (bool, Vec2) {
-        let (collide_bounds, pos) =
-            self.get_bot_pos_after_collide_bounds(&pos, &direction, collide_span);
+        let obj_config = game_lib.get_game_obj_config(obj.config_index);
+        let new_pos = obj.pos + obj.direction * obj_config.speed * time.delta_secs();
 
-        (collide_bounds, pos)
+        let (collide_bounds, new_pos) = get_bot_pos_after_collide_bounds(
+            &new_pos,
+            obj_config.collide_span,
+            &obj.direction,
+            self.width,
+            self.height,
+        );
+
+        let (collide_obj, new_pos) = self.get_bot_pos_after_collide_objs(
+            entity,
+            obj,
+            &new_pos,
+            obj_config,
+            game_obj_lib,
+            game_lib,
+        );
+
+        (collide_bounds || collide_obj, new_pos)
     }
 
     pub fn update_origin(
@@ -223,12 +242,12 @@ impl GameMap {
 
     #[inline]
     fn get_visible_region(&self, origin: &Vec2) -> MapRegion {
-        MapRegion {
-            start_row: self.get_row(origin.y - self.visible_span.y),
-            end_row: self.get_row(origin.y + self.visible_span.y),
-            start_col: self.get_col(origin.x - self.visible_span.x),
-            end_col: self.get_col(origin.x + self.visible_span.x),
-        }
+        self.get_region(
+            origin.x - self.visible_span.x,
+            origin.y - self.visible_span.y,
+            origin.x + self.visible_span.x,
+            origin.y + self.visible_span.y,
+        )
     }
 
     #[inline]
@@ -243,72 +262,67 @@ impl GameMap {
         i.clamp(0, (self.col_count() - 1) as i32) as usize
     }
 
-    fn get_bot_pos_after_collide_bounds(
+    fn get_bot_pos_after_collide_objs(
         &self,
-        pos: &Vec2,
-        direction: &Vec2,
-        collide_span: f32,
+        entity: &Entity,
+        obj: &GameObj,
+        new_pos: &Vec2,
+        obj_config: &GameObjConfig,
+        game_obj_lib: &GameObjLib,
+        game_lib: &GameLib,
     ) -> (bool, Vec2) {
-        let left = pos.x - collide_span;
-        let right = pos.x + collide_span;
-        let dx = if left < 0.0 {
-            -left
-        } else if right > self.width {
-            self.width - right
-        } else {
-            0.0
-        };
-
-        let bottom = pos.y - collide_span;
-        let top = pos.y + collide_span;
-        let dy = if bottom < 0.0 {
-            -bottom
-        } else if top > self.height {
-            self.height - top
-        } else {
-            0.0
-        };
-
-        let mut corrected_pos = pos.clone();
-        let min_x = collide_span;
-        let max_x = self.width - collide_span;
-        let min_y = collide_span;
-        let max_y = self.height - collide_span;
-
-        let collide = if dx == 0.0 && dy == 0.0 {
-            false
-        } else {
-            if dx.signum() * direction.x.signum() < 0.0 && dy.signum() * direction.y.signum() < 0.0
-            {
-                if (dx * direction.y).abs() < (dy * direction.x).abs() {
-                    corrected_pos.x = corrected_pos.x.clamp(min_x, max_x);
-                    corrected_pos.y += dy.signum() * (dx * direction.y / direction.x).abs();
-                    corrected_pos.y = corrected_pos.y.clamp(min_y, max_y);
-                } else {
-                    corrected_pos.y = corrected_pos.y.clamp(min_y, max_y);
-                    corrected_pos.x += dx.signum() * (dy * direction.x / direction.y).abs();
-                    corrected_pos.x = corrected_pos.x.clamp(min_y, max_y);
-                }
-            } else {
-                corrected_pos.x = corrected_pos.x.clamp(min_x, max_x);
-                corrected_pos.y = corrected_pos.y.clamp(min_y, max_y);
+        let mut collide = false;
+        let collide_region =
+            self.get_collide_region_bot(&obj.pos, new_pos, obj_config.collide_span);
+        let mut pos = new_pos.clone();
+        let func = |e: &Entity| {
+            if entity == e {
+                return;
             }
-            true
+
+            let Some(obj2) = game_obj_lib.get(e) else {
+                error!("Cannot find entity in GameObjLib");
+                return;
+            };
+            let obj_config2 = game_lib.get_game_obj_config(obj2.config_index);
+
+            if (obj_config2.obj_type != GameObjType::Bot
+                && obj_config2.obj_type != GameObjType::Tile)
+                || obj_config2.collide_span == 0.0
+            {
+                return;
+            }
+
+            let (collide_obj, corrected_pos) = get_bot_pos_after_collide_obj(
+                &pos,
+                obj_config.collide_span,
+                &obj.direction,
+                &obj2.pos,
+                obj_config2.collide_span,
+            );
+
+            if collide_obj {
+                collide = true;
+            }
+
+            pos = corrected_pos;
         };
 
-        (collide, corrected_pos)
+        self.run_on_region(&collide_region, func);
+
+        (collide, pos)
     }
 
     fn hide_offscreen(&self, new_visible_region: &MapRegion, commands: &mut Commands) {
         let offscreen_regions = self.visible_region.sub(&new_visible_region);
-        let func = |entity: &Entity, commands: &mut Commands| {
+        let func = |entity: &Entity| {
             commands
                 .entity(entity.clone())
                 .entry::<Visibility>()
                 .and_modify(|mut v| *v = Visibility::Hidden);
         };
 
-        self.run_on_regions(&offscreen_regions, commands, func);
+        self.run_on_regions(&offscreen_regions, func);
     }
 
     fn update_onscreen(
@@ -318,7 +332,7 @@ impl GameMap {
         commands: &mut Commands,
     ) {
         let onscreen_regions = self.visible_region.intersect(&new_visible_region);
-        let func = |entity: &Entity, commands: &mut Commands| {
+        let func = |entity: &Entity| {
             let Some(obj) = game_obj_lib.get(entity) else {
                 return;
             };
@@ -332,7 +346,7 @@ impl GameMap {
                 });
         };
 
-        self.run_on_regions(&onscreen_regions, commands, func);
+        self.run_on_regions(&onscreen_regions, func);
     }
 
     fn show_newscreen(
@@ -342,7 +356,7 @@ impl GameMap {
         commands: &mut Commands,
     ) {
         let newscreen_regions = new_visible_region.sub(&self.visible_region);
-        let func = |entity: &Entity, commands: &mut Commands| {
+        let func = |entity: &Entity| {
             let Some(obj) = game_obj_lib.get(entity) else {
                 return;
             };
@@ -359,21 +373,54 @@ impl GameMap {
             });
         };
 
-        self.run_on_regions(&newscreen_regions, commands, func);
+        self.run_on_regions(&newscreen_regions, func);
     }
 
-    fn run_on_regions<F>(&self, regions: &Vec<MapRegion>, commands: &mut Commands, func: F)
+    fn run_on_regions<F>(&self, regions: &Vec<MapRegion>, mut func: F)
     where
-        F: Fn(&Entity, &mut Commands),
+        F: FnMut(&Entity),
     {
         for region in regions.iter() {
-            for row in region.start_row..=region.end_row {
-                for col in region.start_col..=region.end_col {
-                    for entity in self.map[row][col].iter() {
-                        func(entity, commands);
-                    }
+            self.run_on_region(region, &mut func);
+        }
+    }
+
+    fn run_on_region<F>(&self, region: &MapRegion, mut func: F)
+    where
+        F: FnMut(&Entity),
+    {
+        for row in region.start_row..=region.end_row {
+            for col in region.start_col..=region.end_col {
+                for entity in self.map[row][col].iter() {
+                    func(entity);
                 }
             }
+        }
+    }
+
+    #[inline]
+    fn get_collide_region_bot(
+        &self,
+        start_pos: &Vec2,
+        end_pos: &Vec2,
+        collide_span: f32,
+    ) -> MapRegion {
+        let span = self.max_collide_span + collide_span;
+        self.get_region(
+            start_pos.x.min(end_pos.x) - span,
+            start_pos.y.min(end_pos.y) - span,
+            start_pos.x.max(end_pos.x) + span,
+            start_pos.y.max(end_pos.y) + span,
+        )
+    }
+
+    #[inline]
+    fn get_region(&self, left: f32, bottom: f32, right: f32, top: f32) -> MapRegion {
+        MapRegion {
+            start_row: self.get_row(bottom),
+            end_row: self.get_row(top),
+            start_col: self.get_col(left),
+            end_col: self.get_col(right),
         }
     }
 }

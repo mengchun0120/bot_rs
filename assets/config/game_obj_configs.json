@@ -7,7 +7,7 @@
         "obj_type": "Bot",
         "side": "Player",
         "speed": 100.0,
-        "collide_span": 30.0,
+        "collide_span": 21.2132,
         "gun_configs": [
             {
                 "config_name": "green_standard_gun",
@@ -34,7 +34,7 @@
         "obj_type": "Bot",
         "side": "AI",
         "speed": 80.0,
-        "collide_span": 30.0,
+        "collide_span": 21.2132,
         "gun_configs": []
     },
     {

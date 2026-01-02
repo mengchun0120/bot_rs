@@ -1,0 +1,99 @@
+use bevy::prelude::*;
+
+pub fn get_bot_pos_after_collide_bounds(
+    pos: &Vec2,
+    collide_span: f32,
+    direction: &Vec2,
+    width: f32,
+    height: f32,
+) -> (bool, Vec2) {
+    let left = pos.x - collide_span;
+    let right = pos.x + collide_span;
+    let dx = if left < 0.0 {
+        -left
+    } else if right > width {
+        width - right
+    } else {
+        0.0
+    };
+
+    let bottom = pos.y - collide_span;
+    let top = pos.y + collide_span;
+    let dy = if bottom < 0.0 {
+        -bottom
+    } else if top > height {
+        height - top
+    } else {
+        0.0
+    };
+
+    let mut corrected_pos = pos.clone();
+    let min_x = collide_span;
+    let max_x = width - collide_span;
+    let min_y = collide_span;
+    let max_y = height - collide_span;
+
+    let collide = if dx == 0.0 && dy == 0.0 {
+        false
+    } else {
+        if dx.signum() * direction.x.signum() < 0.0 && dy.signum() * direction.y.signum() < 0.0 {
+            if (dx * direction.y).abs() < (dy * direction.x).abs() {
+                corrected_pos.x = corrected_pos.x.clamp(min_x, max_x);
+                corrected_pos.y += dy.signum() * (dx * direction.y / direction.x).abs();
+                corrected_pos.y = corrected_pos.y.clamp(min_y, max_y);
+            } else {
+                corrected_pos.y = corrected_pos.y.clamp(min_y, max_y);
+                corrected_pos.x += dx.signum() * (dy * direction.x / direction.y).abs();
+                corrected_pos.x = corrected_pos.x.clamp(min_y, max_y);
+            }
+        } else {
+            corrected_pos.x = corrected_pos.x.clamp(min_x, max_x);
+            corrected_pos.y = corrected_pos.y.clamp(min_y, max_y);
+        }
+        true
+    };
+
+    (collide, corrected_pos)
+}
+
+pub fn get_bot_pos_after_collide_obj(
+    pos1: &Vec2,
+    collide_span1: f32,
+    direction: &Vec2,
+    pos2: &Vec2,
+    collide_span2: f32,
+) -> (bool, Vec2) {
+    let total_span = collide_span1 + collide_span2;
+    let dx = (pos1.x - pos2.x).abs();
+    let dy = (pos1.y - pos2.y).abs();
+    let mut corrected_pos = pos1.clone();
+
+    if dx >= total_span || dy >= total_span {
+        return (false, corrected_pos);
+    }
+
+    let cx = total_span - dx;
+    let cy = total_span - dy;
+
+    if cx * direction.y.abs() < cy * direction.x.abs() {
+        corrected_pos.x = if direction.x > 0.0 {
+            pos2.x - total_span
+        } else {
+            pos2.x + total_span
+        };
+        if direction.y != 0.0 {
+            corrected_pos.y -= direction.y.signum() * cx * direction.y.abs() / direction.x;
+        }
+    } else {
+        corrected_pos.y = if direction.y > 0.0 {
+            pos2.y - total_span
+        } else {
+            pos2.y + total_span
+        };
+        if direction.x != 0.0 {
+            corrected_pos.x -= direction.x.signum() * cy * direction.x.abs() / direction.y;
+        }
+    }
+
+    (true, corrected_pos)
+}

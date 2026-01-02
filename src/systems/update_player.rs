@@ -18,16 +18,19 @@ pub fn update_player(
         error!("Cannot find player in GameObjLib");
         return;
     };
-    let obj_config = game_lib.get_game_obj_config(obj.config_index);
 
     if is_close(&obj.pos, &dest) {
         q_player.1.dest = None;
         return;
     }
 
-    let new_pos = obj.pos + obj.direction * obj_config.speed * time.delta_secs();
-    let (collide, new_pos) =
-        game_map.get_bot_pos_after_collide(&new_pos, &obj.direction, obj_config.collide_span);
+    let (collide, new_pos) = game_map.get_bot_new_pos(
+        &q_player.0,
+        &obj,
+        game_obj_lib.as_ref(),
+        game_lib.as_ref(),
+        time.as_ref(),
+    );
 
     game_map.update_origin(&new_pos, game_obj_lib.as_ref(), &mut commands);
 
