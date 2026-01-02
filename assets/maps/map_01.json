@@ -1,6 +1,6 @@
 {
-    "row_count": 80,
-    "col_count": 80,
+    "row_count": 30,
+    "col_count": 30,
     "player": {
         "config_name": "player_bot",
         "pos": [300.0, 100.0],
@@ -20,6 +20,31 @@
         {
             "config_name": "ai_bot",
             "pos": [400.0, 120.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [600.0, 600.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [800.0, 800.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [1000.0, 1000.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [800.0, 100.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [100.0, 800.0],
             "direction": [1.0, 0.0]
         }
     ]

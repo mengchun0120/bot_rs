@@ -21,13 +21,13 @@ pub struct GameMap {
     visible_region: MapRegion,
 }
 
-#[derive(Component, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
 pub struct MapPos {
     pub row: usize,
     pub col: usize,
 }
 
-#[derive(Resource, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, Resource, Eq, PartialEq, Default)]
 pub struct MapRegion {
     pub start_row: usize,
     pub end_row: usize,
@@ -107,7 +107,7 @@ impl GameMap {
     ) -> Result<(), MyError> {
         let obj_config = game_lib.get_game_obj_config(config_index);
 
-        if !self.is_inside(pos, obj_config.collide_span) {
+        if !self.contains(pos, obj_config.collide_span) {
             let err_msg = format!("Position {:?} is outside of map", pos);
             error!(err_msg);
             return Err(MyError::Other(err_msg));
@@ -126,7 +126,7 @@ impl GameMap {
     }
 
     #[inline]
-    pub fn is_inside(&self, pos: &Vec2, collide_span: f32) -> bool {
+    pub fn contains(&self, pos: &Vec2, collide_span: f32) -> bool {
         pos.x >= collide_span
             && pos.x + collide_span < self.width
             && pos.y >= collide_span
@@ -178,8 +178,10 @@ impl GameMap {
         self.origin.y = origin.y.clamp(self.min_origin.y, self.max_origin.y);
 
         let new_visible_region = self.get_visible_region(&self.origin);
-        let update_region = self.visible_region.merge(&new_visible_region);
-        self.update_screen_pos(&update_region, game_obj_lib, commands);
+
+        self.hide_offscreen(&new_visible_region, commands);
+        self.update_onscreen(&new_visible_region, game_obj_lib, commands);
+        self.show_newscreen(&new_visible_region, game_obj_lib, commands);
 
         self.visible_region = new_visible_region;
     }
@@ -209,10 +211,8 @@ impl GameMap {
             self.width - self.min_origin.x,
             self.height - self.min_origin.y,
         );
-        self.origin = Vec2::new(
-            player_pos.x.clamp(self.min_origin.x, self.max_origin.x),
-            player_pos.y.clamp(self.min_origin.y, self.max_origin.y),
-        );
+        self.origin.x = player_pos.x.clamp(self.min_origin.x, self.max_origin.x);
+        self.origin.y = player_pos.y.clamp(self.min_origin.y, self.max_origin.y);
     }
 
     fn setup_visible_region(&mut self, game_config: &GameConfig) {
@@ -221,6 +221,7 @@ impl GameMap {
         self.visible_region = self.get_visible_region(&self.origin);
     }
 
+    #[inline]
     fn get_visible_region(&self, origin: &Vec2) -> MapRegion {
         MapRegion {
             start_row: self.get_row(origin.y - self.visible_span.y),
@@ -230,41 +231,16 @@ impl GameMap {
         }
     }
 
+    #[inline]
     fn get_row(&self, y: f32) -> usize {
         let i = (y / self.cell_size).floor() as i32;
         i.clamp(0, (self.row_count() - 1) as i32) as usize
     }
 
+    #[inline]
     fn get_col(&self, x: f32) -> usize {
         let i = (x / self.cell_size).floor() as i32;
         i.clamp(0, (self.col_count() - 1) as i32) as usize
-    }
-
-    fn update_screen_pos(
-        &self,
-        region: &MapRegion,
-        game_obj_lib: &GameObjLib,
-        commands: &mut Commands,
-    ) {
-        for row in region.start_row..=region.end_row {
-            for col in region.start_col..=region.end_col {
-                for entity in self.map[row][col].iter() {
-                    let Some(obj) = game_obj_lib.get(entity) else {
-                        error!("Cannot find entity in GameObjLib");
-                        continue;
-                    };
-                    let screen_pos = self.get_screen_pos(&obj.pos);
-
-                    commands
-                        .entity(entity.clone())
-                        .entry::<Transform>()
-                        .and_modify(move |mut t| {
-                            t.translation.x = screen_pos.x;
-                            t.translation.y = screen_pos.y;
-                        });
-                }
-            }
-        }
     }
 
     fn get_bot_pos_after_collide_bounds(
@@ -322,6 +298,84 @@ impl GameMap {
 
         (collide, corrected_pos)
     }
+
+    fn hide_offscreen(&self, new_visible_region: &MapRegion, commands: &mut Commands) {
+        let offscreen_regions = self.visible_region.sub(&new_visible_region);
+        let func = |entity: &Entity, commands: &mut Commands| {
+            commands
+                .entity(entity.clone())
+                .entry::<Visibility>()
+                .and_modify(|mut v| *v = Visibility::Hidden);
+        };
+
+        self.run_on_regions(&offscreen_regions, commands, func);
+    }
+
+    fn update_onscreen(
+        &self,
+        new_visible_region: &MapRegion,
+        game_obj_lib: &GameObjLib,
+        commands: &mut Commands,
+    ) {
+        let onscreen_regions = self.visible_region.intersect(&new_visible_region);
+        let func = |entity: &Entity, commands: &mut Commands| {
+            let Some(obj) = game_obj_lib.get(entity) else {
+                return;
+            };
+            let screen_pos = self.get_screen_pos(&obj.pos);
+            commands
+                .entity(entity.clone())
+                .entry::<Transform>()
+                .and_modify(move |mut t| {
+                    t.translation.x = screen_pos.x;
+                    t.translation.y = screen_pos.y;
+                });
+        };
+
+        self.run_on_regions(&onscreen_regions, commands, func);
+    }
+
+    fn show_newscreen(
+        &self,
+        new_visible_region: &MapRegion,
+        game_obj_lib: &GameObjLib,
+        commands: &mut Commands,
+    ) {
+        let newscreen_regions = new_visible_region.sub(&self.visible_region);
+        let func = |entity: &Entity, commands: &mut Commands| {
+            let Some(obj) = game_obj_lib.get(entity) else {
+                return;
+            };
+            let screen_pos = self.get_screen_pos(&obj.pos);
+            let mut entity = commands.entity(entity.clone());
+
+            entity.entry::<Transform>().and_modify(move |mut t| {
+                t.translation.x = screen_pos.x;
+                t.translation.y = screen_pos.y;
+            });
+
+            entity.entry::<Visibility>().and_modify(|mut v| {
+                *v = Visibility::Visible;
+            });
+        };
+
+        self.run_on_regions(&newscreen_regions, commands, func);
+    }
+
+    fn run_on_regions<F>(&self, regions: &Vec<MapRegion>, commands: &mut Commands, func: F)
+    where
+        F: Fn(&Entity, &mut Commands),
+    {
+        for region in regions.iter() {
+            for row in region.start_row..=region.end_row {
+                for col in region.start_col..=region.end_col {
+                    for entity in self.map[row][col].iter() {
+                        func(entity, commands);
+                    }
+                }
+            }
+        }
+    }
 }
 
 impl MapRegion {
@@ -333,15 +387,6 @@ impl MapRegion {
             && pos.col <= self.end_col
     }
 
-    pub fn merge(&self, other: &MapRegion) -> MapRegion {
-        MapRegion {
-            start_row: self.start_row.min(other.start_row),
-            end_row: self.end_row.max(other.end_row),
-            start_col: self.start_col.min(other.start_col),
-            end_col: self.end_col.max(other.end_col),
-        }
-    }
-
     pub fn sub(&self, other: &MapRegion) -> Vec<MapRegion> {
         let mut result = Vec::new();
 
@@ -350,6 +395,7 @@ impl MapRegion {
             || self.start_col > other.end_col
             || self.end_col < other.start_col
         {
+            result.push(self.clone());
             return result;
         }
 
@@ -397,20 +443,24 @@ impl MapRegion {
         result
     }
 
-    pub fn intersect(&self, other: &MapRegion) -> Option<MapRegion> {
+    pub fn intersect(&self, other: &MapRegion) -> Vec<MapRegion> {
+        let mut result = Vec::new();
+
         if self.start_row > other.end_row
             || self.end_row < other.start_row
             || self.start_col > other.end_col
             || self.end_col < other.start_col
         {
-            None
-        } else {
-            Some(MapRegion {
-                start_row: self.start_row.max(other.start_row),
-                end_row: self.end_row.min(other.end_row),
-                start_col: self.start_col.max(other.start_col),
-                end_col: self.end_col.min(other.end_col),
-            })
+            return result;
         }
+
+        result.push(MapRegion {
+            start_row: self.start_row.max(other.start_row),
+            end_row: self.end_row.min(other.end_row),
+            start_col: self.start_col.max(other.start_col),
+            end_col: self.end_col.min(other.end_col),
+        });
+
+        result
     }
 }
