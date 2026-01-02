@@ -28,7 +28,8 @@ impl GameObj {
             direction: direction.clone(),
         };
 
-        let entity = obj.create_entity(config_index, game_lib, map, commands)?;
+        let visible = map.is_visible(&obj.map_pos);
+        let entity = obj.create_entity(config_index, visible, game_lib, map, commands)?;
 
         Ok((obj, entity))
     }
@@ -36,6 +37,7 @@ impl GameObj {
     fn create_entity(
         &self,
         config_index: usize,
+        visible: bool,
         game_lib: &GameLib,
         map: &GameMap,
         commands: &mut Commands,
@@ -44,6 +46,11 @@ impl GameObj {
         let image = game_lib.get_image(&obj_config.image)?;
         let size = arr_to_vec2(&obj_config.size);
         let screen_pos = map.get_screen_pos(&self.pos);
+        let visibility = if visible {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
 
         let main_body = commands
             .spawn((
@@ -57,6 +64,7 @@ impl GameObj {
                     rotation: get_rotation(&self.direction.normalize()),
                     ..default()
                 },
+                visibility,
             ))
             .id();
 

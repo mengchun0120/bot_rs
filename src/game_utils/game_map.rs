@@ -1,4 +1,4 @@
-use crate::config::{game_config::*, game_map_config::*, game_obj_config::*};
+use crate::config::{game_config::*, game_map_config::*};
 use crate::game::game_obj::*;
 use crate::game_utils::{game_lib::*, game_obj_lib::*};
 use crate::misc::{my_error::*, utils::*};
@@ -149,6 +149,11 @@ impl GameMap {
     #[inline]
     pub fn viewport_to_world(&self, pos: &Vec2) -> Vec2 {
         pos + self.origin
+    }
+
+    #[inline]
+    pub fn is_visible(&self, pos: &MapPos) -> bool {
+        self.visible_region.contains(pos)
     }
 
     pub fn get_bot_pos_after_collide(
@@ -320,12 +325,92 @@ impl GameMap {
 }
 
 impl MapRegion {
+    #[inline]
+    pub fn contains(&self, pos: &MapPos) -> bool {
+        pos.row >= self.start_row
+            && pos.row <= self.end_row
+            && pos.col >= self.start_col
+            && pos.col <= self.end_col
+    }
+
     pub fn merge(&self, other: &MapRegion) -> MapRegion {
         MapRegion {
             start_row: self.start_row.min(other.start_row),
             end_row: self.end_row.max(other.end_row),
             start_col: self.start_col.min(other.start_col),
             end_col: self.end_col.max(other.end_col),
+        }
+    }
+
+    pub fn sub(&self, other: &MapRegion) -> Vec<MapRegion> {
+        let mut result = Vec::new();
+
+        if self.start_row > other.end_row
+            || self.end_row < other.start_row
+            || self.start_col > other.end_col
+            || self.end_col < other.start_col
+        {
+            return result;
+        }
+
+        let mut start_row = self.start_row;
+        let mut end_row = self.end_row;
+
+        if self.start_row < other.start_row {
+            result.push(MapRegion {
+                start_row: self.start_row,
+                end_row: other.start_row - 1,
+                start_col: self.start_col,
+                end_col: self.end_col,
+            });
+            start_row = other.start_row;
+        }
+
+        if self.end_row > other.end_row {
+            result.push(MapRegion {
+                start_row: other.end_row + 1,
+                end_row: self.end_row,
+                start_col: self.start_col,
+                end_col: self.end_col,
+            });
+            end_row = other.end_row;
+        }
+
+        if self.start_col < other.start_col {
+            result.push(MapRegion {
+                start_row,
+                end_row,
+                start_col: self.start_col,
+                end_col: other.start_col - 1,
+            });
+        }
+
+        if self.end_col > other.end_col {
+            result.push(MapRegion {
+                start_row,
+                end_row,
+                start_col: other.end_col + 1,
+                end_col: self.end_col,
+            });
+        }
+
+        result
+    }
+
+    pub fn intersect(&self, other: &MapRegion) -> Option<MapRegion> {
+        if self.start_row > other.end_row
+            || self.end_row < other.start_row
+            || self.start_col > other.end_col
+            || self.end_col < other.start_col
+        {
+            None
+        } else {
+            Some(MapRegion {
+                start_row: self.start_row.max(other.start_row),
+                end_row: self.end_row.min(other.end_row),
+                start_col: self.start_col.max(other.start_col),
+                end_col: self.end_col.min(other.end_col),
+            })
         }
     }
 }

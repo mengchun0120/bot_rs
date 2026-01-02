@@ -36,7 +36,7 @@ pub fn update_player(
         game_map.relocate(q_player.0, &obj.map_pos, &new_map_pos);
     }
 
-    game_obj_lib.entry(q_player.0).and_modify(|obj|{
+    game_obj_lib.entry(q_player.0).and_modify(|obj| {
         obj.pos = new_pos;
         obj.map_pos = new_map_pos;
     });
