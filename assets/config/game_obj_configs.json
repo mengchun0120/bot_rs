@@ -8,13 +8,36 @@
         "side": "Player",
         "speed": 100.0,
         "collide_span": 21.2132,
-        "gun_configs": [
-            {
-                "config_name": "green_standard_gun",
-                "pos": [30.0, 0.0],
-                "direction": [1.0, 0.0]
-            }
-        ]
+        "weapon_config": {
+            "gun_configs": [
+                {
+                    "config_name": "green_standard_gun",
+                    "pos": [30.0, 0.0],
+                    "direction": [1.0, 0.0]
+                }
+            ],
+            "fire_duration": 0.5
+        }
+    },
+    {
+        "name": "ai_bot",
+        "image": "ai_bot",
+        "size": [60.0, 60.0],
+        "z": 0.0,
+        "obj_type": "Bot",
+        "side": "AI",
+        "speed": 80.0,
+        "collide_span": 21.2132,
+        "weapon_config": {
+            "gun_configs": [
+                {
+                    "config_name": "orange_standard_gun",
+                    "pos": [30.0, 0.0],
+                    "direction": [1.0, 0.0]
+                }
+            ],
+            "fire_duration": 1.0
+        }
     },
     {
         "name": "steel_tile",
@@ -27,25 +50,8 @@
         "collide_span": 20.0
     },
     {
-        "name": "ai_bot",
-        "image": "ai_bot",
-        "size": [60.0, 60.0],
-        "z": 0.0,
-        "obj_type": "Bot",
-        "side": "AI",
-        "speed": 80.0,
-        "collide_span": 21.2132,
-        "gun_configs": [
-            {
-                "config_name": "orange_standard_gun",
-                "pos": [30.0, 0.0],
-                "direction": [1.0, 0.0]
-            }
-        ]
-    },
-    {
-        "name": "green_missile",
-        "image": "green_missile",
+        "name": "green_standard_missile",
+        "image": "green_standard_missile",
         "size": [10.0, 10.0],
         "z": 1.0,
         "obj_type": "Missile",
@@ -54,8 +60,8 @@
         "collide_span": 5.0
     },
     {
-        "name": "orange_missile",
-        "image": "orange_missile",
+        "name": "orange_standard_missile",
+        "image": "orange_standard_missile",
         "size": [10.0, 10.0],
         "z": 1.0,
         "obj_type": "Missile",

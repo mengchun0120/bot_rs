@@ -97,11 +97,11 @@ impl GameObj {
         game_lib: &GameLib,
         commands: &mut Commands,
     ) -> Result<(), MyError> {
-        let Some(gun_configs) = obj_config.gun_configs.as_ref() else {
+        let Some(weapon_config) = obj_config.weapon_config.as_ref() else {
             return Ok(());
         };
 
-        for gun_comp_config in gun_configs.iter() {
+        for gun_comp_config in weapon_config.gun_configs.iter() {
             let gun_config = game_lib.get_gun_config(&gun_comp_config.config_name)?;
             let gun_img = game_lib.get_image(&gun_config.image)?;
             let gun_size = arr_to_vec2(&gun_config.size);

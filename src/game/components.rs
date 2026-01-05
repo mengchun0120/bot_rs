@@ -8,6 +8,11 @@ pub struct PlayerComponent {
 #[derive(Component)]
 pub struct AIComponent;
 
+#[derive(Component)]
+pub struct GunComponent {
+    pub fire_timer: Vec<Timer>,
+}
+
 impl PlayerComponent {
     pub fn new() -> Self {
         PlayerComponent { move_timer: None }
@@ -19,5 +24,11 @@ impl PlayerComponent {
 
     pub fn clear_move_timer(&mut self) {
         self.move_timer = None;
+    }
+}
+
+impl GunComponent {
+    pub fn new() -> Self {
+        todo!()
     }
 }

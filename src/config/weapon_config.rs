@@ -7,7 +7,6 @@ pub struct GunConfig {
     pub size: [f32; 2],
     pub fire_point: [f32; 2],
     pub missile: String,
-    pub fire_duration: f32,
     pub z: f32,
 }
 
@@ -16,4 +15,10 @@ pub struct GunComponentConfig {
     pub config_name: String,
     pub pos: [f32; 2],
     pub direction: [f32; 2],
+}
+
+#[derive(Debug, Deserialize, Resource)]
+pub struct WeaponConfig {
+    pub gun_configs: Vec<GunComponentConfig>,
+    pub fire_duration: f32,
 }

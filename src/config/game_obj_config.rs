@@ -1,4 +1,4 @@
-use crate::config::gun_config::*;
+use crate::config::weapon_config::*;
 use bevy::prelude::*;
 use serde::Deserialize;
 
@@ -27,5 +27,5 @@ pub struct GameObjConfig {
     pub side: GameObjSide,
     pub speed: f32,
     pub collide_span: f32,
-    pub gun_configs: Option<Vec<GunComponentConfig>>,
+    pub weapon_config: Option<WeaponConfig>,
 }
