@@ -35,7 +35,13 @@
         "side": "AI",
         "speed": 80.0,
         "collide_span": 21.2132,
-        "gun_configs": []
+        "gun_configs": [
+            {
+                "config_name": "orange_standard_gun",
+                "pos": [30.0, 0.0],
+                "direction": [1.0, 0.0]
+            }
+        ]
     },
     {
         "name": "green_missile",

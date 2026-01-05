@@ -1,5 +1,5 @@
-use crate::game::components::*;
-use crate::game_utils::{game_map::*, game_obj_lib::*};
+use crate::game::{components::*, game_obj::*};
+use crate::game_utils::{game_lib::*, game_map::*, game_obj_lib::*};
 use crate::misc::utils::*;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
@@ -11,6 +11,7 @@ pub fn process_input(
     q_camera: Single<(&Camera, &GlobalTransform)>,
     game_map: Res<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
+    game_lib: Res<GameLib>,
 ) {
     if mouse_button_input.just_pressed(MouseButton::Right) {
         let Some(cursor_pos) = get_cursor_pos(&q_window, &q_camera, game_map.as_ref()) else {
@@ -21,7 +22,8 @@ pub fn process_input(
             return;
         };
 
-        q_player.1.dest = Some(cursor_pos);
+        let move_time = get_player_move_time(&obj.pos, &cursor_pos, obj, game_lib.as_ref());
+        q_player.1.reset_move_timer(move_time);
 
         let direction = (cursor_pos - obj.pos).normalize();
         obj.direction = direction.clone();
@@ -48,4 +50,14 @@ fn get_cursor_pos(
     };
 
     Some(game_map.viewport_to_world(&pos))
+}
+
+fn get_player_move_time(
+    start_pos: &Vec2,
+    end_pos: &Vec2,
+    obj: &GameObj,
+    game_lib: &GameLib,
+) -> f32 {
+    let speed = game_lib.get_game_obj_config(obj.config_index).speed;
+    start_pos.distance(end_pos.clone()) / speed
 }

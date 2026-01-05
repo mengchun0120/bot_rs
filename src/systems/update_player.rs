@@ -1,6 +1,5 @@
 use crate::game::components::*;
 use crate::game_utils::{game_lib::*, game_map::*, game_obj_lib::*};
-use crate::misc::utils::*;
 use bevy::prelude::*;
 
 pub fn update_player(
@@ -11,18 +10,20 @@ pub fn update_player(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    let Some(dest) = q_player.1.dest else {
+    let Some(timer) = &mut q_player.1.move_timer else {
         return;
     };
+
+    timer.tick(time.delta());
+    if timer.is_finished() {
+        q_player.1.clear_move_timer();
+        return;
+    }
+
     let Some(obj) = game_obj_lib.get(&q_player.0).cloned() else {
         error!("Cannot find player in GameObjLib");
         return;
     };
-
-    if is_close(&obj.pos, &dest) {
-        q_player.1.dest = None;
-        return;
-    }
 
     let (collide, new_pos) = game_map.get_bot_new_pos(
         &q_player.0,
@@ -49,6 +50,6 @@ pub fn update_player(
     q_player.2.translation.y = screen_pos.y;
 
     if collide {
-        q_player.1.dest = None;
+        q_player.1.clear_move_timer();
     }
 }

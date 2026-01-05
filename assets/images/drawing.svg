@@ -7,7 +7,7 @@
    viewBox="0 0 210 297"
    version="1.1"
    id="svg1"
-   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    sodipodi:docname="drawing.svg"
    inkscape:export-filename="drawing.png"
    inkscape:export-xdpi="83.143616"
@@ -28,12 +28,12 @@
      inkscape:document-units="mm"
      showgrid="true"
      inkscape:zoom="1.5465208"
-     inkscape:cx="328.47925"
-     inkscape:cy="538.95169"
+     inkscape:cx="314.57708"
+     inkscape:cy="629.80078"
      inkscape:window-width="1920"
-     inkscape:window-height="1111"
-     inkscape:window-x="-9"
-     inkscape:window-y="-9"
+     inkscape:window-height="1112"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1">
     <inkscape:grid
@@ -126,5 +126,25 @@
        style="fill:#ff6000;fill-opacity:1;stroke:#595900;stroke-width:0.264583;stroke-opacity:1"
        d="m 148.3353,130.42263 14.71313,14.54205 -14.54205,15.0553 z"
        id="path3-2" />
+    <rect
+       style="fill:#ff8900;stroke:#986200;stroke-width:0.89671;fill-opacity:1"
+       id="rect1"
+       width="44.092686"
+       height="19.627831"
+       x="30.818283"
+       y="200.1904"
+       inkscape:export-filename="orange_standard_gun.png"
+       inkscape:export-xdpi="83.143616"
+       inkscape:export-ydpi="83.143616" />
+    <rect
+       style="fill:#009600;fill-opacity:1;stroke:#006200;stroke-width:0.89671;stroke-opacity:1"
+       id="rect1-8"
+       width="44.092686"
+       height="19.627831"
+       x="30.348549"
+       y="160.45386"
+       inkscape:export-filename="green_standard_gun.png"
+       inkscape:export-xdpi="83.143616"
+       inkscape:export-ydpi="83.143616" />
   </g>
 </svg>
