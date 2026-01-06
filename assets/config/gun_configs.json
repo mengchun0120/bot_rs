@@ -3,14 +3,12 @@
         "image": "green_standard_gun",
         "size": [40.0, 20.0],
         "fire_point": [20.0, 0.0],
-        "missile": "green_standard_missile",
         "z": -0.5
     },
     "orange_standard_gun": {
         "image": "orange_standard_gun",
         "size": [40.0, 20.0],
         "fire_point": [20.0, 0.0],
-        "missile": "orange_standard_missile",
         "z": -0.5
     }
 }

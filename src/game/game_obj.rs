@@ -69,7 +69,7 @@ impl GameObj {
             .id();
 
         self.add_guns(main_body, obj_config, game_lib, commands)?;
-        self.add_components(main_body, obj_config, commands);
+        self.add_components(main_body, obj_config, game_lib, commands)?;
 
         Ok(main_body)
     }
@@ -78,9 +78,11 @@ impl GameObj {
         &self,
         main_body: Entity,
         obj_config: &GameObjConfig,
+        game_lib: &GameLib,
         commands: &mut Commands,
-    ) {
+    ) -> Result<(), MyError> {
         let mut entity = commands.entity(main_body);
+
         if obj_config.obj_type == GameObjType::Bot {
             if obj_config.side == GameObjSide::Player {
                 entity.insert(PlayerComponent::new());
@@ -88,6 +90,13 @@ impl GameObj {
                 entity.insert(AIComponent);
             }
         }
+
+        if let Some(weapon_config) = obj_config.weapon_config.as_ref() {
+            let weapon_component = WeaponComponent::new(weapon_config, game_lib)?;
+            entity.insert(weapon_component);
+        }
+
+        Ok(())
     }
 
     fn add_guns(
@@ -101,7 +110,7 @@ impl GameObj {
             return Ok(());
         };
 
-        for gun_comp_config in weapon_config.gun_configs.iter() {
+        for gun_comp_config in weapon_config.gun_components.iter() {
             let gun_config = game_lib.get_gun_config(&gun_comp_config.config_name)?;
             let gun_img = game_lib.get_image(&gun_config.image)?;
             let gun_size = arr_to_vec2(&gun_config.size);

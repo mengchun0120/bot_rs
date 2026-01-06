@@ -9,7 +9,8 @@
         "speed": 100.0,
         "collide_span": 21.2132,
         "weapon_config": {
-            "gun_configs": [
+            "missile": "green_standard_missile",
+            "gun_components": [
                 {
                     "config_name": "green_standard_gun",
                     "pos": [30.0, 0.0],
@@ -29,7 +30,8 @@
         "speed": 80.0,
         "collide_span": 21.2132,
         "weapon_config": {
-            "gun_configs": [
+            "missile": "orange_standard_missile",
+            "gun_components": [
                 {
                     "config_name": "orange_standard_gun",
                     "pos": [30.0, 0.0],
