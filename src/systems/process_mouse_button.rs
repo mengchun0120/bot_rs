@@ -4,7 +4,7 @@ use crate::misc::utils::*;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-pub fn process_input(
+pub fn process_mouse_button(
     mut q_player: Single<(Entity, &mut PlayerComponent, &mut Transform)>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     q_window: Single<&Window, With<PrimaryWindow>>,
