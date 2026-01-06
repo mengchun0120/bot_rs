@@ -1,4 +1,4 @@
-use crate::config::{weapon_config::*};
+use crate::config::weapon_config::*;
 use crate::game_utils::game_lib::*;
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
@@ -15,6 +15,8 @@ pub struct AIComponent;
 pub struct WeaponComponent {
     pub fire_timer: Timer,
     pub fire_points: Vec<Vec2>,
+    pub fire_directions: Vec<Vec2>,
+    pub missile_config_index: usize,
 }
 
 impl PlayerComponent {
@@ -35,11 +37,21 @@ impl WeaponComponent {
     pub fn new(weapon_config: &WeaponConfig, game_lib: &GameLib) -> Result<Self, MyError> {
         let fire_timer = Timer::from_seconds(weapon_config.fire_duration, TimerMode::Repeating);
         let fire_points = Self::get_fire_points(weapon_config, game_lib)?;
+        let fire_directions = Self::get_fire_directions(weapon_config);
+        let missile_config_index = game_lib.get_game_obj_config_index(&weapon_config.missile)?;
 
-        Ok(Self { fire_timer, fire_points, })
+        Ok(Self {
+            fire_timer,
+            fire_points,
+            fire_directions,
+            missile_config_index,
+        })
     }
 
-    fn get_fire_points(weapon_config: &WeaponConfig, game_lib: &GameLib) -> Result<Vec<Vec2>, MyError> {
+    fn get_fire_points(
+        weapon_config: &WeaponConfig,
+        game_lib: &GameLib,
+    ) -> Result<Vec<Vec2>, MyError> {
         let mut fire_points = Vec::new();
 
         for gun_comp_config in weapon_config.gun_components.iter() {
@@ -52,5 +64,16 @@ impl WeaponComponent {
         }
 
         Ok(fire_points)
+    }
+
+    fn get_fire_directions(weapon_config: &WeaponConfig) -> Vec<Vec2> {
+        let mut fire_directions = Vec::new();
+
+        for gun_comp_config in weapon_config.gun_components.iter() {
+            let fire_direction = arr_to_vec2(&gun_comp_config.direction);
+            fire_directions.push(fire_direction);
+        }
+
+        fire_directions
     }
 }
