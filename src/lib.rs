@@ -27,10 +27,12 @@ pub mod systems {
     pub mod process_key;
     pub mod process_mouse_button;
     pub mod setup;
+    pub mod update_missiles;
     pub mod update_player;
 
     pub use process_key::process_key;
     pub use process_mouse_button::process_mouse_button;
     pub use setup::setup_game;
+    pub use update_missiles::update_missiles;
     pub use update_player::update_player;
 }

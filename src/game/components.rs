@@ -12,6 +12,9 @@ pub struct PlayerComponent {
 pub struct AIComponent;
 
 #[derive(Component)]
+pub struct MissileComponent;
+
+#[derive(Component)]
 pub struct WeaponComponent {
     pub fire_timer: Timer,
     pub fire_points: Vec<Vec2>,

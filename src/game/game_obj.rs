@@ -28,7 +28,7 @@ impl GameObj {
             direction: direction.clone(),
         };
 
-        let visible = map.is_visible(&obj.map_pos);
+        let visible = map.check_pos_visible(&obj.pos);
         let entity = obj.create_entity(config_index, visible, game_lib, map, commands)?;
 
         Ok((obj, entity))
@@ -89,6 +89,8 @@ impl GameObj {
             } else if obj_config.side == GameObjSide::AI {
                 entity.insert(AIComponent);
             }
+        } else if obj_config.obj_type == GameObjType::Missile {
+            entity.insert(MissileComponent);
         }
 
         if let Some(weapon_config) = obj_config.weapon_config.as_ref() {

@@ -152,8 +152,9 @@ impl GameMap {
     }
 
     #[inline]
-    pub fn is_visible(&self, pos: &MapPos) -> bool {
-        self.visible_region.contains(pos)
+    pub fn check_pos_visible(&self, pos: &Vec2) -> bool {
+        (pos.x - self.origin.x).abs() <= self.visible_span.x
+            && (pos.y - self.origin.y).abs() <= self.visible_span.y
     }
 
     pub fn get_bot_new_pos(

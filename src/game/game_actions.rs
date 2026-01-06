@@ -21,6 +21,10 @@ pub fn fire_missiles(
         let direction = obj.direction.rotate(fire_directions[i]);
         let pos = obj.pos + direction.rotate(fire_points[i]);
 
+        if !game_map.check_pos_visible(&pos) {
+            continue;
+        }
+
         game_map.add_obj_by_index(
             missile_config_index,
             &pos,
