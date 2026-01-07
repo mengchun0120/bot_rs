@@ -1,5 +1,5 @@
 use crate::config::game_config::*;
-use crate::game_utils::{game_lib::*, game_map::*, game_obj_lib::*};
+use crate::game_utils::{despawn_pool::*, game_lib::*, game_map::*, game_obj_lib::*};
 use crate::misc::utils::*;
 use bevy::prelude::*;
 use std::path::Path;
@@ -39,6 +39,7 @@ pub fn setup_game(
     commands.insert_resource(game_lib);
     commands.insert_resource(game_obj_lib);
     commands.insert_resource(game_map);
+    commands.insert_resource(DespawnPool::new());
 
     info!("Finished setup")
 }

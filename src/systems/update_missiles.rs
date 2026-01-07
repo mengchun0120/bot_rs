@@ -10,7 +10,7 @@ pub fn update_missiles(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, transform) in q_missile.iter() {
+    for (entity, mut transform) in q_missile.iter() {
         let Some(obj) = game_obj_lib.get(&entity).cloned() else {
             error!("Cannot find entity in GameObjLib");
             continue;

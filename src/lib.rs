@@ -12,6 +12,7 @@ pub mod game {
 }
 
 pub mod game_utils {
+    pub mod despawn_pool;
     pub mod game_lib;
     pub mod game_map;
     pub mod game_obj_lib;
