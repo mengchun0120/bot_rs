@@ -276,14 +276,14 @@ impl GameMap {
         let collide_region =
             self.get_collide_region_bot(&obj.pos, new_pos, obj_config.collide_span);
         let mut pos = new_pos.clone();
-        let func = |e: &Entity| {
+        let func = |e: &Entity| -> bool {
             if entity == e {
-                return;
+                return true;
             }
 
             let Some(obj2) = game_obj_lib.get(e) else {
                 error!("Cannot find entity in GameObjLib");
-                return;
+                return true;
             };
             let obj_config2 = game_lib.get_game_obj_config(obj2.config_index);
 
@@ -291,7 +291,7 @@ impl GameMap {
                 && obj_config2.obj_type != GameObjType::Tile)
                 || obj_config2.collide_span == 0.0
             {
-                return;
+                return true;
             }
 
             let (collide_obj, corrected_pos) = get_bot_pos_after_collide_obj(
@@ -307,6 +307,8 @@ impl GameMap {
             }
 
             pos = corrected_pos;
+
+            true
         };
 
         self.run_on_region(&collide_region, func);
@@ -316,11 +318,13 @@ impl GameMap {
 
     fn hide_offscreen(&self, new_visible_region: &MapRegion, commands: &mut Commands) {
         let offscreen_regions = self.visible_region.sub(&new_visible_region);
-        let func = |entity: &Entity| {
+        let func = |entity: &Entity| -> bool {
             commands
                 .entity(entity.clone())
                 .entry::<Visibility>()
                 .and_modify(|mut v| *v = Visibility::Hidden);
+
+            true
         };
 
         self.run_on_regions(&offscreen_regions, func);
@@ -333,9 +337,9 @@ impl GameMap {
         commands: &mut Commands,
     ) {
         let onscreen_regions = self.visible_region.intersect(&new_visible_region);
-        let func = |entity: &Entity| {
+        let func = |entity: &Entity| -> bool {
             let Some(obj) = game_obj_lib.get(entity) else {
-                return;
+                return true;
             };
             let screen_pos = self.get_screen_pos(&obj.pos);
             commands
@@ -345,6 +349,8 @@ impl GameMap {
                     t.translation.x = screen_pos.x;
                     t.translation.y = screen_pos.y;
                 });
+
+            true
         };
 
         self.run_on_regions(&onscreen_regions, func);
@@ -357,9 +363,9 @@ impl GameMap {
         commands: &mut Commands,
     ) {
         let newscreen_regions = new_visible_region.sub(&self.visible_region);
-        let func = |entity: &Entity| {
+        let func = |entity: &Entity| -> bool {
             let Some(obj) = game_obj_lib.get(entity) else {
-                return;
+                return true;
             };
             let screen_pos = self.get_screen_pos(&obj.pos);
             let mut entity = commands.entity(entity.clone());
@@ -372,31 +378,39 @@ impl GameMap {
             entity.entry::<Visibility>().and_modify(|mut v| {
                 *v = Visibility::Visible;
             });
+
+            true
         };
 
         self.run_on_regions(&newscreen_regions, func);
     }
 
-    fn run_on_regions<F>(&self, regions: &Vec<MapRegion>, mut func: F)
+    pub fn run_on_regions<F>(&self, regions: &Vec<MapRegion>, mut func: F) -> bool
     where
-        F: FnMut(&Entity),
+        F: FnMut(&Entity) -> bool,
     {
         for region in regions.iter() {
-            self.run_on_region(region, &mut func);
+            if !self.run_on_region(region, &mut func) {
+                return false;
+            }
         }
+        true
     }
 
-    fn run_on_region<F>(&self, region: &MapRegion, mut func: F)
+    pub fn run_on_region<F>(&self, region: &MapRegion, mut func: F) -> bool
     where
-        F: FnMut(&Entity),
+        F: FnMut(&Entity) -> bool,
     {
         for row in region.start_row..=region.end_row {
             for col in region.start_col..=region.end_col {
                 for entity in self.map[row][col].iter() {
-                    func(entity);
+                    if !func(entity) {
+                        return false;
+                    }
                 }
             }
         }
+        true
     }
 
     #[inline]
@@ -416,7 +430,7 @@ impl GameMap {
     }
 
     #[inline]
-    fn get_region(&self, left: f32, bottom: f32, right: f32, top: f32) -> MapRegion {
+    pub fn get_region(&self, left: f32, bottom: f32, right: f32, top: f32) -> MapRegion {
         MapRegion {
             start_row: self.get_row(bottom),
             end_row: self.get_row(top),

@@ -1,3 +1,6 @@
+use crate::config::game_obj_config::*;
+use crate::game_utils::{despawn_pool::*, game_lib::*, game_map::*, game_obj_lib::*};
+use bevy::ecs::system::entity_command::despawn;
 use bevy::prelude::*;
 
 pub fn get_bot_pos_after_collide_bounds(
@@ -98,19 +101,84 @@ pub fn get_bot_pos_after_collide_obj(
     (true, corrected_pos)
 }
 
-pub fn check_missile_collide_bounds(
-    pos: &Vec2,
+pub fn check_missile_collide(
+    new_pos: &Vec2,
     collide_span: f32,
-    width: f32,
-    height: f32,
+    side: GameObjSide,
+    game_map: &GameMap,
+    game_obj_lib: &GameObjLib,
+    game_lib: &GameLib,
+    despawn_pool: &DespawnPool,
 ) -> bool {
+    check_missile_collide_bounds(new_pos, collide_span, game_map.width, game_map.height)
+        || check_missile_collide_objs(
+            new_pos,
+            collide_span,
+            side,
+            game_map,
+            game_obj_lib,
+            game_lib,
+            despawn_pool,
+        )
+}
+
+pub fn check_missile_collide_objs(
+    new_pos: &Vec2,
+    collide_span: f32,
+    side: GameObjSide,
+    game_map: &GameMap,
+    game_obj_lib: &GameObjLib,
+    game_lib: &GameLib,
+    despawn_pool: &DespawnPool,
+) -> bool {
+    let region = game_map.get_region(
+        new_pos.y - collide_span,
+        new_pos.y + collide_span,
+        new_pos.x - collide_span,
+        new_pos.x + collide_span,
+    );
+    let mut collide = false;
+    let func = |entity: &Entity| -> bool {
+        if despawn_pool.contains(entity) {
+            return true;
+        }
+
+        let Some(obj) = game_obj_lib.get(entity) else {
+            error!("Cannot find entity in GameObjLib");
+            return true;
+        };
+        let obj_config = game_lib.get_game_obj_config(obj.config_index);
+
+        if (obj_config.obj_type != GameObjType::Bot && obj_config.obj_type != GameObjType::Tile)
+            || (obj_config.obj_type == GameObjType::Bot && obj_config.side == side)
+            || obj_config.collide_span == 0.0
+        {
+            return true;
+        }
+
+        if check_missile_collide_bounds(new_pos, collide_span, game_map.width, game_map.height)
+            || check_missile_collide_obj(new_pos, collide_span, &obj.pos, obj_config.collide_span)
+        {
+            collide = true;
+            return false;
+        }
+
+        true
+    };
+
+    game_map.run_on_region(&region, func);
+
+    collide
+}
+
+fn check_missile_collide_bounds(pos: &Vec2, collide_span: f32, width: f32, height: f32) -> bool {
     pos.x - collide_span < 0.0
         || pos.x + collide_span > width
         || pos.y - collide_span < 0.0
         || pos.y + collide_span > height
 }
 
-pub fn check_missile_collide_obj(
+fn check_missile_collide_obj(
     pos1: &Vec2,
     collide_span1: f32,
     pos2: &Vec2,

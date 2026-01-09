@@ -1,4 +1,4 @@
-use crate::game_utils::{game_lib::*, game_map::*, game_obj_lib::*};
+use crate::game_utils::{despawn_pool::*, game_lib::*, game_map::*, game_obj_lib::*};
 use crate::misc::my_error::*;
 use bevy::prelude::*;
 
@@ -36,4 +36,37 @@ pub fn fire_missiles(
     }
 
     Ok(())
+}
+
+pub fn explode(
+    pos: &Vec2,
+    damage: f32,
+    explode_range: f32,
+    commands: &mut Commands,
+    despawn_pool: &mut DespawnPool,
+) {
+
+}
+
+pub fn update_obj_pos(
+    entity: &Entity,
+    new_pos: &Vec2,
+    game_obj_lib: &mut GameObjLib,
+    game_map: &mut GameMap,
+    transform: &mut Transform,
+) {
+    let Some(obj) = game_obj_lib.get_mut(entity) else {
+        error!("Cannot find entity in GameObjLib");
+        return;
+    };
+
+    obj.pos = new_pos.clone();
+
+    let map_pos = game_map.get_map_pos(&obj.pos);
+    game_map.relocate(entity.clone(), &obj.map_pos, &map_pos);
+    obj.map_pos = map_pos;
+
+    let screen_pos = game_map.get_screen_pos(&obj.pos);
+    transform.translation.x = screen_pos.x;
+    transform.translation.y = screen_pos.y;
 }

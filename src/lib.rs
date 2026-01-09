@@ -25,12 +25,14 @@ pub mod misc {
 }
 
 pub mod systems {
+    pub mod cleanup;
     pub mod process_key;
     pub mod process_mouse_button;
     pub mod setup;
     pub mod update_missiles;
     pub mod update_player;
 
+    pub use cleanup::cleanup;
     pub use process_key::process_key;
     pub use process_mouse_button::process_mouse_button;
     pub use setup::setup_game;
