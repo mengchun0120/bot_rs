@@ -43,7 +43,7 @@ pub fn update_missiles(
         }
 
         update_obj_pos(
-            &entity,
+            entity,
             &new_pos,
             game_obj_lib.as_mut(),
             game_map.as_mut(),

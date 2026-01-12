@@ -27,12 +27,26 @@ impl PlayerComponent {
         PlayerComponent { move_timer: None }
     }
 
-    pub fn reset_move_timer(&mut self, duration: f32) {
-        self.move_timer = Some(Timer::from_seconds(duration, TimerMode::Once));
+    pub fn update_move_timer(&mut self, time: &Time) -> bool {
+        if let Some(timer) = self.move_timer.as_mut() {
+            timer.tick(time.delta());
+            if timer.is_finished() {
+                self.clear_move_timer();
+                false
+            } else {
+                true
+            }
+        } else {
+            false
+        }
     }
 
     pub fn clear_move_timer(&mut self) {
         self.move_timer = None;
+    }
+
+    pub fn reset_move_timer(&mut self, duration: f32) {
+        self.move_timer = Some(Timer::from_seconds(duration, TimerMode::Once));
     }
 }
 

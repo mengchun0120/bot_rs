@@ -48,13 +48,13 @@ pub fn explode(
 }
 
 pub fn update_obj_pos(
-    entity: &Entity,
+    entity: Entity,
     new_pos: &Vec2,
     game_obj_lib: &mut GameObjLib,
     game_map: &mut GameMap,
     transform: &mut Transform,
 ) {
-    let Some(obj) = game_obj_lib.get_mut(entity) else {
+    let Some(obj) = game_obj_lib.get_mut(&entity) else {
         error!("Cannot find entity in GameObjLib");
         return;
     };
@@ -62,8 +62,10 @@ pub fn update_obj_pos(
     obj.pos = new_pos.clone();
 
     let map_pos = game_map.get_map_pos(&obj.pos);
-    game_map.relocate(entity.clone(), &obj.map_pos, &map_pos);
-    obj.map_pos = map_pos;
+    if map_pos != obj.map_pos {
+        game_map.relocate(entity.clone(), &obj.map_pos, &map_pos);
+        obj.map_pos = map_pos;
+    }
 
     let screen_pos = game_map.get_screen_pos(&obj.pos);
     transform.translation.x = screen_pos.x;

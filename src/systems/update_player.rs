@@ -1,4 +1,4 @@
-use crate::game::components::*;
+use crate::game::{components::*, game_actions::*};
 use crate::game_utils::{despawn_pool::*, game_lib::*, game_map::*, game_obj_lib::*};
 use bevy::prelude::*;
 
@@ -11,13 +11,7 @@ pub fn update_player(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    let Some(timer) = &mut q_player.1.move_timer else {
-        return;
-    };
-
-    timer.tick(time.delta());
-    if timer.is_finished() {
-        q_player.1.clear_move_timer();
+    if !q_player.1.update_move_timer(time.as_ref()) {
         return;
     }
 
@@ -34,6 +28,18 @@ pub fn update_player(
         time.as_ref(),
     );
 
+    if collide {
+        q_player.1.clear_move_timer();
+    }
+
+    update_obj_pos(
+        q_player.0,
+        &new_pos,
+        game_obj_lib.as_mut(),
+        game_map.as_mut(),
+        q_player.2.as_mut(),
+    );
+
     game_map.update_origin(
         &new_pos,
         game_obj_lib.as_ref(),
@@ -41,22 +47,4 @@ pub fn update_player(
         despawn_pool.as_mut(),
         &mut commands,
     );
-
-    let new_map_pos = game_map.get_map_pos(&new_pos);
-    if new_map_pos != obj.map_pos {
-        game_map.relocate(q_player.0, &obj.map_pos, &new_map_pos);
-    }
-
-    game_obj_lib.entry(q_player.0).and_modify(|obj| {
-        obj.pos = new_pos;
-        obj.map_pos = new_map_pos;
-    });
-
-    let screen_pos = game_map.get_screen_pos(&new_pos);
-    q_player.2.translation.x = screen_pos.x;
-    q_player.2.translation.y = screen_pos.y;
-
-    if collide {
-        q_player.1.clear_move_timer();
-    }
 }
