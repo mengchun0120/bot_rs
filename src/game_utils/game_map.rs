@@ -1,6 +1,6 @@
 use crate::config::{game_config::*, game_map_config::*, game_obj_config::*};
 use crate::game::game_obj::*;
-use crate::game_utils::{game_lib::*, game_obj_lib::*};
+use crate::game_utils::{despawn_pool::*, game_lib::*, game_obj_lib::*};
 use crate::misc::{collide::*, my_error::*, utils::*};
 use bevy::prelude::*;
 
@@ -192,6 +192,8 @@ impl GameMap {
         &mut self,
         origin: &Vec2,
         game_obj_lib: &GameObjLib,
+        game_lib: &GameLib,
+        despawn_pool: &mut DespawnPool,
         commands: &mut Commands,
     ) {
         self.origin.x = origin.x.clamp(self.min_origin.x, self.max_origin.x);
@@ -199,7 +201,13 @@ impl GameMap {
 
         let new_visible_region = self.get_visible_region(&self.origin);
 
-        self.hide_offscreen(&new_visible_region, commands);
+        self.hide_offscreen(
+            &new_visible_region,
+            game_obj_lib,
+            game_lib,
+            despawn_pool,
+            commands,
+        );
         self.update_onscreen(&new_visible_region, game_obj_lib, commands);
         self.show_newscreen(&new_visible_region, game_obj_lib, commands);
 
@@ -219,6 +227,16 @@ impl GameMap {
     #[inline]
     pub fn col_count(&self) -> usize {
         self.map[0].len()
+    }
+
+    #[inline]
+    pub fn remove(&mut self, entity: &Entity, map_pos: &MapPos) {
+        if !self.map[map_pos.row][map_pos.col].remove(entity) {
+            error!(
+                "Cannot remove entity {:?} from GameMap at position {:?}",
+                entity, map_pos
+            );
+        }
     }
 
     fn setup_origin(&mut self, game_config: &GameConfig, map_config: &GameMapConfig) {
@@ -316,9 +334,27 @@ impl GameMap {
         (collide, pos)
     }
 
-    fn hide_offscreen(&self, new_visible_region: &MapRegion, commands: &mut Commands) {
+    fn hide_offscreen(
+        &self,
+        new_visible_region: &MapRegion,
+        game_obj_lib: &GameObjLib,
+        game_lib: &GameLib,
+        despawn_pool: &mut DespawnPool,
+        commands: &mut Commands,
+    ) {
         let offscreen_regions = self.visible_region.sub(&new_visible_region);
         let func = |entity: &Entity| -> bool {
+            let Some(config_index) = game_obj_lib.get(entity).map(|obj| obj.config_index) else {
+                error!("Cannot find entity {:?} in GameObjLib", entity);
+                return true;
+            };
+            let obj_type = game_lib.get_game_obj_config(config_index).obj_type;
+
+            if obj_type == GameObjType::Missile || obj_type == GameObjType::Effect {
+                despawn_pool.insert(entity.clone());
+                return true;
+            }
+
             commands
                 .entity(entity.clone())
                 .entry::<Visibility>()

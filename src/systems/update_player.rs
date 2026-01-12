@@ -1,5 +1,5 @@
 use crate::game::components::*;
-use crate::game_utils::{game_lib::*, game_map::*, game_obj_lib::*};
+use crate::game_utils::{despawn_pool::*, game_lib::*, game_map::*, game_obj_lib::*};
 use bevy::prelude::*;
 
 pub fn update_player(
@@ -7,6 +7,7 @@ pub fn update_player(
     game_lib: Res<GameLib>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
+    mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
     time: Res<Time>,
 ) {
@@ -33,7 +34,13 @@ pub fn update_player(
         time.as_ref(),
     );
 
-    game_map.update_origin(&new_pos, game_obj_lib.as_ref(), &mut commands);
+    game_map.update_origin(
+        &new_pos,
+        game_obj_lib.as_ref(),
+        game_lib.as_ref(),
+        despawn_pool.as_mut(),
+        &mut commands,
+    );
 
     let new_map_pos = game_map.get_map_pos(&new_pos);
     if new_map_pos != obj.map_pos {

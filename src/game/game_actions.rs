@@ -45,7 +45,6 @@ pub fn explode(
     commands: &mut Commands,
     despawn_pool: &mut DespawnPool,
 ) {
-
 }
 
 pub fn update_obj_pos(
