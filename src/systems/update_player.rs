@@ -1,3 +1,4 @@
+use crate::config::game_obj_config::*;
 use crate::game::{components::*, game_actions::*};
 use crate::game_utils::{despawn_pool::*, game_lib::*, game_map::*, game_obj_lib::*};
 use bevy::prelude::*;
@@ -40,11 +41,142 @@ pub fn update_player(
         q_player.2.as_mut(),
     );
 
-    game_map.update_origin(
+    update_origin(
         &new_pos,
         game_obj_lib.as_ref(),
         game_lib.as_ref(),
+        game_map.as_mut(),
         despawn_pool.as_mut(),
         &mut commands,
     );
+}
+
+fn update_origin(
+    origin: &Vec2,
+    game_obj_lib: &GameObjLib,
+    game_lib: &GameLib,
+    game_map: &mut GameMap,
+    despawn_pool: &mut DespawnPool,
+    commands: &mut Commands,
+) {
+    let old_visible_region = game_map.get_visible_region();
+
+    game_map.set_origin(origin);
+    let new_visible_region = game_map.get_visible_region();
+
+    hide_offscreen_objs(
+        &old_visible_region,
+        &new_visible_region,
+        game_obj_lib,
+        game_lib,
+        game_map,
+        despawn_pool,
+        commands,
+    );
+
+    update_onscreen_screen_pos(
+        &old_visible_region,
+        &new_visible_region,
+        game_obj_lib,
+        game_map,
+        commands,
+    );
+
+    show_newscreen_objs(
+        &old_visible_region,
+        &new_visible_region,
+        game_obj_lib,
+        game_map,
+        commands,
+    );
+}
+
+fn hide_offscreen_objs(
+    old_visible_region: &MapRegion,
+    new_visible_region: &MapRegion,
+    game_obj_lib: &GameObjLib,
+    game_lib: &GameLib,
+    game_map: &GameMap,
+    despawn_pool: &mut DespawnPool,
+    commands: &mut Commands,
+) {
+    let offscreen_regions = old_visible_region.sub(&new_visible_region);
+    let func = |entity: &Entity| -> bool {
+        let Some(config_index) = game_obj_lib.get(entity).map(|obj| obj.config_index) else {
+            error!("Cannot find entity {:?} in GameObjLib", entity);
+            return true;
+        };
+        let obj_type = game_lib.get_game_obj_config(config_index).obj_type;
+
+        if obj_type == GameObjType::Missile || obj_type == GameObjType::Effect {
+            despawn_pool.insert(entity.clone());
+            return true;
+        }
+
+        commands
+            .entity(entity.clone())
+            .entry::<Visibility>()
+            .and_modify(|mut v| *v = Visibility::Hidden);
+
+        true
+    };
+
+    game_map.run_on_regions(&offscreen_regions, func);
+}
+
+fn update_onscreen_screen_pos(
+    old_visible_region: &MapRegion,
+    new_visible_region: &MapRegion,
+    game_obj_lib: &GameObjLib,
+    game_map: &GameMap,
+    commands: &mut Commands,
+) {
+    let onscreen_regions = old_visible_region.intersect(&new_visible_region);
+    let func = |entity: &Entity| -> bool {
+        let Some(obj) = game_obj_lib.get(entity) else {
+            return true;
+        };
+        let screen_pos = game_map.get_screen_pos(&obj.pos);
+        commands
+            .entity(entity.clone())
+            .entry::<Transform>()
+            .and_modify(move |mut t| {
+                t.translation.x = screen_pos.x;
+                t.translation.y = screen_pos.y;
+            });
+
+        true
+    };
+
+    game_map.run_on_regions(&onscreen_regions, func);
+}
+
+fn show_newscreen_objs(
+    old_visible_region: &MapRegion,
+    new_visible_region: &MapRegion,
+    game_obj_lib: &GameObjLib,
+    game_map: &GameMap,
+    commands: &mut Commands,
+) {
+    let newscreen_regions = new_visible_region.sub(&old_visible_region);
+    let func = |entity: &Entity| -> bool {
+        let Some(obj) = game_obj_lib.get(entity) else {
+            return true;
+        };
+        let screen_pos = game_map.get_screen_pos(&obj.pos);
+        let mut entity = commands.entity(entity.clone());
+
+        entity.entry::<Transform>().and_modify(move |mut t| {
+            t.translation.x = screen_pos.x;
+            t.translation.y = screen_pos.y;
+        });
+
+        entity.entry::<Visibility>().and_modify(|mut v| {
+            *v = Visibility::Visible;
+        });
+
+        true
+    };
+
+    game_map.run_on_regions(&newscreen_regions, func);
 }

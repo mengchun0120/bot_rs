@@ -18,7 +18,6 @@ pub struct GameMap {
     max_origin: Vec2,
     origin: Vec2,
     visible_span: Vec2,
-    visible_region: MapRegion,
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
@@ -47,7 +46,6 @@ impl GameMap {
             max_origin: Vec2::default(),
             origin: Vec2::default(),
             visible_span: Vec2::default(),
-            visible_region: MapRegion::default(),
         }
     }
 
@@ -188,30 +186,9 @@ impl GameMap {
         (collide_bounds || collide_obj, new_pos)
     }
 
-    pub fn update_origin(
-        &mut self,
-        origin: &Vec2,
-        game_obj_lib: &GameObjLib,
-        game_lib: &GameLib,
-        despawn_pool: &mut DespawnPool,
-        commands: &mut Commands,
-    ) {
+    pub fn set_origin(&mut self, origin: &Vec2) {
         self.origin.x = origin.x.clamp(self.min_origin.x, self.max_origin.x);
         self.origin.y = origin.y.clamp(self.min_origin.y, self.max_origin.y);
-
-        let new_visible_region = self.get_visible_region(&self.origin);
-
-        self.hide_offscreen(
-            &new_visible_region,
-            game_obj_lib,
-            game_lib,
-            despawn_pool,
-            commands,
-        );
-        self.update_onscreen(&new_visible_region, game_obj_lib, commands);
-        self.show_newscreen(&new_visible_region, game_obj_lib, commands);
-
-        self.visible_region = new_visible_region;
     }
 
     pub fn relocate(&mut self, entity: Entity, old_pos: &MapPos, new_pos: &MapPos) {
@@ -256,16 +233,15 @@ impl GameMap {
     fn setup_visible_region(&mut self, game_config: &GameConfig) {
         self.visible_span.x = game_config.window_width() / 2.0 + game_config.window_ext_size;
         self.visible_span.y = game_config.window_height() / 2.0 + game_config.window_ext_size;
-        self.visible_region = self.get_visible_region(&self.origin);
     }
 
     #[inline]
-    fn get_visible_region(&self, origin: &Vec2) -> MapRegion {
+    pub fn get_visible_region(&self) -> MapRegion {
         self.get_region(
-            origin.x - self.visible_span.x,
-            origin.y - self.visible_span.y,
-            origin.x + self.visible_span.x,
-            origin.y + self.visible_span.y,
+            self.origin.x - self.visible_span.x,
+            self.origin.y - self.visible_span.y,
+            self.origin.x + self.visible_span.x,
+            self.origin.y + self.visible_span.y,
         )
     }
 
@@ -332,93 +308,6 @@ impl GameMap {
         self.run_on_region(&collide_region, func);
 
         (collide, pos)
-    }
-
-    fn hide_offscreen(
-        &self,
-        new_visible_region: &MapRegion,
-        game_obj_lib: &GameObjLib,
-        game_lib: &GameLib,
-        despawn_pool: &mut DespawnPool,
-        commands: &mut Commands,
-    ) {
-        let offscreen_regions = self.visible_region.sub(&new_visible_region);
-        let func = |entity: &Entity| -> bool {
-            let Some(config_index) = game_obj_lib.get(entity).map(|obj| obj.config_index) else {
-                error!("Cannot find entity {:?} in GameObjLib", entity);
-                return true;
-            };
-            let obj_type = game_lib.get_game_obj_config(config_index).obj_type;
-
-            if obj_type == GameObjType::Missile || obj_type == GameObjType::Effect {
-                despawn_pool.insert(entity.clone());
-                return true;
-            }
-
-            commands
-                .entity(entity.clone())
-                .entry::<Visibility>()
-                .and_modify(|mut v| *v = Visibility::Hidden);
-
-            true
-        };
-
-        self.run_on_regions(&offscreen_regions, func);
-    }
-
-    fn update_onscreen(
-        &self,
-        new_visible_region: &MapRegion,
-        game_obj_lib: &GameObjLib,
-        commands: &mut Commands,
-    ) {
-        let onscreen_regions = self.visible_region.intersect(&new_visible_region);
-        let func = |entity: &Entity| -> bool {
-            let Some(obj) = game_obj_lib.get(entity) else {
-                return true;
-            };
-            let screen_pos = self.get_screen_pos(&obj.pos);
-            commands
-                .entity(entity.clone())
-                .entry::<Transform>()
-                .and_modify(move |mut t| {
-                    t.translation.x = screen_pos.x;
-                    t.translation.y = screen_pos.y;
-                });
-
-            true
-        };
-
-        self.run_on_regions(&onscreen_regions, func);
-    }
-
-    fn show_newscreen(
-        &self,
-        new_visible_region: &MapRegion,
-        game_obj_lib: &GameObjLib,
-        commands: &mut Commands,
-    ) {
-        let newscreen_regions = new_visible_region.sub(&self.visible_region);
-        let func = |entity: &Entity| -> bool {
-            let Some(obj) = game_obj_lib.get(entity) else {
-                return true;
-            };
-            let screen_pos = self.get_screen_pos(&obj.pos);
-            let mut entity = commands.entity(entity.clone());
-
-            entity.entry::<Transform>().and_modify(move |mut t| {
-                t.translation.x = screen_pos.x;
-                t.translation.y = screen_pos.y;
-            });
-
-            entity.entry::<Visibility>().and_modify(|mut v| {
-                *v = Visibility::Visible;
-            });
-
-            true
-        };
-
-        self.run_on_regions(&newscreen_regions, func);
     }
 
     pub fn run_on_regions<F>(&self, regions: &Vec<MapRegion>, mut func: F) -> bool
