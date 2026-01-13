@@ -1,5 +1,5 @@
 use crate::config::game_obj_config::*;
-use crate::game::game_obj::*;
+use crate::game::*;
 use crate::game_utils::*;
 use crate::misc::{collide::*, my_error::*};
 use bevy::prelude::*;

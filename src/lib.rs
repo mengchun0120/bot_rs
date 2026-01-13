@@ -9,6 +9,12 @@ pub mod game {
     pub mod components;
     pub mod game_actions;
     pub mod game_obj;
+    pub mod game_obj_side;
+    pub mod game_obj_type;
+
+    pub use game_obj::GameObj;
+    pub use game_obj_side::GameObjSide;
+    pub use game_obj_type::GameObjType;
 }
 
 pub mod game_utils {

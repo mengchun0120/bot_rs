@@ -1,21 +1,7 @@
 use crate::config::weapon_config::*;
+use crate::game::*;
 use bevy::prelude::*;
 use serde::Deserialize;
-
-#[derive(Debug, Resource, Deserialize, PartialEq, Eq, Copy, Clone)]
-pub enum GameObjType {
-    Tile,
-    Bot,
-    Missile,
-    Effect,
-}
-
-#[derive(Debug, Resource, Deserialize, PartialEq, Eq, Copy, Clone)]
-pub enum GameObjSide {
-    Player,
-    AI,
-    Neutral,
-}
 
 #[derive(Debug, Resource, Deserialize)]
 pub struct GameObjConfig {
