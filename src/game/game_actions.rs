@@ -1,6 +1,6 @@
 use crate::config::game_obj_config::*;
 use crate::game::game_obj::*;
-use crate::game_utils::{game_lib::*, game_map::*, game_obj_lib::*};
+use crate::game_utils::*;
 use crate::misc::{collide::*, my_error::*};
 use bevy::prelude::*;
 
@@ -72,6 +72,31 @@ pub fn get_bot_new_pos(
     (collide_bounds || collide_obj, new_pos)
 }
 
+pub fn update_obj_pos(
+    entity: Entity,
+    new_pos: &Vec2,
+    game_obj_lib: &mut GameObjLib,
+    game_map: &mut GameMap,
+    transform: &mut Transform,
+) {
+    let Some(obj) = game_obj_lib.get_mut(&entity) else {
+        error!("Cannot find entity in GameObjLib");
+        return;
+    };
+
+    obj.pos = new_pos.clone();
+
+    let map_pos = game_map.get_map_pos(&obj.pos);
+    if map_pos != obj.map_pos {
+        game_map.relocate(entity.clone(), &obj.map_pos, &map_pos);
+        obj.map_pos = map_pos;
+    }
+
+    let screen_pos = game_map.get_screen_pos(&obj.pos);
+    transform.translation.x = screen_pos.x;
+    transform.translation.y = screen_pos.y;
+}
+
 fn get_bot_pos_after_collide_objs(
     entity: &Entity,
     obj: &GameObj,
@@ -123,29 +148,4 @@ fn get_bot_pos_after_collide_objs(
     game_map.run_on_region(&collide_region, func);
 
     (collide, pos)
-}
-
-pub fn update_obj_pos(
-    entity: Entity,
-    new_pos: &Vec2,
-    game_obj_lib: &mut GameObjLib,
-    game_map: &mut GameMap,
-    transform: &mut Transform,
-) {
-    let Some(obj) = game_obj_lib.get_mut(&entity) else {
-        error!("Cannot find entity in GameObjLib");
-        return;
-    };
-
-    obj.pos = new_pos.clone();
-
-    let map_pos = game_map.get_map_pos(&obj.pos);
-    if map_pos != obj.map_pos {
-        game_map.relocate(entity.clone(), &obj.map_pos, &map_pos);
-        obj.map_pos = map_pos;
-    }
-
-    let screen_pos = game_map.get_screen_pos(&obj.pos);
-    transform.translation.x = screen_pos.x;
-    transform.translation.y = screen_pos.y;
 }

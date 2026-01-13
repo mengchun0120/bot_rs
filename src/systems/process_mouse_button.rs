@@ -1,5 +1,5 @@
 use crate::game::{components::*, game_obj::*};
-use crate::game_utils::{game_lib::*, game_map::*, game_obj_lib::*};
+use crate::game_utils::*;
 use crate::misc::utils::*;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;

@@ -16,6 +16,15 @@ pub mod game_utils {
     pub mod game_lib;
     pub mod game_map;
     pub mod game_obj_lib;
+    pub mod map_pos;
+    pub mod map_region;
+
+    pub use despawn_pool::DespawnPool;
+    pub use game_lib::GameLib;
+    pub use game_map::GameMap;
+    pub use game_obj_lib::GameObjLib;
+    pub use map_pos::MapPos;
+    pub use map_region::MapRegion;
 }
 
 pub mod misc {

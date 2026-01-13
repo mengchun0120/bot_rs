@@ -1,5 +1,5 @@
 use crate::config::weapon_config::*;
-use crate::game_utils::game_lib::*;
+use crate::game_utils::*;
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 

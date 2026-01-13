@@ -1,6 +1,6 @@
 use crate::config::game_obj_config::*;
 use crate::game::components::*;
-use crate::game_utils::{game_lib::*, game_map::*};
+use crate::game_utils::*;
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 
