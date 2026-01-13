@@ -12,6 +12,8 @@ pub mod game {
     pub mod game_obj_side;
     pub mod game_obj_type;
 
+    pub use components::*;
+    pub use game_actions::*;
     pub use game_obj::GameObj;
     pub use game_obj_side::GameObjSide;
     pub use game_obj_type::GameObjType;

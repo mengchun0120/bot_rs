@@ -1,4 +1,4 @@
-use crate::game::{components::*, game_obj::*};
+use crate::game::*;
 use crate::game_utils::*;
 use crate::misc::utils::*;
 use bevy::prelude::*;

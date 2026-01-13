@@ -1,4 +1,4 @@
-use crate::game::game_obj::*;
+use crate::game::*;
 use bevy::prelude::*;
 use std::collections::HashMap;
 
