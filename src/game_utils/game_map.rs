@@ -1,7 +1,7 @@
-use crate::config::{game_config::*, game_map_config::*, game_obj_config::*};
+use crate::config::{game_config::*, game_map_config::*};
 use crate::game::game_obj::*;
-use crate::game_utils::{despawn_pool::*, game_lib::*, game_obj_lib::*};
-use crate::misc::{collide::*, my_error::*, utils::*};
+use crate::game_utils::{game_lib::*, game_obj_lib::*};
+use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 
 use std::collections::HashSet;
@@ -59,8 +59,11 @@ impl GameMap {
         let map_config: GameMapConfig = read_json(map_path)?;
         let mut map = Self::new(cell_size, map_config.row_count, map_config.col_count);
 
-        map.setup_origin(&game_lib.game_config, &map_config);
-        map.setup_visible_region(&game_lib.game_config);
+        map.setup_min_max_origin(&game_lib.game_config);
+        map.setup_visible_span(&game_lib.game_config);
+
+        let player_pos = arr_to_vec2(&map_config.player.pos);
+        map.set_origin(&player_pos);
 
         map.add_obj_by_config(&map_config.player, game_lib, game_obj_lib, commands)?;
 
@@ -155,37 +158,6 @@ impl GameMap {
             && (pos.y - self.origin.y).abs() <= self.visible_span.y
     }
 
-    pub fn get_bot_new_pos(
-        &self,
-        entity: &Entity,
-        obj: &GameObj,
-        game_obj_lib: &GameObjLib,
-        game_lib: &GameLib,
-        time: &Time,
-    ) -> (bool, Vec2) {
-        let obj_config = game_lib.get_game_obj_config(obj.config_index);
-        let new_pos = obj.pos + obj.direction * obj_config.speed * time.delta_secs();
-
-        let (collide_bounds, new_pos) = get_bot_pos_after_collide_bounds(
-            &new_pos,
-            obj_config.collide_span,
-            &obj.direction,
-            self.width,
-            self.height,
-        );
-
-        let (collide_obj, new_pos) = self.get_bot_pos_after_collide_objs(
-            entity,
-            obj,
-            &new_pos,
-            obj_config,
-            game_obj_lib,
-            game_lib,
-        );
-
-        (collide_bounds || collide_obj, new_pos)
-    }
-
     pub fn set_origin(&mut self, origin: &Vec2) {
         self.origin.x = origin.x.clamp(self.min_origin.x, self.max_origin.x);
         self.origin.y = origin.y.clamp(self.min_origin.y, self.max_origin.y);
@@ -216,25 +188,6 @@ impl GameMap {
         }
     }
 
-    fn setup_origin(&mut self, game_config: &GameConfig, map_config: &GameMapConfig) {
-        let player_pos = arr_to_vec2(&map_config.player.pos);
-        self.min_origin = Vec2::new(
-            game_config.window_width() / 2.0,
-            game_config.window_height() / 2.0,
-        );
-        self.max_origin = Vec2::new(
-            self.width - self.min_origin.x,
-            self.height - self.min_origin.y,
-        );
-        self.origin.x = player_pos.x.clamp(self.min_origin.x, self.max_origin.x);
-        self.origin.y = player_pos.y.clamp(self.min_origin.y, self.max_origin.y);
-    }
-
-    fn setup_visible_region(&mut self, game_config: &GameConfig) {
-        self.visible_span.x = game_config.window_width() / 2.0 + game_config.window_ext_size;
-        self.visible_span.y = game_config.window_height() / 2.0 + game_config.window_ext_size;
-    }
-
     #[inline]
     pub fn get_visible_region(&self) -> MapRegion {
         self.get_region(
@@ -246,68 +199,15 @@ impl GameMap {
     }
 
     #[inline]
-    fn get_row(&self, y: f32) -> usize {
+    pub fn get_row(&self, y: f32) -> usize {
         let i = (y / self.cell_size).floor() as i32;
         i.clamp(0, (self.row_count() - 1) as i32) as usize
     }
 
     #[inline]
-    fn get_col(&self, x: f32) -> usize {
+    pub fn get_col(&self, x: f32) -> usize {
         let i = (x / self.cell_size).floor() as i32;
         i.clamp(0, (self.col_count() - 1) as i32) as usize
-    }
-
-    fn get_bot_pos_after_collide_objs(
-        &self,
-        entity: &Entity,
-        obj: &GameObj,
-        new_pos: &Vec2,
-        obj_config: &GameObjConfig,
-        game_obj_lib: &GameObjLib,
-        game_lib: &GameLib,
-    ) -> (bool, Vec2) {
-        let mut collide = false;
-        let collide_region =
-            self.get_collide_region_bot(&obj.pos, new_pos, obj_config.collide_span);
-        let mut pos = new_pos.clone();
-        let func = |e: &Entity| -> bool {
-            if entity == e {
-                return true;
-            }
-
-            let Some(obj2) = game_obj_lib.get(e) else {
-                error!("Cannot find entity in GameObjLib");
-                return true;
-            };
-            let obj_config2 = game_lib.get_game_obj_config(obj2.config_index);
-
-            if (obj_config2.obj_type != GameObjType::Bot
-                && obj_config2.obj_type != GameObjType::Tile)
-                || obj_config2.collide_span == 0.0
-            {
-                return true;
-            }
-
-            let (collide_obj, corrected_pos) = get_bot_pos_after_collide_obj(
-                &pos,
-                obj_config.collide_span,
-                &obj.direction,
-                &obj2.pos,
-                obj_config2.collide_span,
-            );
-
-            if collide_obj {
-                collide = true;
-            }
-
-            pos = corrected_pos;
-
-            true
-        };
-
-        self.run_on_region(&collide_region, func);
-
-        (collide, pos)
     }
 
     pub fn run_on_regions<F>(&self, regions: &Vec<MapRegion>, mut func: F) -> bool
@@ -339,7 +239,7 @@ impl GameMap {
     }
 
     #[inline]
-    fn get_collide_region_bot(
+    pub fn get_collide_region_bot(
         &self,
         start_pos: &Vec2,
         end_pos: &Vec2,
@@ -362,6 +262,22 @@ impl GameMap {
             start_col: self.get_col(left),
             end_col: self.get_col(right),
         }
+    }
+
+    fn setup_min_max_origin(&mut self, game_config: &GameConfig) {
+        self.min_origin = Vec2::new(
+            game_config.window_width() / 2.0,
+            game_config.window_height() / 2.0,
+        );
+        self.max_origin = Vec2::new(
+            self.width - self.min_origin.x,
+            self.height - self.min_origin.y,
+        );
+    }
+
+    fn setup_visible_span(&mut self, game_config: &GameConfig) {
+        self.visible_span.x = game_config.window_width() / 2.0 + game_config.window_ext_size;
+        self.visible_span.y = game_config.window_height() / 2.0 + game_config.window_ext_size;
     }
 }
 

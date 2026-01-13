@@ -1,5 +1,7 @@
-use crate::game_utils::{despawn_pool::*, game_lib::*, game_map::*, game_obj_lib::*};
-use crate::misc::my_error::*;
+use crate::config::game_obj_config::*;
+use crate::game::game_obj::*;
+use crate::game_utils::{game_lib::*, game_map::*, game_obj_lib::*};
+use crate::misc::{collide::*, my_error::*};
 use bevy::prelude::*;
 
 pub fn fire_missiles(
@@ -38,13 +40,89 @@ pub fn fire_missiles(
     Ok(())
 }
 
-pub fn explode(
-    pos: &Vec2,
-    damage: f32,
-    explode_range: f32,
-    commands: &mut Commands,
-    despawn_pool: &mut DespawnPool,
-) {
+pub fn get_bot_new_pos(
+    entity: &Entity,
+    obj: &GameObj,
+    game_map: &GameMap,
+    game_obj_lib: &GameObjLib,
+    game_lib: &GameLib,
+    time: &Time,
+) -> (bool, Vec2) {
+    let obj_config = game_lib.get_game_obj_config(obj.config_index);
+    let new_pos = obj.pos + obj.direction * obj_config.speed * time.delta_secs();
+
+    let (collide_bounds, new_pos) = get_bot_pos_after_collide_bounds(
+        &new_pos,
+        obj_config.collide_span,
+        &obj.direction,
+        game_map.width,
+        game_map.height,
+    );
+
+    let (collide_obj, new_pos) = get_bot_pos_after_collide_objs(
+        entity,
+        obj,
+        &new_pos,
+        game_map,
+        obj_config,
+        game_obj_lib,
+        game_lib,
+    );
+
+    (collide_bounds || collide_obj, new_pos)
+}
+
+fn get_bot_pos_after_collide_objs(
+    entity: &Entity,
+    obj: &GameObj,
+    new_pos: &Vec2,
+    game_map: &GameMap,
+    obj_config: &GameObjConfig,
+    game_obj_lib: &GameObjLib,
+    game_lib: &GameLib,
+) -> (bool, Vec2) {
+    let mut collide = false;
+    let collide_region =
+        game_map.get_collide_region_bot(&obj.pos, new_pos, obj_config.collide_span);
+    let mut pos = new_pos.clone();
+    let func = |e: &Entity| -> bool {
+        if entity == e {
+            return true;
+        }
+
+        let Some(obj2) = game_obj_lib.get(e) else {
+            error!("Cannot find entity in GameObjLib");
+            return true;
+        };
+        let obj_config2 = game_lib.get_game_obj_config(obj2.config_index);
+
+        if (obj_config2.obj_type != GameObjType::Bot
+            && obj_config2.obj_type != GameObjType::Tile)
+            || obj_config2.collide_span == 0.0
+        {
+            return true;
+        }
+
+        let (collide_obj, corrected_pos) = get_bot_pos_after_collide_obj(
+            &pos,
+            obj_config.collide_span,
+            &obj.direction,
+            &obj2.pos,
+            obj_config2.collide_span,
+        );
+
+        if collide_obj {
+            collide = true;
+        }
+
+        pos = corrected_pos;
+
+        true
+    };
+
+    game_map.run_on_region(&collide_region, func);
+
+    (collide, pos)
 }
 
 pub fn update_obj_pos(

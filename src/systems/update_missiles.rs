@@ -9,7 +9,6 @@ pub fn update_missiles(
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
     mut despawn_pool: ResMut<DespawnPool>,
-    mut commands: Commands,
     time: Res<Time>,
 ) {
     for (entity, mut transform) in q_missile.iter_mut() {

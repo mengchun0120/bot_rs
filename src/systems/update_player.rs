@@ -21,9 +21,10 @@ pub fn update_player(
         return;
     };
 
-    let (collide, new_pos) = game_map.get_bot_new_pos(
+    let (collide, new_pos) = get_bot_new_pos(
         &q_player.0,
         &obj,
+        game_map.as_ref(),
         game_obj_lib.as_ref(),
         game_lib.as_ref(),
         time.as_ref(),
