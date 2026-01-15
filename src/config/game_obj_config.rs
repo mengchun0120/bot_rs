@@ -1,4 +1,4 @@
-use crate::config::weapon_config::*;
+use crate::config::*;
 use crate::game::*;
 use bevy::prelude::*;
 use serde::Deserialize;

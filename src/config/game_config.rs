@@ -11,6 +11,7 @@ pub struct GameConfig {
     game_obj_config_file: String,
     image_config_file: String,
     gun_config_file: String,
+    explosion_config_file: String,
     pub cell_size: f32,
     pub window_ext_size: f32,
 }
@@ -54,5 +55,10 @@ impl GameConfig {
     #[inline]
     pub fn gun_config_file(&self) -> PathBuf {
         self.config_dir().join(&self.gun_config_file)
+    }
+
+    #[inline]
+    pub fn explosion_config_file(&self) -> PathBuf {
+        self.config_dir().join(&self.explosion_config_file)
     }
 }

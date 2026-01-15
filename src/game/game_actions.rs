@@ -1,4 +1,4 @@
-use crate::config::game_obj_config::*;
+use crate::config::*;
 use crate::game::*;
 use crate::game_utils::*;
 use crate::misc::{collide::*, my_error::*};

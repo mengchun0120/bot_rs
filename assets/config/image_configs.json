@@ -5,5 +5,6 @@
     "green_standard_missile": "green_standard_missile.png",
     "orange_standard_missile": "orange_standard_missile.png",
     "green_standard_gun": "green_standard_gun.png",
-    "orange_standard_gun": "orange_standard_gun.png"
+    "orange_standard_gun": "orange_standard_gun.png",
+    "green_explosion": "green_explosion.png"
 }

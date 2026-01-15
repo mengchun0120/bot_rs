@@ -1,4 +1,4 @@
-use crate::config::weapon_config::*;
+use crate::config::*;
 use crate::game_utils::*;
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
