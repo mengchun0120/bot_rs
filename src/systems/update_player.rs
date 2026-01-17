@@ -108,7 +108,7 @@ fn hide_offscreen_objs(
         };
         let obj_type = game_lib.get_game_obj_config(config_index).obj_type;
 
-        if obj_type == GameObjType::Missile || obj_type == GameObjType::Effect {
+        if obj_type == GameObjType::Missile || obj_type == GameObjType::Explosion {
             despawn_pool.insert(entity.clone());
             return true;
         }

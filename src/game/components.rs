@@ -15,6 +15,15 @@ pub struct AIComponent;
 pub struct MissileComponent;
 
 #[derive(Component)]
+pub struct ExplosionComponent;
+
+#[derive(Component)]
+pub struct PlayComponent {
+    pub timer: Timer,
+    pub last_index: usize,
+}
+
+#[derive(Component)]
 pub struct WeaponComponent {
     pub fire_timer: Timer,
     pub fire_points: Vec<Vec2>,
@@ -92,5 +101,15 @@ impl WeaponComponent {
         }
 
         fire_directions
+    }
+}
+
+impl PlayComponent {
+    pub fn new(play_config: &PlayConfig) -> Self {
+        let frame_duration = 1.0 / play_config.frames_per_second as f32;
+        Self {
+            timer: Timer::from_seconds(frame_duration, TimerMode::Repeating),
+            last_index: play_config.frame_count,
+        }
     }
 }

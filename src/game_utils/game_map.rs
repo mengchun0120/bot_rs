@@ -266,5 +266,3 @@ impl GameMap {
         self.visible_span.y = game_config.window_height() / 2.0 + game_config.window_ext_size;
     }
 }
-
-

@@ -121,8 +121,7 @@ fn get_bot_pos_after_collide_objs(
         };
         let obj_config2 = game_lib.get_game_obj_config(obj2.config_index);
 
-        if (obj_config2.obj_type != GameObjType::Bot
-            && obj_config2.obj_type != GameObjType::Tile)
+        if (obj_config2.obj_type != GameObjType::Bot && obj_config2.obj_type != GameObjType::Tile)
             || obj_config2.collide_span == 0.0
         {
             return true;

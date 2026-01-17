@@ -6,5 +6,5 @@ pub enum GameObjType {
     Tile,
     Bot,
     Missile,
-    Effect,
+    Explosion,
 }
