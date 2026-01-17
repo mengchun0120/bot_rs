@@ -13,6 +13,7 @@ pub fn fire_missiles(
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
+    asset_server: &AssetServer,
 ) -> Result<(), MyError> {
     let Some(obj) = game_obj_lib.get(&entity).cloned() else {
         error!("Cannot find entity in GameObjLib");
@@ -34,6 +35,7 @@ pub fn fire_missiles(
             game_lib,
             game_obj_lib,
             commands,
+            asset_server,
         )?;
     }
 

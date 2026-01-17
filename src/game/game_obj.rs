@@ -17,61 +17,33 @@ impl GameObj {
         config_index: usize,
         pos: &Vec2,
         direction: &Vec2,
-        map: &GameMap,
+        game_map: &GameMap,
         game_lib: &GameLib,
         commands: &mut Commands,
+        asset_server: &AssetServer,
     ) -> Result<(Self, Entity), MyError> {
         let obj = Self {
             config_index,
             pos: pos.clone(),
-            map_pos: map.get_map_pos(pos),
+            map_pos: game_map.get_map_pos(pos),
             direction: direction.clone(),
         };
-
-        let visible = map.check_pos_visible(&obj.pos);
-        let entity = obj.create_entity(config_index, visible, game_lib, map, commands)?;
-
-        Ok((obj, entity))
-    }
-
-    fn create_entity(
-        &self,
-        config_index: usize,
-        visible: bool,
-        game_lib: &GameLib,
-        map: &GameMap,
-        commands: &mut Commands,
-    ) -> Result<Entity, MyError> {
         let obj_config = game_lib.get_game_obj_config(config_index);
-        let image = game_lib.get_image(&obj_config.image)?;
-        let size = arr_to_vec2(&obj_config.size);
-        let screen_pos = map.get_screen_pos(&self.pos);
-        let visibility = if visible {
-            Visibility::Visible
+        let visible = game_map.check_pos_visible(&obj.pos);
+        let entity = if obj_config.obj_type == GameObjType::Explosion {
+            obj.create_explosion(
+                obj_config,
+                visible,
+                game_lib,
+                game_map,
+                commands,
+                asset_server,
+            )?
         } else {
-            Visibility::Hidden
+            obj.create_regular_obj(obj_config, visible, game_lib, game_map, commands)?
         };
 
-        let main_body = commands
-            .spawn((
-                Sprite {
-                    image,
-                    custom_size: Some(size),
-                    ..default()
-                },
-                Transform {
-                    translation: Vec3::new(screen_pos.x, screen_pos.y, obj_config.z),
-                    rotation: get_rotation(&self.direction.normalize()),
-                    ..default()
-                },
-                visibility,
-            ))
-            .id();
-
-        self.add_guns(main_body, obj_config, game_lib, commands)?;
-        self.add_components(main_body, obj_config, game_lib, commands)?;
-
-        Ok(main_body)
+        Ok((obj, entity))
     }
 
     fn create_regular_obj(
@@ -79,12 +51,11 @@ impl GameObj {
         obj_config: &GameObjConfig,
         visible: bool,
         game_lib: &GameLib,
-        map: &GameMap,
+        game_map: &GameMap,
         commands: &mut Commands,
     ) -> Result<Entity, MyError> {
         let image = game_lib.get_image(&obj_config.image)?;
-        let size = arr_to_vec2(&obj_config.size);
-        let screen_pos = map.get_screen_pos(&self.pos);
+        let screen_pos = game_map.get_screen_pos(&self.pos);
         let visibility = if visible {
             Visibility::Visible
         } else {
@@ -95,7 +66,7 @@ impl GameObj {
             .spawn((
                 Sprite {
                     image,
-                    custom_size: Some(size),
+                    custom_size: Some(obj_config.size()),
                     ..default()
                 },
                 Transform {
@@ -120,7 +91,7 @@ impl GameObj {
         if let Some(weapon_config) = obj_config.weapon_config.as_ref() {
             let weapon_component = WeaponComponent::new(weapon_config, game_lib)?;
             commands.entity(entity).insert(weapon_component);
-            self.add_guns(entity, weapon_config, game_lib, commands);
+            self.add_guns(entity, weapon_config, game_lib, commands)?;
         }
 
         Ok(entity)
@@ -140,7 +111,7 @@ impl GameObj {
             error!("Missing PlayConfig in GameObjConfig");
             return Err(MyError::NotFound("PlayConfig".into()));
         };
-        let size = arr_to_vec2(&obj_config.size);
+        let size = obj_config.size();
         let screen_pos = map.get_screen_pos(&self.pos);
         let visibility = if visible {
             Visibility::Visible
@@ -164,39 +135,12 @@ impl GameObj {
                 Sprite::from_atlas_image(image, TextureAtlas { layout, index: 0 }),
                 Transform::from_xyz(screen_pos.x, screen_pos.y, obj_config.z),
                 visibility,
-                ExplosionComponent,
                 PlayComponent::new(play_config),
+                ExplosionComponent,
             ))
             .id();
 
         Ok(entity)
-    }
-
-    fn add_components(
-        &self,
-        main_body: Entity,
-        obj_config: &GameObjConfig,
-        game_lib: &GameLib,
-        commands: &mut Commands,
-    ) -> Result<(), MyError> {
-        let mut entity = commands.entity(main_body);
-
-        if obj_config.obj_type == GameObjType::Bot {
-            if obj_config.side == GameObjSide::Player {
-                entity.insert(PlayerComponent::new());
-            } else if obj_config.side == GameObjSide::AI {
-                entity.insert(AIComponent);
-            }
-        } else if obj_config.obj_type == GameObjType::Missile {
-            entity.insert(MissileComponent);
-        }
-
-        if let Some(weapon_config) = obj_config.weapon_config.as_ref() {
-            let weapon_component = WeaponComponent::new(weapon_config, game_lib)?;
-            entity.insert(weapon_component);
-        }
-
-        Ok(())
     }
 
     fn add_guns(

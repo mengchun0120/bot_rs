@@ -44,6 +44,10 @@ pub mod misc {
     pub mod collide;
     pub mod my_error;
     pub mod utils;
+
+    pub use collide::*;
+    pub use my_error::*;
+    pub use utils::*;
 }
 
 pub mod systems {

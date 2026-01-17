@@ -31,6 +31,7 @@ pub fn setup_game(
         &game_lib,
         &mut game_obj_lib,
         &mut commands,
+        asset_server.as_ref(),
         &mut exit_app,
     ) else {
         return;
@@ -73,9 +74,17 @@ fn load_game_map<P: AsRef<Path>>(
     game_lib: &GameLib,
     game_obj_lib: &mut GameObjLib,
     commands: &mut Commands,
+    asset_server: &AssetServer,
     exit_app: &mut MessageWriter<AppExit>,
 ) -> Option<GameMap> {
-    let game_map = match GameMap::load(map_path, cell_size, game_lib, game_obj_lib, commands) {
+    let game_map = match GameMap::load(
+        map_path,
+        cell_size,
+        game_lib,
+        game_obj_lib,
+        commands,
+        asset_server,
+    ) {
         Ok(map) => map,
         Err(err) => {
             error!("Failed to load GameMap: {}", err);

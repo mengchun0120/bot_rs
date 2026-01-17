@@ -1,5 +1,6 @@
 use crate::config::*;
 use crate::game::*;
+use crate::misc::*;
 use bevy::prelude::*;
 use serde::Deserialize;
 
@@ -23,4 +24,10 @@ pub struct GameObjConfig {
     pub damage: Option<f32>,
     pub play_config: Option<PlayConfig>,
     pub explosion: Option<String>,
+}
+
+impl GameObjConfig {
+    pub fn size(&self) -> Vec2 {
+        arr_to_vec2(&self.size)
+    }
 }
