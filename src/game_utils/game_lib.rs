@@ -12,12 +12,14 @@ pub struct GameLib {
     game_obj_config_indices: HashMap<String, usize>,
     images: HashMap<String, Handle<Image>>,
     gun_configs: HashMap<String, GunConfig>,
+    texture_atlas_layouts: HashMap<String, Handle<TextureAtlasLayout>>,
 }
 
 impl GameLib {
     pub fn load<P: AsRef<Path>>(
         config_path: P,
         asset_server: &AssetServer,
+        layouts: &mut Assets<TextureAtlasLayout>,
     ) -> Result<Self, MyError> {
         let game_config: GameConfig = read_json(config_path)?;
         let mut game_lib = GameLib {
@@ -26,10 +28,11 @@ impl GameLib {
             game_obj_configs: Vec::new(),
             game_obj_config_indices: HashMap::new(),
             gun_configs: HashMap::new(),
+            texture_atlas_layouts: HashMap::new(),
         };
 
         game_lib.load_images(asset_server)?;
-        game_lib.load_game_obj_configs()?;
+        game_lib.load_game_obj_configs(layouts)?;
         game_lib.load_gun_configs()?;
 
         info!("GameLib initialized");
@@ -75,6 +78,20 @@ impl GameLib {
         }
     }
 
+    #[inline]
+    pub fn get_tex_atlas_layout(
+        &self,
+        name: &String,
+    ) -> Result<Handle<TextureAtlasLayout>, MyError> {
+        match self.texture_atlas_layouts.get(name) {
+            Some(layout) => Ok(layout.clone()),
+            None => {
+                error!("Cannot find TextureAtlasLayout: {}", name);
+                Err(MyError::NotFound(name.clone()))
+            }
+        }
+    }
+
     fn load_images(&mut self, asset_server: &AssetServer) -> Result<(), MyError> {
         let assets_dir = PathBuf::from("assets");
         let image_dir = self.game_config.image_dir();
@@ -102,7 +119,10 @@ impl GameLib {
         Ok(())
     }
 
-    fn load_game_obj_configs(&mut self) -> Result<(), MyError> {
+    fn load_game_obj_configs(
+        &mut self,
+        layouts: &mut Assets<TextureAtlasLayout>,
+    ) -> Result<(), MyError> {
         self.game_obj_configs = read_json(self.game_config.game_obj_config_file())?;
 
         for i in 0..self.game_obj_configs.len() {
@@ -114,6 +134,15 @@ impl GameLib {
             }
 
             self.game_obj_config_indices.insert(name.clone(), i);
+
+            if let Some(play_config) = self.game_obj_configs[i].play_config.as_ref() {
+                let layout = Self::create_tex_atlas_layout(
+                    &self.game_obj_configs[i].size,
+                    play_config.frame_count,
+                    layouts,
+                );
+                self.texture_atlas_layouts.insert(name.clone(), layout);
+            }
         }
 
         Ok(())
@@ -122,5 +151,23 @@ impl GameLib {
     fn load_gun_configs(&mut self) -> Result<(), MyError> {
         self.gun_configs = read_json(self.game_config.gun_config_file())?;
         Ok(())
+    }
+
+    fn create_tex_atlas_layout(
+        size: &[f32; 2],
+        frame_count: usize,
+        layouts: &mut Assets<TextureAtlasLayout>,
+    ) -> Handle<TextureAtlasLayout> {
+        let tile_size = UVec2 {
+            x: size[0] as u32,
+            y: size[1] as u32,
+        };
+        layouts.add(TextureAtlasLayout::from_grid(
+            tile_size,
+            frame_count as u32,
+            1,
+            None,
+            None,
+        ))
     }
 }

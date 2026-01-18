@@ -13,7 +13,6 @@ pub fn fire_missiles(
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
-    asset_server: &AssetServer,
 ) -> Result<(), MyError> {
     let Some(obj) = game_obj_lib.get(&entity).cloned() else {
         error!("Cannot find entity in GameObjLib");
@@ -35,7 +34,6 @@ pub fn fire_missiles(
             game_lib,
             game_obj_lib,
             commands,
-            asset_server,
         )?;
     }
 
@@ -97,6 +95,29 @@ pub fn update_obj_pos(
     let screen_pos = game_map.get_screen_pos(&obj.pos);
     transform.translation.x = screen_pos.x;
     transform.translation.y = screen_pos.y;
+}
+
+pub fn explode(
+    explosion: &String,
+    pos: &Vec2,
+    game_obj_lib: &mut GameObjLib,
+    game_map: &mut GameMap,
+    game_lib: &GameLib,
+    commands: &mut Commands,
+) -> Result<(), MyError> {
+    let config_index = game_lib.get_game_obj_config_index(explosion)?;
+    let direction = Vec2::new(1.0, 0.0);
+
+    game_map.add_obj_by_index(
+        config_index,
+        pos,
+        &direction,
+        game_lib,
+        game_obj_lib,
+        commands,
+    )?;
+
+    Ok(())
 }
 
 fn get_bot_pos_after_collide_objs(

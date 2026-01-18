@@ -41,7 +41,6 @@ impl GameMap {
         game_lib: &GameLib,
         game_obj_lib: &mut GameObjLib,
         commands: &mut Commands,
-        asset_server: &AssetServer,
     ) -> Result<GameMap, MyError> {
         let map_config: GameMapConfig = read_json(map_path)?;
         let mut map = Self::new(cell_size, map_config.row_count, map_config.col_count);
@@ -57,7 +56,6 @@ impl GameMap {
             game_lib,
             game_obj_lib,
             commands,
-            asset_server,
         )?;
 
         for map_obj_config in map_config.objs.iter() {
@@ -66,7 +64,6 @@ impl GameMap {
                 game_lib,
                 game_obj_lib,
                 commands,
-                asset_server,
             )?;
         }
 
@@ -79,7 +76,6 @@ impl GameMap {
         game_lib: &GameLib,
         game_obj_lib: &mut GameObjLib,
         commands: &mut Commands,
-        asset_server: &AssetServer,
     ) -> Result<(), MyError> {
         let config_index = game_lib.get_game_obj_config_index(&map_obj_config.config_name)?;
         let pos = arr_to_vec2(&map_obj_config.pos);
@@ -92,7 +88,6 @@ impl GameMap {
             game_lib,
             game_obj_lib,
             commands,
-            asset_server,
         )?;
 
         Ok(())
@@ -106,7 +101,6 @@ impl GameMap {
         game_lib: &GameLib,
         game_obj_lib: &mut GameObjLib,
         commands: &mut Commands,
-        asset_server: &AssetServer,
     ) -> Result<(), MyError> {
         let obj_config = game_lib.get_game_obj_config(config_index);
 
@@ -116,15 +110,16 @@ impl GameMap {
             return Err(MyError::Other(err_msg));
         }
 
-        let (obj, entity) = GameObj::new(
+        let Some((obj, entity)) = GameObj::new(
             config_index,
             pos,
             direction,
             self,
             game_lib,
             commands,
-            asset_server,
-        )?;
+        )? else {
+            return Ok(());
+        };
 
         self.map[obj.map_pos.row][obj.map_pos.col].insert(entity);
         if self.max_collide_span < obj_config.collide_span {

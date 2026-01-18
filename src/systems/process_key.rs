@@ -14,7 +14,6 @@ pub fn process_key(
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
     mut exit_app: MessageWriter<AppExit>,
     time: Res<Time>,
 ) {
@@ -34,7 +33,6 @@ pub fn process_key(
             game_obj_lib.as_mut(),
             game_lib.as_ref(),
             &mut commands,
-            asset_server.as_ref(),
         )
         .unwrap_or_else(|err| {
             error!("Failed to fire missiles: {}", err);

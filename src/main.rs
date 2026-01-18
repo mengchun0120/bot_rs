@@ -20,6 +20,7 @@ fn main() {
                 process_key,
                 update_player,
                 update_missiles,
+                update_explosions,
             ),
         )
         .add_systems(PostUpdate, cleanup)

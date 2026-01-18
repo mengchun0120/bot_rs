@@ -9,12 +9,14 @@ pub fn setup_game(
     mut window: Single<&mut Window>,
     mut exit_app: MessageWriter<AppExit>,
     asset_server: Res<AssetServer>,
+    mut layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut commands: Commands,
 ) {
     let Some(game_lib) = load_game_lib(
         args.config_path.as_path(),
         &mut exit_app,
         asset_server.as_ref(),
+        layouts.as_mut(),
     ) else {
         return;
     };
@@ -31,7 +33,6 @@ pub fn setup_game(
         &game_lib,
         &mut game_obj_lib,
         &mut commands,
-        asset_server.as_ref(),
         &mut exit_app,
     ) else {
         return;
@@ -49,8 +50,9 @@ fn load_game_lib<P: AsRef<Path>>(
     config_path: P,
     exit_app: &mut MessageWriter<AppExit>,
     asset_server: &AssetServer,
+    layouts: &mut Assets<TextureAtlasLayout>,
 ) -> Option<GameLib> {
-    let game_lib = match GameLib::load(config_path, asset_server) {
+    let game_lib = match GameLib::load(config_path, asset_server, layouts) {
         Ok(lib) => lib,
         Err(err) => {
             error!("Failed to initialize GameLib: {}", err);
@@ -74,7 +76,6 @@ fn load_game_map<P: AsRef<Path>>(
     game_lib: &GameLib,
     game_obj_lib: &mut GameObjLib,
     commands: &mut Commands,
-    asset_server: &AssetServer,
     exit_app: &mut MessageWriter<AppExit>,
 ) -> Option<GameMap> {
     let game_map = match GameMap::load(
@@ -83,7 +84,6 @@ fn load_game_map<P: AsRef<Path>>(
         game_lib,
         game_obj_lib,
         commands,
-        asset_server,
     ) {
         Ok(map) => map,
         Err(err) => {

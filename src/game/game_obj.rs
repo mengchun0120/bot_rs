@@ -20,8 +20,7 @@ impl GameObj {
         game_map: &GameMap,
         game_lib: &GameLib,
         commands: &mut Commands,
-        asset_server: &AssetServer,
-    ) -> Result<(Self, Entity), MyError> {
+    ) -> Result<Option<(Self, Entity)>, MyError> {
         let obj = Self {
             config_index,
             pos: pos.clone(),
@@ -30,20 +29,27 @@ impl GameObj {
         };
         let obj_config = game_lib.get_game_obj_config(config_index);
         let visible = game_map.check_pos_visible(&obj.pos);
-        let entity = if obj_config.obj_type == GameObjType::Explosion {
-            obj.create_explosion(
-                obj_config,
-                visible,
-                game_lib,
-                game_map,
-                commands,
-                asset_server,
-            )?
-        } else {
-            obj.create_regular_obj(obj_config, visible, game_lib, game_map, commands)?
+        let entity = match obj_config.obj_type {
+            GameObjType::Bot | GameObjType::Tile => {
+                obj.create_regular_obj(obj_config, visible, game_lib, game_map, commands)?
+            }
+            GameObjType::Missile => {
+                if visible {
+                    obj.create_regular_obj(obj_config, visible, game_lib, game_map, commands)?
+                } else {
+                    return Ok(None);
+                }
+            }
+            GameObjType::Explosion => {
+                if visible {
+                    obj.create_explosion(obj_config, visible, game_lib, game_map, commands)?
+                } else {
+                    return Ok(None);
+                }
+            }
         };
 
-        Ok((obj, entity))
+        Ok(Some((obj, entity)))
     }
 
     fn create_regular_obj(
@@ -102,34 +108,21 @@ impl GameObj {
         obj_config: &GameObjConfig,
         visible: bool,
         game_lib: &GameLib,
-        map: &GameMap,
+        game_map: &GameMap,
         commands: &mut Commands,
-        asset_server: &AssetServer,
     ) -> Result<Entity, MyError> {
         let image = game_lib.get_image(&obj_config.image)?;
         let Some(play_config) = obj_config.play_config.as_ref() else {
             error!("Missing PlayConfig in GameObjConfig");
             return Err(MyError::NotFound("PlayConfig".into()));
         };
-        let size = obj_config.size();
-        let screen_pos = map.get_screen_pos(&self.pos);
+        let screen_pos = game_map.get_screen_pos(&self.pos);
         let visibility = if visible {
             Visibility::Visible
         } else {
             Visibility::Hidden
         };
-        let tile_size = UVec2 {
-            x: size.x as u32,
-            y: size.y as u32,
-        };
-        let layout = asset_server.add(TextureAtlasLayout::from_grid(
-            tile_size,
-            play_config.frame_count as u32,
-            1,
-            None,
-            None,
-        ));
-
+        let layout = game_lib.get_tex_atlas_layout(&obj_config.name)?;
         let entity = commands
             .spawn((
                 Sprite::from_atlas_image(image, TextureAtlas { layout, index: 0 }),

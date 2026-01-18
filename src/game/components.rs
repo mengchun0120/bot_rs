@@ -109,7 +109,7 @@ impl PlayComponent {
         let frame_duration = 1.0 / play_config.frames_per_second as f32;
         Self {
             timer: Timer::from_seconds(frame_duration, TimerMode::Repeating),
-            last_index: play_config.frame_count,
+            last_index: play_config.frame_count - 1,
         }
     }
 }

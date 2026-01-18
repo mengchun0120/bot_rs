@@ -19,9 +19,9 @@ pub mod game {
 
     pub use components::*;
     pub use game_actions::*;
-    pub use game_obj::GameObj;
-    pub use game_obj_side::GameObjSide;
-    pub use game_obj_type::GameObjType;
+    pub use game_obj::*;
+    pub use game_obj_side::*;
+    pub use game_obj_type::*;
 }
 
 pub mod game_utils {
@@ -32,12 +32,12 @@ pub mod game_utils {
     pub mod map_pos;
     pub mod map_region;
 
-    pub use despawn_pool::DespawnPool;
-    pub use game_lib::GameLib;
-    pub use game_map::GameMap;
-    pub use game_obj_lib::GameObjLib;
-    pub use map_pos::MapPos;
-    pub use map_region::MapRegion;
+    pub use despawn_pool::*;
+    pub use game_lib::*;
+    pub use game_map::*;
+    pub use game_obj_lib::*;
+    pub use map_pos::*;
+    pub use map_region::*;
 }
 
 pub mod misc {
@@ -55,13 +55,15 @@ pub mod systems {
     pub mod process_key;
     pub mod process_mouse_button;
     pub mod setup;
+    pub mod update_explosions;
     pub mod update_missiles;
     pub mod update_player;
 
-    pub use cleanup::cleanup;
-    pub use process_key::process_key;
-    pub use process_mouse_button::process_mouse_button;
-    pub use setup::setup_game;
-    pub use update_missiles::update_missiles;
-    pub use update_player::update_player;
+    pub use cleanup::*;
+    pub use process_key::*;
+    pub use process_mouse_button::*;
+    pub use setup::*;
+    pub use update_explosions::*;
+    pub use update_missiles::*;
+    pub use update_player::*;
 }

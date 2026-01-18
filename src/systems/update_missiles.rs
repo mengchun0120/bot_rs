@@ -9,6 +9,7 @@ pub fn update_missiles(
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
     mut despawn_pool: ResMut<DespawnPool>,
+    mut commands: Commands,
     time: Res<Time>,
 ) {
     for (entity, mut transform) in q_missile.iter_mut() {
@@ -37,6 +38,20 @@ pub fn update_missiles(
             game_lib.as_ref(),
             despawn_pool.as_ref(),
         ) {
+            if let Some(explosion) = obj_config.explosion.as_ref() {
+                if explode(
+                    explosion,
+                    &new_pos,
+                    game_obj_lib.as_mut(),
+                    game_map.as_mut(),
+                    game_lib.as_ref(),
+                    &mut commands,
+                )
+                .is_err()
+                {
+                    error!("Failed to create explosion {}", explosion);
+                }
+            }
             despawn_pool.insert(entity);
             continue;
         }
