@@ -170,14 +170,19 @@ pub fn check_missile_collide_objs(
     collide
 }
 
-fn check_missile_collide_bounds(pos: &Vec2, collide_span: f32, width: f32, height: f32) -> bool {
+pub fn check_missile_collide_bounds(
+    pos: &Vec2,
+    collide_span: f32,
+    width: f32,
+    height: f32,
+) -> bool {
     pos.x - collide_span < 0.0
         || pos.x + collide_span > width
         || pos.y - collide_span < 0.0
         || pos.y + collide_span > height
 }
 
-fn check_missile_collide_obj(
+pub fn check_missile_collide_obj(
     pos1: &Vec2,
     collide_span1: f32,
     pos2: &Vec2,

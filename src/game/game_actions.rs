@@ -1,7 +1,7 @@
 use crate::config::*;
 use crate::game::*;
 use crate::game_utils::*;
-use crate::misc::{collide::*, my_error::*};
+use crate::misc::*;
 use bevy::prelude::*;
 
 pub fn fire_missiles(
@@ -103,9 +103,11 @@ pub fn explode(
     game_obj_lib: &mut GameObjLib,
     game_map: &mut GameMap,
     game_lib: &GameLib,
+    despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
     let config_index = game_lib.get_game_obj_config_index(explosion)?;
+    let explosion_config = game_lib.get_game_obj_config(config_index);
     let direction = Vec2::new(1.0, 0.0);
 
     game_map.add_obj_by_index(
@@ -116,6 +118,19 @@ pub fn explode(
         game_obj_lib,
         commands,
     )?;
+
+    if let Some(damage) = explosion_config.damage {
+        do_damage(
+            pos,
+            explosion_config.side,
+            damage,
+            explosion_config.collide_span,
+            game_map,
+            game_obj_lib,
+            game_lib,
+            despawn_pool,
+        );
+    }
 
     Ok(())
 }
@@ -170,4 +185,49 @@ fn get_bot_pos_after_collide_objs(
     game_map.run_on_region(&collide_region, func);
 
     (collide, pos)
+}
+
+fn do_damage(
+    pos: &Vec2,
+    side: GameObjSide,
+    damage: f32,
+    span: f32,
+    game_map: &GameMap,
+    game_obj_lib: &mut GameObjLib,
+    game_lib: &GameLib,
+    despawn_pool: &mut DespawnPool,
+) {
+    let total_span = span + game_map.max_collide_span;
+    let region = game_map.get_region(
+        pos.x - total_span,
+        pos.y - total_span,
+        pos.x + total_span,
+        pos.y + total_span,
+    );
+    let func = |entity: &Entity| -> bool {
+        if despawn_pool.contains(entity) {
+            return true;
+        }
+
+        let Some(obj) = game_obj_lib.get_mut(entity) else {
+            error!("Cannot find entity in GameObjLib");
+            return true;
+        };
+        let obj_config = game_lib.get_game_obj_config(obj.config_index);
+
+        if obj_config.obj_type == GameObjType::Bot
+            && obj_config.side != side
+            && check_missile_collide_obj(pos, span, &obj.pos, obj_config.collide_span)
+            && let Some(hp) = obj.hp.as_mut()
+        {
+            *hp = (*hp - damage).max(0.0);
+            if *hp == 0.0 {
+                despawn_pool.insert(entity.clone());
+            }
+        }
+
+        true
+    };
+
+    game_map.run_on_region(&region, func);
 }

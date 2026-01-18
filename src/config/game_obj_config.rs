@@ -19,6 +19,7 @@ pub struct GameObjConfig {
     pub obj_type: GameObjType,
     pub side: GameObjSide,
     pub speed: f32,
+    pub hp: Option<f32>,
     pub collide_span: f32,
     pub weapon_config: Option<WeaponConfig>,
     pub damage: Option<f32>,

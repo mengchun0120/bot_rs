@@ -51,20 +51,10 @@ impl GameMap {
         let player_pos = arr_to_vec2(&map_config.player.pos);
         map.set_origin(&player_pos);
 
-        map.add_obj_by_config(
-            &map_config.player,
-            game_lib,
-            game_obj_lib,
-            commands,
-        )?;
+        map.add_obj_by_config(&map_config.player, game_lib, game_obj_lib, commands)?;
 
         for map_obj_config in map_config.objs.iter() {
-            map.add_obj_by_config(
-                map_obj_config,
-                game_lib,
-                game_obj_lib,
-                commands,
-            )?;
+            map.add_obj_by_config(map_obj_config, game_lib, game_obj_lib, commands)?;
         }
 
         Ok(map)
@@ -110,14 +100,9 @@ impl GameMap {
             return Err(MyError::Other(err_msg));
         }
 
-        let Some((obj, entity)) = GameObj::new(
-            config_index,
-            pos,
-            direction,
-            self,
-            game_lib,
-            commands,
-        )? else {
+        let Some((obj, entity)) =
+            GameObj::new(config_index, pos, direction, self, game_lib, commands)?
+        else {
             return Ok(());
         };
 

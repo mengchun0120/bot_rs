@@ -45,6 +45,7 @@ pub fn update_missiles(
                     game_obj_lib.as_mut(),
                     game_map.as_mut(),
                     game_lib.as_ref(),
+                    despawn_pool.as_mut(),
                     &mut commands,
                 )
                 .is_err()

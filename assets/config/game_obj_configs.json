@@ -8,6 +8,7 @@
         "side": "Player",
         "speed": 100.0,
         "collide_span": 21.2132,
+        "hp": 100.0,
         "weapon_config": {
             "missile": "green_standard_missile",
             "gun_components": [
@@ -29,6 +30,7 @@
         "side": "AI",
         "speed": 80.0,
         "collide_span": 21.2132,
+        "hp": 40.0,
         "weapon_config": {
             "missile": "orange_standard_missile",
             "gun_components": [

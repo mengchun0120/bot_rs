@@ -10,6 +10,7 @@ pub struct GameObj {
     pub pos: Vec2,
     pub map_pos: MapPos,
     pub direction: Vec2,
+    pub hp: Option<f32>,
 }
 
 impl GameObj {
@@ -21,14 +22,16 @@ impl GameObj {
         game_lib: &GameLib,
         commands: &mut Commands,
     ) -> Result<Option<(Self, Entity)>, MyError> {
+        let obj_config = game_lib.get_game_obj_config(config_index);
         let obj = Self {
             config_index,
             pos: pos.clone(),
             map_pos: game_map.get_map_pos(pos),
             direction: direction.clone(),
+            hp: obj_config.hp.clone(),
         };
-        let obj_config = game_lib.get_game_obj_config(config_index);
         let visible = game_map.check_pos_visible(&obj.pos);
+
         let entity = match obj_config.obj_type {
             GameObjType::Bot | GameObjType::Tile => {
                 obj.create_regular_obj(obj_config, visible, game_lib, game_map, commands)?
