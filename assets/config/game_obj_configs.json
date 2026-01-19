@@ -72,7 +72,8 @@
         "obj_type": "Missile",
         "side": "AI",
         "speed": 80.0,
-        "collide_span": 5.0
+        "collide_span": 5.0,
+        "explosion": "orange_explosion"
     },
     {
         "name": "green_explosion",
@@ -84,6 +85,21 @@
         "speed": 0.0,
         "collide_span": 40.0,
         "damage": 50.0,
+        "play_config": {
+            "frame_count": 24,
+            "frames_per_second": 24
+        }
+    },
+    {
+        "name": "orange_explosion",
+        "image": "orange_explosion",
+        "size": [70.0, 70.0],
+        "z": 1.0,
+        "obj_type": "Explosion",
+        "side": "AI",
+        "speed": 0.0,
+        "collide_span": 40.0,
+        "damage": 10.0,
         "play_config": {
             "frame_count": 24,
             "frames_per_second": 24

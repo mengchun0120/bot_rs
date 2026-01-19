@@ -1,6 +1,7 @@
 use crate::game::*;
 use crate::game_utils::*;
 use bevy::prelude::*;
+use std::collections::HashSet;
 
 pub fn update_player(
     mut q_player: Single<(Entity, &mut PlayerComponent, &mut Transform)>,
@@ -19,6 +20,7 @@ pub fn update_player(
         error!("Cannot find player in GameObjLib");
         return;
     };
+    let obj_config = game_lib.get_game_obj_config(obj.config_index);
 
     let (collide, new_pos) = get_bot_new_pos(
         &q_player.0,
@@ -40,6 +42,30 @@ pub fn update_player(
         game_map.as_mut(),
         q_player.2.as_mut(),
     );
+
+    let mut captured_missiles: HashSet<Entity> = HashSet::new();
+
+    capture_missiles(
+        &new_pos,
+        obj_config.collide_span,
+        obj_config.side,
+        &mut captured_missiles,
+        game_obj_lib.as_ref(),
+        game_map.as_ref(),
+        game_lib.as_ref(),
+        despawn_pool.as_ref(),
+    );
+
+    if !captured_missiles.is_empty() {
+        explode_all(
+            &mut captured_missiles,
+            game_obj_lib.as_mut(),
+            game_map.as_mut(),
+            game_lib.as_ref(),
+            despawn_pool.as_mut(),
+            &mut commands,
+        );
+    }
 
     update_origin(
         &new_pos,
