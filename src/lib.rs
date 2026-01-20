@@ -52,6 +52,7 @@ pub mod misc {
 
 pub mod systems {
     pub mod cleanup;
+    pub mod process_cursor;
     pub mod process_key;
     pub mod process_mouse_button;
     pub mod setup;
@@ -60,6 +61,7 @@ pub mod systems {
     pub mod update_player;
 
     pub use cleanup::*;
+    pub use process_cursor::*;
     pub use process_key::*;
     pub use process_mouse_button::*;
     pub use setup::*;

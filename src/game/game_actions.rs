@@ -216,6 +216,26 @@ pub fn explode(
     Ok(())
 }
 
+pub fn get_cursor_pos(
+    window: &Window,
+    camera: &Camera,
+    transform: &GlobalTransform,
+    game_map: &GameMap,
+) -> Option<Vec2> {
+    let Some(cursor_pos) = window.cursor_position() else {
+        return None;
+    };
+    let pos = match camera.viewport_to_world_2d(transform, cursor_pos) {
+        Ok(p) => p,
+        Err(err) => {
+            error!("Failed to transform cursor position: {}", err);
+            return None;
+        }
+    };
+
+    Some(game_map.viewport_to_world(&pos))
+}
+
 fn get_bot_pos_after_collide_objs(
     entity: &Entity,
     obj: &GameObj,

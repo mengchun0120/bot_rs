@@ -16,6 +16,7 @@ fn main() {
         .add_systems(
             Update,
             (
+                process_cursor,
                 process_mouse_button,
                 process_key,
                 update_player,
