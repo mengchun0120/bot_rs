@@ -9,7 +9,7 @@ pub fn process_key(
         &mut WeaponComponent,
         &mut Transform,
     )>,
-    mouse_button_input: Res<ButtonInput<KeyCode>>,
+    key_input: Res<ButtonInput<KeyCode>>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
@@ -19,7 +19,7 @@ pub fn process_key(
 ) {
     q_player.2.fire_timer.tick(time.delta());
 
-    if mouse_button_input.just_pressed(KeyCode::KeyF) || mouse_button_input.pressed(KeyCode::KeyF) {
+    if key_input.just_pressed(KeyCode::KeyF) || key_input.pressed(KeyCode::KeyF) {
         if !q_player.2.fire_timer.is_finished() {
             return;
         }
@@ -38,5 +38,7 @@ pub fn process_key(
             error!("Failed to fire missiles: {}", err);
             exit_app.write(AppExit::error());
         });
+    } else if key_input.just_pressed(KeyCode::KeyS) {
+        q_player.1.stop_moving();
     }
 }
