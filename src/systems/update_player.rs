@@ -12,7 +12,7 @@ pub fn update_player(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    if !q_player.1.update_move_timer(time.as_ref()) {
+    if !q_player.1.move_enabled() {
         return;
     }
 
@@ -21,6 +21,8 @@ pub fn update_player(
         return;
     };
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
+
+    q_player.1.update_move_timer(time.delta());
 
     let (collide, new_pos) = get_bot_new_pos(
         &q_player.0,
@@ -32,7 +34,7 @@ pub fn update_player(
     );
 
     if collide {
-        q_player.1.clear_move_timer();
+        q_player.1.stop_moving();
     }
 
     update_obj_pos(

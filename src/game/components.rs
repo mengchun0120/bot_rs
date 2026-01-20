@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::config::*;
 use crate::game_utils::*;
 use crate::misc::{my_error::*, utils::*};
@@ -5,7 +7,8 @@ use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct PlayerComponent {
-    pub move_timer: Option<Timer>,
+    move_enabled: bool,
+    move_timer: Timer,
 }
 
 #[derive(Component)]
@@ -33,29 +36,32 @@ pub struct WeaponComponent {
 
 impl PlayerComponent {
     pub fn new() -> Self {
-        PlayerComponent { move_timer: None }
-    }
-
-    pub fn update_move_timer(&mut self, time: &Time) -> bool {
-        if let Some(timer) = self.move_timer.as_mut() {
-            timer.tick(time.delta());
-            if timer.is_finished() {
-                self.clear_move_timer();
-                false
-            } else {
-                true
-            }
-        } else {
-            false
+        PlayerComponent {
+            move_enabled: false,
+            move_timer: Timer::from_seconds(0.0, TimerMode::Repeating),
         }
     }
 
-    pub fn clear_move_timer(&mut self) {
-        self.move_timer = None;
+    #[inline]
+    pub fn move_enabled(&self) -> bool {
+        self.move_enabled
     }
 
-    pub fn reset_move_timer(&mut self, duration: f32) {
-        self.move_timer = Some(Timer::from_seconds(duration, TimerMode::Once));
+    #[inline]
+    pub fn start_moving(&mut self, move_duration: Duration) {
+        self.move_enabled = true;
+        self.move_timer.set_duration(move_duration);
+        self.move_timer.reset();
+    }
+
+    #[inline]
+    pub fn update_move_timer(&mut self, delta: Duration) {
+        self.move_timer.tick(delta);
+    }
+
+    #[inline]
+    pub fn stop_moving(&mut self) {
+        self.move_enabled = false;
     }
 }
 

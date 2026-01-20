@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::game::*;
 use crate::game_utils::*;
 use crate::misc::utils::*;
@@ -22,8 +24,8 @@ pub fn process_mouse_button(
             return;
         };
 
-        let move_time = get_player_move_time(&obj.pos, &cursor_pos, obj, game_lib.as_ref());
-        q_player.1.reset_move_timer(move_time);
+        let move_duration = get_player_move_time(&obj.pos, &cursor_pos, obj, game_lib.as_ref());
+        q_player.1.start_moving(Duration::from_secs_f32(move_duration));
 
         let direction = (cursor_pos - obj.pos).normalize();
         obj.direction = direction.clone();
