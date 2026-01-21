@@ -4,7 +4,7 @@
     "player": {
         "config_name": "player_bot",
         "pos": [300.0, 100.0],
-        "direction": [-1.0, 1.0]
+        "direction": [1.0, 0.0]
     },
     "objs": [
         {

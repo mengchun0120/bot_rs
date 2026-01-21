@@ -16,6 +16,16 @@
                     "config_name": "green_standard_gun",
                     "pos": [30.0, 0.0],
                     "direction": [1.0, 0.0]
+                },
+                {
+                    "config_name": "green_standard_gun",
+                    "pos": [21.213203435596427, 21.213203435596427],
+                    "direction": [0.7071067811865476, 0.7071067811865476]
+                },
+                {
+                    "config_name": "green_standard_gun",
+                    "pos": [21.213203435596427, -21.213203435596427],
+                    "direction": [0.7071067811865476, -0.7071067811865476]
                 }
             ],
             "fire_duration": 0.2

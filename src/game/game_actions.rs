@@ -22,7 +22,7 @@ pub fn fire_missiles(
 
     for i in 0..fire_points.len() {
         let direction = obj.direction.rotate(fire_directions[i]);
-        let pos = obj.pos + direction.rotate(fire_points[i]);
+        let pos = obj.pos + obj.direction.rotate(fire_points[i]);
 
         if !game_map.check_pos_visible(&pos) {
             continue;
