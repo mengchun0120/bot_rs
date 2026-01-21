@@ -5,16 +5,12 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
 pub fn process_cursor(
-    mut q_player: Single<(Entity, &mut PlayerComponent, &mut Transform)>,
+    mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<PlayerComponent>>,
     q_window: Single<&Window, With<PrimaryWindow>>,
     q_camera: Single<(&Camera, &GlobalTransform)>,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_map: Res<GameMap>,
 ) {
-    if q_player.1.move_enabled() {
-        return;
-    }
-
     let Some(cursor_pos) = get_cursor_pos(
         q_window.into_inner(),
         q_camera.0,

@@ -63,47 +63,15 @@ impl GameObj {
         game_map: &GameMap,
         commands: &mut Commands,
     ) -> Result<Entity, MyError> {
-        let image = game_lib.get_image(&obj_config.image)?;
-        let screen_pos = game_map.get_screen_pos(&self.pos);
-        let visibility = if visible {
-            Visibility::Visible
-        } else {
-            Visibility::Hidden
-        };
-
-        let entity = commands
-            .spawn((
-                Sprite {
-                    image,
-                    custom_size: Some(obj_config.size()),
-                    ..default()
-                },
-                Transform {
-                    translation: Vec3::new(screen_pos.x, screen_pos.y, obj_config.z),
-                    rotation: get_rotation(&self.direction.normalize()),
-                    ..default()
-                },
-                visibility,
-            ))
-            .id();
-
-        if obj_config.obj_type == GameObjType::Bot {
-            if obj_config.side == GameObjSide::Player {
-                commands.entity(entity).insert(PlayerComponent::new());
-            } else if obj_config.side == GameObjSide::AI {
-                commands.entity(entity).insert(AIComponent);
-            }
-        } else if obj_config.obj_type == GameObjType::Missile {
-            commands.entity(entity).insert(MissileComponent);
-        }
+        let main_body = self.add_main_body(obj_config, visible, game_lib, game_map, commands)?;
 
         if let Some(weapon_config) = obj_config.weapon_config.as_ref() {
             let weapon_component = WeaponComponent::new(weapon_config, game_lib)?;
-            commands.entity(entity).insert(weapon_component);
-            self.add_guns(entity, weapon_config, game_lib, commands)?;
+            commands.entity(main_body).insert(weapon_component);
+            self.add_guns(main_body, weapon_config, game_lib, commands)?;
         }
 
-        Ok(entity)
+        Ok(main_body)
     }
 
     fn create_explosion(
@@ -137,6 +105,50 @@ impl GameObj {
             .id();
 
         Ok(entity)
+    }
+
+    fn add_main_body(
+        &self,
+        obj_config: &GameObjConfig,
+        visible: bool,
+        game_lib: &GameLib,
+        game_map: &GameMap,
+        commands: &mut Commands,
+    ) -> Result<Entity, MyError> {
+        let image = game_lib.get_image(&obj_config.image)?;
+        let screen_pos = game_map.get_screen_pos(&self.pos);
+        let visibility = if visible {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
+
+        let mut entity_cmd = commands.spawn((
+            Sprite {
+                image,
+                custom_size: Some(obj_config.size()),
+                ..default()
+            },
+            Transform {
+                translation: Vec3::new(screen_pos.x, screen_pos.y, obj_config.z),
+                rotation: get_rotation(&self.direction.normalize()),
+                ..default()
+            },
+            visibility,
+        ));
+
+        if obj_config.obj_type == GameObjType::Bot {
+            entity_cmd.insert(MoveComponent::new());
+            if obj_config.side == GameObjSide::AI {
+                entity_cmd.insert(AIComponent);
+            } else if obj_config.side == GameObjSide::Player {
+                entity_cmd.insert(PlayerComponent);
+            }
+        } else if obj_config.obj_type == GameObjType::Missile {
+            entity_cmd.insert(MissileComponent);
+        }
+
+        Ok(entity_cmd.id())
     }
 
     fn add_guns(

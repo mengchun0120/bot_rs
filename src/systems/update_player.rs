@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use std::collections::HashSet;
 
 pub fn update_player(
-    mut q_player: Single<(Entity, &mut PlayerComponent, &mut Transform)>,
+    mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<PlayerComponent>>,
     game_lib: Res<GameLib>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -12,7 +12,7 @@ pub fn update_player(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    if !q_player.1.move_enabled() {
+    if !q_player.1.move_enabled {
         return;
     }
 
@@ -22,9 +22,7 @@ pub fn update_player(
     };
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
 
-    q_player.1.update_move_timer(time.delta());
-
-    let (collide, new_pos) = get_bot_new_pos(
+    let (_, new_pos) = get_bot_new_pos(
         &q_player.0,
         &obj,
         game_map.as_ref(),
@@ -32,10 +30,6 @@ pub fn update_player(
         game_lib.as_ref(),
         time.as_ref(),
     );
-
-    if collide {
-        q_player.1.stop_moving();
-    }
 
     update_obj_pos(
         q_player.0,

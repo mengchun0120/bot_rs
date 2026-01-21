@@ -1,15 +1,15 @@
-use std::time::Duration;
-
 use crate::config::*;
 use crate::game_utils::*;
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct PlayerComponent {
-    move_enabled: bool,
-    move_timer: Timer,
+pub struct MoveComponent {
+    pub move_enabled: bool,
 }
+
+#[derive(Component)]
+pub struct PlayerComponent;
 
 #[derive(Component)]
 pub struct AIComponent;
@@ -34,34 +34,11 @@ pub struct WeaponComponent {
     pub missile_config_index: usize,
 }
 
-impl PlayerComponent {
+impl MoveComponent {
     pub fn new() -> Self {
-        PlayerComponent {
+        Self {
             move_enabled: false,
-            move_timer: Timer::from_seconds(0.0, TimerMode::Repeating),
         }
-    }
-
-    #[inline]
-    pub fn move_enabled(&self) -> bool {
-        self.move_enabled
-    }
-
-    #[inline]
-    pub fn start_moving(&mut self, move_duration: Duration) {
-        self.move_enabled = true;
-        self.move_timer.set_duration(move_duration);
-        self.move_timer.reset();
-    }
-
-    #[inline]
-    pub fn update_move_timer(&mut self, delta: Duration) {
-        self.move_timer.tick(delta);
-    }
-
-    #[inline]
-    pub fn stop_moving(&mut self) {
-        self.move_enabled = false;
     }
 }
 

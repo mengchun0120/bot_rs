@@ -3,12 +3,15 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn process_key(
-    mut q_player: Single<(
-        Entity,
-        &mut PlayerComponent,
-        &mut WeaponComponent,
-        &mut Transform,
-    )>,
+    mut q_player: Single<
+        (
+            Entity,
+            &mut MoveComponent,
+            &mut WeaponComponent,
+            &mut Transform,
+        ),
+        With<PlayerComponent>,
+    >,
     key_input: Res<ButtonInput<KeyCode>>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -39,6 +42,6 @@ pub fn process_key(
             exit_app.write(AppExit::error());
         });
     } else if key_input.just_pressed(KeyCode::KeyS) {
-        q_player.1.stop_moving();
+        q_player.1.move_enabled = false;
     }
 }
