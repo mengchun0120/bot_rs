@@ -18,6 +18,7 @@ pub struct GameMap {
     max_origin: Vec2,
     origin: Vec2,
     visible_span: Vec2,
+    visible_region: RectRegion,
 }
 
 impl GameMap {
@@ -32,6 +33,7 @@ impl GameMap {
             max_origin: Vec2::default(),
             origin: Vec2::default(),
             visible_span: Vec2::default(),
+            visible_region: RectRegion::default(),
         }
     }
 
@@ -96,7 +98,7 @@ impl GameMap {
     ) -> Result<(), MyError> {
         let obj_config = game_lib.get_game_obj_config(config_index);
 
-        if !self.contains(pos, obj_config.collide_span) {
+        if !self.contains(pos) {
             let err_msg = format!("Position {:?} is outside of map", pos);
             error!(err_msg);
             return Err(MyError::Other(err_msg));
@@ -126,11 +128,11 @@ impl GameMap {
     }
 
     #[inline]
-    pub fn contains(&self, pos: &Vec2, collide_span: f32) -> bool {
-        pos.x >= collide_span
-            && pos.x + collide_span < self.width
-            && pos.y >= collide_span
-            && pos.y + collide_span < self.height
+    pub fn contains(&self, pos: &Vec2) -> bool {
+        pos.x >= 0.0
+            && pos.x < self.width
+            && pos.y >= 0.0
+            && pos.y < self.height
     }
 
     #[inline]
@@ -153,13 +155,13 @@ impl GameMap {
 
     #[inline]
     pub fn check_pos_visible(&self, pos: &Vec2) -> bool {
-        (pos.x - self.origin.x).abs() <= self.visible_span.x
-            && (pos.y - self.origin.y).abs() <= self.visible_span.y
+        self.visible_region.covers(pos)
     }
 
     pub fn set_origin(&mut self, origin: &Vec2) {
         self.origin.x = origin.x.clamp(self.min_origin.x, self.max_origin.x);
         self.origin.y = origin.y.clamp(self.min_origin.y, self.max_origin.y);
+        self.update_visible_region();
     }
 
     pub fn relocate(&mut self, entity: Entity, old_pos: &MapPos, new_pos: &MapPos) {
@@ -277,5 +279,12 @@ impl GameMap {
     fn setup_visible_span(&mut self, game_config: &GameConfig) {
         self.visible_span.x = game_config.window_width() / 2.0 + game_config.window_ext_size;
         self.visible_span.y = game_config.window_height() / 2.0 + game_config.window_ext_size;
+    }
+
+    fn update_visible_region(&mut self) {
+        self.visible_region.left = (self.origin.x - self.visible_span.x).max(0.0);
+        self.visible_region.bottom = (self.origin.y - self.visible_span.y).max(0.0);
+        self.visible_region.right = (self.origin.x + self.visible_span.x).min(self.width);
+        self.visible_region.top = (self.origin.y + self.visible_span.y).min(self.height);
     }
 }

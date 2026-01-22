@@ -31,6 +31,7 @@ pub mod game_utils {
     pub mod game_obj_lib;
     pub mod map_pos;
     pub mod map_region;
+    pub mod rect_region;
 
     pub use despawn_pool::*;
     pub use game_lib::*;
@@ -38,6 +39,7 @@ pub mod game_utils {
     pub use game_obj_lib::*;
     pub use map_pos::*;
     pub use map_region::*;
+    pub use rect_region::*;
 }
 
 pub mod misc {

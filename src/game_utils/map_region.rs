@@ -1,7 +1,7 @@
 use crate::game_utils::*;
 use bevy::prelude::*;
 
-#[derive(Debug, Clone, Copy, Resource, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
 pub struct MapRegion {
     pub start_row: usize,
     pub end_row: usize,
