@@ -13,4 +13,5 @@ pub struct GameMapObjConfig {
     pub config_name: String,
     pub pos: [f32; 2],
     pub direction: [f32; 2],
+    pub speed: Option<f32>,
 }

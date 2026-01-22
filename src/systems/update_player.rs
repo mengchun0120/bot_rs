@@ -12,7 +12,7 @@ pub fn update_player(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    if !q_player.1.move_enabled {
+    if q_player.1.speed == 0.0 {
         return;
     }
 
@@ -25,6 +25,7 @@ pub fn update_player(
     let (_, new_pos) = get_bot_new_pos(
         &q_player.0,
         &obj,
+        q_player.1.speed,
         game_map.as_ref(),
         game_obj_lib.as_ref(),
         game_lib.as_ref(),

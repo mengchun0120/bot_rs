@@ -11,6 +11,7 @@ pub fn process_mouse_button(
     q_camera: Single<(&Camera, &GlobalTransform)>,
     game_map: Res<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
+    game_lib: Res<GameLib>,
 ) {
     if mouse_button_input.just_pressed(MouseButton::Right) {
         let Some(cursor_pos) = get_cursor_pos(
@@ -25,8 +26,9 @@ pub fn process_mouse_button(
             error!("Cannot find player in GameObjLib");
             return;
         };
+        let speed = game_lib.get_game_obj_config(obj.config_index).speed;
 
-        q_player.1.move_enabled = true;
+        q_player.1.speed = speed;
 
         let direction = (cursor_pos - obj.pos).normalize();
         obj.direction = direction.clone();

@@ -18,6 +18,7 @@ impl GameObj {
         config_index: usize,
         pos: &Vec2,
         direction: &Vec2,
+        speed: Option<f32>,
         game_map: &GameMap,
         game_lib: &GameLib,
         commands: &mut Commands,
@@ -32,31 +33,50 @@ impl GameObj {
         };
         let visible = game_map.check_pos_visible(&obj.pos);
 
-        let entity = match obj_config.obj_type {
-            GameObjType::Bot | GameObjType::Tile => {
-                obj.create_regular_obj(obj_config, visible, game_lib, game_map, commands)?
+        match obj_config.obj_type {
+            GameObjType::Bot => {
+                let entity = obj.create_bot(speed, obj_config, visible, game_lib, game_map, commands)?;
+                Ok(Some((obj, entity)))
+            }
+            GameObjType::Tile => {
+                let entity = obj.create_tile(obj_config, visible, game_lib, game_map, commands)?;
+                Ok(Some((obj, entity)))
             }
             GameObjType::Missile => {
                 if visible {
-                    obj.create_regular_obj(obj_config, visible, game_lib, game_map, commands)?
+                    let entity = obj.create_missile(
+                        speed, obj_config, visible, game_lib, game_map, commands,
+                    )?;
+                    Ok(Some((obj, entity)))
                 } else {
-                    return Ok(None);
+                    Ok(None)
                 }
             }
             GameObjType::Explosion => {
                 if visible {
-                    obj.create_explosion(obj_config, visible, game_lib, game_map, commands)?
+                    let entity = obj.create_explosion(obj_config, visible, game_lib, game_map, commands)?;
+                    Ok(Some((obj, entity)))
                 } else {
-                    return Ok(None);
+                    Ok(None)
                 }
             }
-        };
-
-        Ok(Some((obj, entity)))
+        }
     }
 
-    fn create_regular_obj(
+    fn create_tile(
         &self,
+        obj_config: &GameObjConfig,
+        visible: bool,
+        game_lib: &GameLib,
+        game_map: &GameMap,
+        commands: &mut Commands,
+    ) -> Result<Entity, MyError> {
+         self.add_main_body(obj_config, visible, game_lib, game_map, commands)
+    }
+
+    fn create_bot(
+        &self,
+        speed: Option<f32>,
         obj_config: &GameObjConfig,
         visible: bool,
         game_lib: &GameLib,
@@ -65,11 +85,31 @@ impl GameObj {
     ) -> Result<Entity, MyError> {
         let main_body = self.add_main_body(obj_config, visible, game_lib, game_map, commands)?;
 
+        let s = speed.unwrap_or(0.0);
+        commands.entity(main_body).insert(MoveComponent::new(s));
+
         if let Some(weapon_config) = obj_config.weapon_config.as_ref() {
             let weapon_component = WeaponComponent::new(weapon_config, game_lib)?;
             commands.entity(main_body).insert(weapon_component);
             self.add_guns(main_body, weapon_config, game_lib, commands)?;
         }
+
+        Ok(main_body)
+    }
+
+    fn create_missile(
+        &self,
+        speed: Option<f32>,
+        obj_config: &GameObjConfig,
+        visible: bool,
+        game_lib: &GameLib,
+        game_map: &GameMap,
+        commands: &mut Commands,
+    )-> Result<Entity, MyError> {
+        let main_body = self.add_main_body(obj_config, visible, game_lib, game_map, commands)?;
+
+        let s = speed.unwrap_or(obj_config.speed);
+        commands.entity(main_body).insert(MoveComponent::new(s));
 
         Ok(main_body)
     }
@@ -138,7 +178,6 @@ impl GameObj {
         ));
 
         if obj_config.obj_type == GameObjType::Bot {
-            entity_cmd.insert(MoveComponent::new());
             if obj_config.side == GameObjSide::AI {
                 entity_cmd.insert(AIComponent);
             } else if obj_config.side == GameObjSide::Player {

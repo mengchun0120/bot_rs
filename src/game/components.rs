@@ -5,7 +5,7 @@ use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct MoveComponent {
-    pub move_enabled: bool,
+    pub speed: f32,
 }
 
 #[derive(Component)]
@@ -35,10 +35,8 @@ pub struct WeaponComponent {
 }
 
 impl MoveComponent {
-    pub fn new() -> Self {
-        Self {
-            move_enabled: false,
-        }
+    pub fn new(speed: f32) -> Self {
+        Self { speed: speed }
     }
 }
 

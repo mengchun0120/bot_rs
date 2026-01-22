@@ -75,6 +75,7 @@ impl GameMap {
             config_index,
             &pos,
             &direction,
+            map_obj_config.speed,
             game_lib,
             game_obj_lib,
             commands,
@@ -88,6 +89,7 @@ impl GameMap {
         config_index: usize,
         pos: &Vec2,
         direction: &Vec2,
+        speed: Option<f32>,
         game_lib: &GameLib,
         game_obj_lib: &mut GameObjLib,
         commands: &mut Commands,
@@ -100,8 +102,15 @@ impl GameMap {
             return Err(MyError::Other(err_msg));
         }
 
-        let Some((obj, entity)) =
-            GameObj::new(config_index, pos, direction, self, game_lib, commands)?
+        let Some((obj, entity)) = GameObj::new(
+            config_index,
+            pos,
+            direction,
+            speed,
+            self,
+            game_lib,
+            commands,
+        )?
         else {
             return Ok(());
         };

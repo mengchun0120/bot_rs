@@ -4,7 +4,7 @@ use crate::misc::collide::*;
 use bevy::prelude::*;
 
 pub fn update_missiles(
-    mut q_missile: Query<(Entity, &mut Transform), With<MissileComponent>>,
+    mut q_missile: Query<(Entity, &MoveComponent, &mut Transform), With<MissileComponent>>,
     game_lib: Res<GameLib>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -12,7 +12,7 @@ pub fn update_missiles(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, mut transform) in q_missile.iter_mut() {
+    for (entity, move_comp, mut transform) in q_missile.iter_mut() {
         if despawn_pool.contains(&entity) {
             continue;
         }
@@ -22,7 +22,7 @@ pub fn update_missiles(
             continue;
         };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);
-        let new_pos = obj.pos + obj.direction * time.delta_secs() * obj_config.speed;
+        let new_pos = obj.pos + obj.direction * time.delta_secs() * move_comp.speed;
 
         if !game_map.check_pos_visible(&new_pos) {
             despawn_pool.insert(entity);

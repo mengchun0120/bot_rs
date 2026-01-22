@@ -10,6 +10,7 @@ pub fn fire_missiles(
     missile_config_index: usize,
     fire_points: &Vec<Vec2>,
     fire_directions: &Vec<Vec2>,
+    base_velocity: &Vec2,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -21,8 +22,12 @@ pub fn fire_missiles(
     };
 
     for i in 0..fire_points.len() {
-        let direction = obj.direction.rotate(fire_directions[i]);
+        let missile_config = game_lib.get_game_obj_config(missile_config_index);
         let pos = obj.pos + obj.direction.rotate(fire_points[i]);
+        let relative_direction = obj.direction.rotate(fire_directions[i]);
+        let velocity = relative_direction * missile_config.speed + base_velocity;
+        let direction = velocity.normalize();
+        let speed = Some(velocity.length());
 
         if !game_map.check_pos_visible(&pos) {
             continue;
@@ -32,6 +37,7 @@ pub fn fire_missiles(
             missile_config_index,
             &pos,
             &direction,
+            speed,
             game_lib,
             game_obj_lib,
             commands,
@@ -44,13 +50,14 @@ pub fn fire_missiles(
 pub fn get_bot_new_pos(
     entity: &Entity,
     obj: &GameObj,
+    speed: f32,
     game_map: &GameMap,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
     time: &Time,
 ) -> (bool, Vec2) {
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
-    let new_pos = obj.pos + obj.direction * obj_config.speed * time.delta_secs();
+    let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
 
     let (collide_bounds, new_pos) = get_bot_pos_after_collide_bounds(
         &new_pos,
@@ -195,6 +202,7 @@ pub fn explode(
         config_index,
         pos,
         &direction,
+        None,
         game_lib,
         game_obj_lib,
         commands,
