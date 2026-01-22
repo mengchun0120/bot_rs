@@ -21,12 +21,14 @@ pub fn setup_game(
         return;
     };
 
-    init_window(&game_lib.game_config, window.as_mut());
+    let game_config = &game_lib.game_config;
+
+    init_window(game_config, window.as_mut());
     commands.spawn(Camera2d);
 
     let mut game_obj_lib = GameObjLib::new();
 
-    let game_map_path = game_lib.game_config.map_dir().join(&args.map_path);
+    let game_map_path = game_config.map_dir().join(&args.map_path);
     let Some(game_map) = load_game_map(
         game_map_path,
         game_lib.game_config.cell_size,

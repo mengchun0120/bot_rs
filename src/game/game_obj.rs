@@ -35,7 +35,8 @@ impl GameObj {
 
         match obj_config.obj_type {
             GameObjType::Bot => {
-                let entity = obj.create_bot(speed, obj_config, visible, game_lib, game_map, commands)?;
+                let entity =
+                    obj.create_bot(speed, obj_config, visible, game_lib, game_map, commands)?;
                 Ok(Some((obj, entity)))
             }
             GameObjType::Tile => {
@@ -44,9 +45,8 @@ impl GameObj {
             }
             GameObjType::Missile => {
                 if visible {
-                    let entity = obj.create_missile(
-                        speed, obj_config, visible, game_lib, game_map, commands,
-                    )?;
+                    let entity = obj
+                        .create_missile(speed, obj_config, visible, game_lib, game_map, commands)?;
                     Ok(Some((obj, entity)))
                 } else {
                     Ok(None)
@@ -54,7 +54,8 @@ impl GameObj {
             }
             GameObjType::Explosion => {
                 if visible {
-                    let entity = obj.create_explosion(obj_config, visible, game_lib, game_map, commands)?;
+                    let entity =
+                        obj.create_explosion(obj_config, visible, game_lib, game_map, commands)?;
                     Ok(Some((obj, entity)))
                 } else {
                     Ok(None)
@@ -71,7 +72,7 @@ impl GameObj {
         game_map: &GameMap,
         commands: &mut Commands,
     ) -> Result<Entity, MyError> {
-         self.add_main_body(obj_config, visible, game_lib, game_map, commands)
+        self.add_main_body(obj_config, visible, game_lib, game_map, commands)
     }
 
     fn create_bot(
@@ -105,7 +106,7 @@ impl GameObj {
         game_lib: &GameLib,
         game_map: &GameMap,
         commands: &mut Commands,
-    )-> Result<Entity, MyError> {
+    ) -> Result<Entity, MyError> {
         let main_body = self.add_main_body(obj_config, visible, game_lib, game_map, commands)?;
 
         let s = speed.unwrap_or(obj_config.speed);

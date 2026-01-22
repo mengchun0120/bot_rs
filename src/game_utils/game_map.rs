@@ -129,10 +129,7 @@ impl GameMap {
 
     #[inline]
     pub fn contains(&self, pos: &Vec2) -> bool {
-        pos.x >= 0.0
-            && pos.x < self.width
-            && pos.y >= 0.0
-            && pos.y < self.height
+        pos.x >= 0.0 && pos.x < self.width && pos.y >= 0.0 && pos.y < self.height
     }
 
     #[inline]
