@@ -3,12 +3,15 @@ use bevy::prelude::*;
 
 #[derive(Debug, Resource)]
 pub struct WorldInfo {
+    world_width: f32,
+    world_height: f32,
     world_region: RectRegion,
     min_origin: Vec2,
     max_origin: Vec2,
     origin: Vec2,
     visible_span: Vec2,
     visible_region: RectRegion,
+    max_collide_span: f32,
 }
 
 impl WorldInfo {
@@ -21,6 +24,8 @@ impl WorldInfo {
         origin: &Vec2,
     ) -> Self {
         let mut world_info = Self {
+            world_width,
+            world_height,
             world_region: RectRegion::new(0.0, 0.0, world_width, world_height),
             min_origin: Vec2::new(window_width / 2.0, window_height / 2.0),
             max_origin: Vec2::new(
@@ -33,11 +38,22 @@ impl WorldInfo {
                 window_height / 2.0 + visible_ext_size,
             ),
             visible_region: RectRegion::default(),
+            max_collide_span: 0.0,
         };
 
-        world_info.set_origin(origin);
+        world_info.set_origin(&origin);
 
         world_info
+    }
+
+    #[inline]
+    pub fn world_width(&self) -> f32 {
+        self.world_width
+    }
+
+    #[inline]
+    pub fn world_height(&self) -> f32 {
+        self.world_height
     }
 
     #[inline]
@@ -75,5 +91,22 @@ impl WorldInfo {
     #[inline]
     pub fn contains(&self, pos: &Vec2) -> bool {
         self.world_region.covers(pos)
+    }
+
+    #[inline]
+    pub fn max_collide_span(&self) -> f32 {
+        self.max_collide_span
+    }
+
+    #[inline]
+    pub fn update_max_collide_span(&mut self, collide_span: f32) {
+        if self.max_collide_span < collide_span {
+            self.max_collide_span = collide_span;
+        }
+    }
+
+    #[inline]
+    pub fn visible_region(&self) -> &RectRegion {
+        &self.visible_region
     }
 }

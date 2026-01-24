@@ -7,6 +7,7 @@ pub fn update_player(
     mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<PlayerComponent>>,
     game_lib: Res<GameLib>,
     mut game_map: ResMut<GameMap>,
+    mut world_info: ResMut<WorldInfo>,
     mut game_obj_lib: ResMut<GameObjLib>,
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
@@ -27,6 +28,7 @@ pub fn update_player(
         &obj,
         q_player.1.speed,
         game_map.as_ref(),
+        world_info.as_ref(),
         game_obj_lib.as_ref(),
         game_lib.as_ref(),
         time.as_ref(),
@@ -35,8 +37,9 @@ pub fn update_player(
     update_obj_pos(
         q_player.0,
         &new_pos,
-        game_obj_lib.as_mut(),
         game_map.as_mut(),
+        world_info.as_ref(),
+        game_obj_lib.as_mut(),
         q_player.2.as_mut(),
     );
 
@@ -47,8 +50,9 @@ pub fn update_player(
         obj_config.collide_span,
         obj_config.side,
         &mut captured_missiles,
-        game_obj_lib.as_ref(),
         game_map.as_ref(),
+        world_info.as_ref(),
+        game_obj_lib.as_ref(),
         game_lib.as_ref(),
         despawn_pool.as_ref(),
     );
@@ -58,6 +62,7 @@ pub fn update_player(
             &mut captured_missiles,
             game_obj_lib.as_mut(),
             game_map.as_mut(),
+            world_info.as_mut(),
             game_lib.as_ref(),
             despawn_pool.as_mut(),
             &mut commands,
@@ -66,9 +71,10 @@ pub fn update_player(
 
     update_origin(
         &new_pos,
+        game_map.as_mut(),
+        world_info.as_mut(),
         game_obj_lib.as_ref(),
         game_lib.as_ref(),
-        game_map.as_mut(),
         despawn_pool.as_mut(),
         &mut commands,
     );
@@ -76,23 +82,24 @@ pub fn update_player(
 
 fn update_origin(
     origin: &Vec2,
+    game_map: &mut GameMap,
+    world_info: &mut WorldInfo,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
-    game_map: &mut GameMap,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) {
-    let old_visible_region = game_map.get_visible_region();
+    let old_visible_region = game_map.get_region_from_rect(world_info.visible_region());
 
-    game_map.set_origin(origin);
-    let new_visible_region = game_map.get_visible_region();
+    world_info.set_origin(origin);
+    let new_visible_region = game_map.get_region_from_rect(world_info.visible_region());
 
     hide_offscreen_objs(
         &old_visible_region,
         &new_visible_region,
+        game_map,
         game_obj_lib,
         game_lib,
-        game_map,
         despawn_pool,
         commands,
     );
@@ -100,16 +107,18 @@ fn update_origin(
     update_onscreen_screen_pos(
         &old_visible_region,
         &new_visible_region,
-        game_obj_lib,
         game_map,
+        world_info,
+        game_obj_lib,
         commands,
     );
 
     show_newscreen_objs(
         &old_visible_region,
         &new_visible_region,
-        game_obj_lib,
         game_map,
+        world_info,
+        game_obj_lib,
         commands,
     );
 }
@@ -117,9 +126,9 @@ fn update_origin(
 fn hide_offscreen_objs(
     old_visible_region: &MapRegion,
     new_visible_region: &MapRegion,
+    game_map: &GameMap,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
-    game_map: &GameMap,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) {
@@ -150,8 +159,9 @@ fn hide_offscreen_objs(
 fn update_onscreen_screen_pos(
     old_visible_region: &MapRegion,
     new_visible_region: &MapRegion,
-    game_obj_lib: &GameObjLib,
     game_map: &GameMap,
+    world_info: &WorldInfo,
+    game_obj_lib: &GameObjLib,
     commands: &mut Commands,
 ) {
     let onscreen_regions = old_visible_region.intersect(&new_visible_region);
@@ -159,7 +169,7 @@ fn update_onscreen_screen_pos(
         let Some(obj) = game_obj_lib.get(entity) else {
             return true;
         };
-        let screen_pos = game_map.get_screen_pos(&obj.pos);
+        let screen_pos = world_info.get_screen_pos(&obj.pos);
         commands
             .entity(entity.clone())
             .entry::<Transform>()
@@ -177,8 +187,9 @@ fn update_onscreen_screen_pos(
 fn show_newscreen_objs(
     old_visible_region: &MapRegion,
     new_visible_region: &MapRegion,
-    game_obj_lib: &GameObjLib,
     game_map: &GameMap,
+    world_info: &WorldInfo,
+    game_obj_lib: &GameObjLib,
     commands: &mut Commands,
 ) {
     let newscreen_regions = new_visible_region.sub(&old_visible_region);
@@ -186,7 +197,7 @@ fn show_newscreen_objs(
         let Some(obj) = game_obj_lib.get(entity) else {
             return true;
         };
-        let screen_pos = game_map.get_screen_pos(&obj.pos);
+        let screen_pos = world_info.get_screen_pos(&obj.pos);
         let mut entity = commands.entity(entity.clone());
 
         entity.entry::<Transform>().and_modify(move |mut t| {

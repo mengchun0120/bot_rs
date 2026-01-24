@@ -8,14 +8,14 @@ pub fn process_cursor(
     mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<PlayerComponent>>,
     q_window: Single<&Window, With<PrimaryWindow>>,
     q_camera: Single<(&Camera, &GlobalTransform)>,
+    world_info: Res<WorldInfo>,
     mut game_obj_lib: ResMut<GameObjLib>,
-    game_map: Res<GameMap>,
 ) {
     let Some(cursor_pos) = get_cursor_pos(
         q_window.into_inner(),
         q_camera.0,
         q_camera.1,
-        game_map.as_ref(),
+        world_info.as_ref(),
     ) else {
         return;
     };

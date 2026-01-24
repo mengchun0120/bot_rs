@@ -105,20 +105,26 @@ pub fn check_missile_collide(
     collide_span: f32,
     side: GameObjSide,
     game_map: &GameMap,
+    world_info: &WorldInfo,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
-    check_missile_collide_bounds(new_pos, collide_span, game_map.width, game_map.height)
-        || check_missile_collide_objs(
-            new_pos,
-            collide_span,
-            side,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            despawn_pool,
-        )
+    check_missile_collide_bounds(
+        new_pos,
+        collide_span,
+        world_info.world_width(),
+        world_info.world_height(),
+    ) || check_missile_collide_objs(
+        new_pos,
+        collide_span,
+        side,
+        game_map,
+        world_info,
+        game_obj_lib,
+        game_lib,
+        despawn_pool,
+    )
 }
 
 pub fn check_missile_collide_objs(
@@ -126,6 +132,7 @@ pub fn check_missile_collide_objs(
     collide_span: f32,
     side: GameObjSide,
     game_map: &GameMap,
+    world_info: &WorldInfo,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
@@ -155,8 +162,12 @@ pub fn check_missile_collide_objs(
             return true;
         }
 
-        if check_missile_collide_bounds(new_pos, collide_span, game_map.width, game_map.height)
-            || check_missile_collide_obj(new_pos, collide_span, &obj.pos, obj_config.collide_span)
+        if check_missile_collide_bounds(
+            new_pos,
+            collide_span,
+            world_info.world_width(),
+            world_info.world_height(),
+        ) || check_missile_collide_obj(new_pos, collide_span, &obj.pos, obj_config.collide_span)
         {
             collide = true;
             return false;

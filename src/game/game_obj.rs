@@ -14,15 +14,21 @@ pub struct GameObj {
 }
 
 impl GameObj {
-    pub fn new(
+    pub fn create(
         config_index: usize,
         pos: &Vec2,
         direction: &Vec2,
         speed: Option<f32>,
         game_map: &GameMap,
+        world_info: &WorldInfo,
         game_lib: &GameLib,
         commands: &mut Commands,
     ) -> Result<Option<(Self, Entity)>, MyError> {
+        if !world_info.contains(pos) {
+            error!("Failed to create GameObj: Position {} is out of map", pos);
+            return Err(MyError::Other("Position out of map".into()));
+        }
+
         let obj_config = game_lib.get_game_obj_config(config_index);
         let obj = Self {
             config_index,
@@ -31,60 +37,63 @@ impl GameObj {
             direction: direction.clone(),
             hp: obj_config.hp.clone(),
         };
-        let visible = game_map.check_pos_visible(&obj.pos);
+        let visible = world_info.check_pos_visible(&obj.pos);
 
-        match obj_config.obj_type {
-            GameObjType::Bot => {
-                let entity =
-                    obj.create_bot(speed, obj_config, visible, game_lib, game_map, commands)?;
-                Ok(Some((obj, entity)))
-            }
-            GameObjType::Tile => {
-                let entity = obj.create_tile(obj_config, visible, game_lib, game_map, commands)?;
-                Ok(Some((obj, entity)))
-            }
+        let entity = match obj_config.obj_type {
+            GameObjType::Bot => Self::create_bot(
+                pos, direction, speed, obj_config, visible, world_info, game_lib, commands,
+            )?,
+            GameObjType::Tile => Self::create_tile(
+                pos, direction, obj_config, visible, world_info, game_lib, commands,
+            )?,
             GameObjType::Missile => {
                 if visible {
-                    let entity = obj
-                        .create_missile(speed, obj_config, visible, game_lib, game_map, commands)?;
-                    Ok(Some((obj, entity)))
+                    Self::create_missile(
+                        pos, direction, speed, obj_config, world_info, game_lib, commands,
+                    )?
                 } else {
-                    Ok(None)
+                    return Ok(None);
                 }
             }
             GameObjType::Explosion => {
                 if visible {
-                    let entity =
-                        obj.create_explosion(obj_config, visible, game_lib, game_map, commands)?;
-                    Ok(Some((obj, entity)))
+                    Self::create_explosion(pos, obj_config, world_info, game_lib, commands)?
                 } else {
-                    Ok(None)
+                    return Ok(None);
                 }
             }
-        }
+        };
+
+        Ok(Some((obj, entity)))
     }
 
     fn create_tile(
-        &self,
+        pos: &Vec2,
+        direction: &Vec2,
         obj_config: &GameObjConfig,
         visible: bool,
+        world_info: &WorldInfo,
         game_lib: &GameLib,
-        game_map: &GameMap,
         commands: &mut Commands,
     ) -> Result<Entity, MyError> {
-        self.add_main_body(obj_config, visible, game_lib, game_map, commands)
+        Self::create_main_body(
+            pos, direction, obj_config, visible, world_info, game_lib, commands,
+        )
     }
 
     fn create_bot(
-        &self,
+        pos: &Vec2,
+        direction: &Vec2,
         speed: Option<f32>,
         obj_config: &GameObjConfig,
         visible: bool,
+        world_info: &WorldInfo,
         game_lib: &GameLib,
-        game_map: &GameMap,
         commands: &mut Commands,
     ) -> Result<Entity, MyError> {
-        let main_body = self.add_main_body(obj_config, visible, game_lib, game_map, commands)?;
+        let main_body = Self::create_main_body(
+            pos, direction, obj_config, visible, world_info, game_lib, commands,
+        )?;
 
         let s = speed.unwrap_or(0.0);
         commands.entity(main_body).insert(MoveComponent::new(s));
@@ -92,22 +101,24 @@ impl GameObj {
         if let Some(weapon_config) = obj_config.weapon_config.as_ref() {
             let weapon_component = WeaponComponent::new(weapon_config, game_lib)?;
             commands.entity(main_body).insert(weapon_component);
-            self.add_guns(main_body, weapon_config, game_lib, commands)?;
+            Self::create_guns(main_body, weapon_config, game_lib, commands)?;
         }
 
         Ok(main_body)
     }
 
     fn create_missile(
-        &self,
+        pos: &Vec2,
+        direction: &Vec2,
         speed: Option<f32>,
         obj_config: &GameObjConfig,
-        visible: bool,
+        world_info: &WorldInfo,
         game_lib: &GameLib,
-        game_map: &GameMap,
         commands: &mut Commands,
     ) -> Result<Entity, MyError> {
-        let main_body = self.add_main_body(obj_config, visible, game_lib, game_map, commands)?;
+        let main_body = Self::create_main_body(
+            pos, direction, obj_config, true, world_info, game_lib, commands,
+        )?;
 
         let s = speed.unwrap_or(obj_config.speed);
         commands.entity(main_body).insert(MoveComponent::new(s));
@@ -116,11 +127,10 @@ impl GameObj {
     }
 
     fn create_explosion(
-        &self,
+        pos: &Vec2,
         obj_config: &GameObjConfig,
-        visible: bool,
+        world_info: &WorldInfo,
         game_lib: &GameLib,
-        game_map: &GameMap,
         commands: &mut Commands,
     ) -> Result<Entity, MyError> {
         let image = game_lib.get_image(&obj_config.image)?;
@@ -128,18 +138,13 @@ impl GameObj {
             error!("Missing PlayConfig in GameObjConfig");
             return Err(MyError::NotFound("PlayConfig".into()));
         };
-        let screen_pos = game_map.get_screen_pos(&self.pos);
-        let visibility = if visible {
-            Visibility::Visible
-        } else {
-            Visibility::Hidden
-        };
+        let screen_pos = world_info.get_screen_pos(pos);
         let layout = game_lib.get_tex_atlas_layout(&obj_config.name)?;
         let entity = commands
             .spawn((
                 Sprite::from_atlas_image(image, TextureAtlas { layout, index: 0 }),
                 Transform::from_xyz(screen_pos.x, screen_pos.y, obj_config.z),
-                visibility,
+                Visibility::Visible,
                 PlayComponent::new(play_config),
                 ExplosionComponent,
             ))
@@ -148,16 +153,17 @@ impl GameObj {
         Ok(entity)
     }
 
-    fn add_main_body(
-        &self,
+    fn create_main_body(
+        pos: &Vec2,
+        direction: &Vec2,
         obj_config: &GameObjConfig,
         visible: bool,
+        world_info: &WorldInfo,
         game_lib: &GameLib,
-        game_map: &GameMap,
         commands: &mut Commands,
     ) -> Result<Entity, MyError> {
         let image = game_lib.get_image(&obj_config.image)?;
-        let screen_pos = game_map.get_screen_pos(&self.pos);
+        let screen_pos = world_info.get_screen_pos(pos);
         let visibility = if visible {
             Visibility::Visible
         } else {
@@ -172,7 +178,7 @@ impl GameObj {
             },
             Transform {
                 translation: Vec3::new(screen_pos.x, screen_pos.y, obj_config.z),
-                rotation: get_rotation(&self.direction.normalize()),
+                rotation: get_rotation(&direction.normalize()),
                 ..default()
             },
             visibility,
@@ -191,8 +197,7 @@ impl GameObj {
         Ok(entity_cmd.id())
     }
 
-    fn add_guns(
-        &self,
+    fn create_guns(
         main_body: Entity,
         weapon_config: &WeaponConfig,
         game_lib: &GameLib,
@@ -219,6 +224,7 @@ impl GameObj {
                         rotation: get_rotation(&gun_direction),
                         ..default()
                     },
+                    Visibility::Inherited,
                 ))
                 .id();
 

@@ -5,9 +5,10 @@ use bevy::prelude::*;
 
 pub fn update_missiles(
     mut q_missile: Query<(Entity, &MoveComponent, &mut Transform), With<MissileComponent>>,
-    game_lib: Res<GameLib>,
     mut game_map: ResMut<GameMap>,
+    mut world_info: ResMut<WorldInfo>,
     mut game_obj_lib: ResMut<GameObjLib>,
+    game_lib: Res<GameLib>,
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
     time: Res<Time>,
@@ -24,7 +25,7 @@ pub fn update_missiles(
         let obj_config = game_lib.get_game_obj_config(obj.config_index);
         let new_pos = obj.pos + obj.direction * time.delta_secs() * move_comp.speed;
 
-        if !game_map.check_pos_visible(&new_pos) {
+        if !world_info.check_pos_visible(&new_pos) {
             despawn_pool.insert(entity);
             continue;
         }
@@ -34,6 +35,7 @@ pub fn update_missiles(
             obj_config.collide_span,
             obj_config.side,
             game_map.as_ref(),
+            world_info.as_ref(),
             game_obj_lib.as_ref(),
             game_lib.as_ref(),
             despawn_pool.as_ref(),
@@ -44,6 +46,7 @@ pub fn update_missiles(
                     &new_pos,
                     game_obj_lib.as_mut(),
                     game_map.as_mut(),
+                    world_info.as_mut(),
                     game_lib.as_ref(),
                     despawn_pool.as_mut(),
                     &mut commands,
@@ -60,8 +63,9 @@ pub fn update_missiles(
         update_obj_pos(
             entity,
             &new_pos,
-            game_obj_lib.as_mut(),
             game_map.as_mut(),
+            world_info.as_ref(),
+            game_obj_lib.as_mut(),
             transform.as_mut(),
         );
     }

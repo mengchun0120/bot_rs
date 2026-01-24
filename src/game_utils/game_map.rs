@@ -1,164 +1,24 @@
-use crate::config::*;
-use crate::game::*;
 use crate::game_utils::*;
-use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 
 use std::collections::HashSet;
-use std::path::Path;
 
 #[derive(Resource)]
 pub struct GameMap {
-    pub cell_size: f32,
-    pub width: f32,
-    pub height: f32,
+    cell_size: f32,
     pub map: Vec<Vec<HashSet<Entity>>>,
-    pub max_collide_span: f32,
-    min_origin: Vec2,
-    max_origin: Vec2,
-    origin: Vec2,
-    visible_span: Vec2,
-    visible_region: RectRegion,
 }
 
 impl GameMap {
-    pub fn new(cell_size: f32, row_count: usize, col_count: usize) -> Self {
+    pub fn new(row_count: usize, col_count: usize, cell_size: f32) -> Self {
         Self {
             cell_size,
-            width: col_count as f32 * cell_size,
-            height: row_count as f32 * cell_size,
             map: vec![vec![HashSet::new(); col_count]; row_count],
-            max_collide_span: 0.0,
-            min_origin: Vec2::default(),
-            max_origin: Vec2::default(),
-            origin: Vec2::default(),
-            visible_span: Vec2::default(),
-            visible_region: RectRegion::default(),
         }
     }
 
-    pub fn load<P: AsRef<Path>>(
-        map_path: P,
-        cell_size: f32,
-        game_lib: &GameLib,
-        game_obj_lib: &mut GameObjLib,
-        commands: &mut Commands,
-    ) -> Result<GameMap, MyError> {
-        let map_config: GameMapConfig = read_json(map_path)?;
-        let mut map = Self::new(cell_size, map_config.row_count, map_config.col_count);
-
-        map.setup_min_max_origin(&game_lib.game_config);
-        map.setup_visible_span(&game_lib.game_config);
-
-        let player_pos = arr_to_vec2(&map_config.player.pos);
-        map.set_origin(&player_pos);
-
-        map.add_obj_by_config(&map_config.player, game_lib, game_obj_lib, commands)?;
-
-        for map_obj_config in map_config.objs.iter() {
-            map.add_obj_by_config(map_obj_config, game_lib, game_obj_lib, commands)?;
-        }
-
-        Ok(map)
-    }
-
-    pub fn add_obj_by_config(
-        &mut self,
-        map_obj_config: &GameMapObjConfig,
-        game_lib: &GameLib,
-        game_obj_lib: &mut GameObjLib,
-        commands: &mut Commands,
-    ) -> Result<(), MyError> {
-        let config_index = game_lib.get_game_obj_config_index(&map_obj_config.config_name)?;
-        let pos = arr_to_vec2(&map_obj_config.pos);
-        let direction = arr_to_vec2(&map_obj_config.direction).normalize();
-
-        self.add_obj_by_index(
-            config_index,
-            &pos,
-            &direction,
-            map_obj_config.speed,
-            game_lib,
-            game_obj_lib,
-            commands,
-        )?;
-
-        Ok(())
-    }
-
-    pub fn add_obj_by_index(
-        &mut self,
-        config_index: usize,
-        pos: &Vec2,
-        direction: &Vec2,
-        speed: Option<f32>,
-        game_lib: &GameLib,
-        game_obj_lib: &mut GameObjLib,
-        commands: &mut Commands,
-    ) -> Result<(), MyError> {
-        let obj_config = game_lib.get_game_obj_config(config_index);
-
-        if !self.contains(pos) {
-            let err_msg = format!("Position {:?} is outside of map", pos);
-            error!(err_msg);
-            return Err(MyError::Other(err_msg));
-        }
-
-        let Some((obj, entity)) = GameObj::new(
-            config_index,
-            pos,
-            direction,
-            speed,
-            self,
-            game_lib,
-            commands,
-        )?
-        else {
-            return Ok(());
-        };
-
-        self.map[obj.map_pos.row][obj.map_pos.col].insert(entity);
-        if self.max_collide_span < obj_config.collide_span {
-            self.max_collide_span = obj_config.collide_span;
-        }
-
-        game_obj_lib.insert(entity, obj);
-
-        Ok(())
-    }
-
-    #[inline]
-    pub fn contains(&self, pos: &Vec2) -> bool {
-        pos.x >= 0.0 && pos.x < self.width && pos.y >= 0.0 && pos.y < self.height
-    }
-
-    #[inline]
-    pub fn get_map_pos(&self, pos: &Vec2) -> MapPos {
-        MapPos {
-            row: (pos.y / self.cell_size).floor() as usize,
-            col: (pos.x / self.cell_size).floor() as usize,
-        }
-    }
-
-    #[inline]
-    pub fn get_screen_pos(&self, pos: &Vec2) -> Vec2 {
-        pos - self.origin
-    }
-
-    #[inline]
-    pub fn viewport_to_world(&self, pos: &Vec2) -> Vec2 {
-        pos + self.origin
-    }
-
-    #[inline]
-    pub fn check_pos_visible(&self, pos: &Vec2) -> bool {
-        self.visible_region.covers(pos)
-    }
-
-    pub fn set_origin(&mut self, origin: &Vec2) {
-        self.origin.x = origin.x.clamp(self.min_origin.x, self.max_origin.x);
-        self.origin.y = origin.y.clamp(self.min_origin.y, self.max_origin.y);
-        self.update_visible_region();
+    pub fn add(&mut self, map_pos: &MapPos, entity: Entity) {
+        self.map[map_pos.row][map_pos.col].insert(entity);
     }
 
     pub fn relocate(&mut self, entity: Entity, old_pos: &MapPos, new_pos: &MapPos) {
@@ -187,13 +47,11 @@ impl GameMap {
     }
 
     #[inline]
-    pub fn get_visible_region(&self) -> MapRegion {
-        self.get_region(
-            self.origin.x - self.visible_span.x,
-            self.origin.y - self.visible_span.y,
-            self.origin.x + self.visible_span.x,
-            self.origin.y + self.visible_span.y,
-        )
+    pub fn get_map_pos(&self, pos: &Vec2) -> MapPos {
+        MapPos {
+            row: (pos.y / self.cell_size).floor() as usize,
+            col: (pos.x / self.cell_size).floor() as usize,
+        }
     }
 
     #[inline]
@@ -242,8 +100,9 @@ impl GameMap {
         start_pos: &Vec2,
         end_pos: &Vec2,
         collide_span: f32,
+        world_info: &WorldInfo,
     ) -> MapRegion {
-        let span = self.max_collide_span + collide_span;
+        let span = world_info.max_collide_span() + collide_span;
         self.get_region(
             start_pos.x.min(end_pos.x) - span,
             start_pos.y.min(end_pos.y) - span,
@@ -262,26 +121,13 @@ impl GameMap {
         }
     }
 
-    fn setup_min_max_origin(&mut self, game_config: &GameConfig) {
-        self.min_origin = Vec2::new(
-            game_config.window_width() / 2.0,
-            game_config.window_height() / 2.0,
-        );
-        self.max_origin = Vec2::new(
-            self.width - self.min_origin.x,
-            self.height - self.min_origin.y,
-        );
-    }
-
-    fn setup_visible_span(&mut self, game_config: &GameConfig) {
-        self.visible_span.x = game_config.window_width() / 2.0 + game_config.window_ext_size;
-        self.visible_span.y = game_config.window_height() / 2.0 + game_config.window_ext_size;
-    }
-
-    fn update_visible_region(&mut self) {
-        self.visible_region.left = (self.origin.x - self.visible_span.x).max(0.0);
-        self.visible_region.bottom = (self.origin.y - self.visible_span.y).max(0.0);
-        self.visible_region.right = (self.origin.x + self.visible_span.x).min(self.width);
-        self.visible_region.top = (self.origin.y + self.visible_span.y).min(self.height);
+    #[inline]
+    pub fn get_region_from_rect(&self, rect_region: &RectRegion) -> MapRegion {
+        self.get_region(
+            rect_region.left,
+            rect_region.bottom,
+            rect_region.right,
+            rect_region.top,
+        )
     }
 }

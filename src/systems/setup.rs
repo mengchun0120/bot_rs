@@ -1,93 +1,147 @@
 use crate::config::*;
+use crate::game::*;
 use crate::game_utils::*;
-use crate::misc::utils::*;
+use crate::misc::*;
 use bevy::prelude::*;
-use std::path::Path;
+use std::path::PathBuf;
 
 pub fn setup_game(
     args: Res<Args>,
     mut window: Single<&mut Window>,
-    mut exit_app: MessageWriter<AppExit>,
     asset_server: Res<AssetServer>,
     mut layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut commands: Commands,
+    mut exit_app: MessageWriter<AppExit>,
 ) {
     let Some(game_lib) = load_game_lib(
-        args.config_path.as_path(),
-        &mut exit_app,
+        &args.config_path,
         asset_server.as_ref(),
         layouts.as_mut(),
+        &mut exit_app,
     ) else {
         return;
     };
 
     let game_config = &game_lib.game_config;
+    let Some(map_config) = read_map_config(args.as_ref(), game_config, &mut exit_app) else {
+        return;
+    };
 
-    init_window(game_config, window.as_mut());
-    commands.spawn(Camera2d);
-
+    let mut world_info = create_world_info(&game_config, &map_config);
     let mut game_obj_lib = GameObjLib::new();
 
-    let game_map_path = game_config.map_dir().join(&args.map_path);
     let Some(game_map) = load_game_map(
-        game_map_path,
-        game_lib.game_config.cell_size,
-        &game_lib,
+        &map_config,
+        game_config.cell_size,
+        &mut world_info,
         &mut game_obj_lib,
+        &game_lib,
         &mut commands,
         &mut exit_app,
     ) else {
         return;
     };
 
-    commands.insert_resource(game_lib);
-    commands.insert_resource(game_obj_lib);
+    init_window(game_config, window.as_mut());
+    commands.spawn(Camera2d);
     commands.insert_resource(game_map);
+    commands.insert_resource(world_info);
+    commands.insert_resource(game_obj_lib);
+    commands.insert_resource(game_lib);
     commands.insert_resource(DespawnPool::new());
 
     info!("Finished setup")
 }
 
-fn load_game_lib<P: AsRef<Path>>(
-    config_path: P,
-    exit_app: &mut MessageWriter<AppExit>,
+fn load_game_lib(
+    config_path: &PathBuf,
     asset_server: &AssetServer,
     layouts: &mut Assets<TextureAtlasLayout>,
+    exit_app: &mut MessageWriter<AppExit>,
 ) -> Option<GameLib> {
-    let game_lib = match GameLib::load(config_path, asset_server, layouts) {
-        Ok(lib) => lib,
+    match GameLib::load(config_path, asset_server, layouts) {
+        Ok(lib) => Some(lib),
         Err(err) => {
-            error!("Failed to initialize GameLib: {}", err);
+            error!("Failed to load GameLib: {}", err);
+            exit_app.write(AppExit::error());
+            None
+        }
+    }
+}
+
+fn read_map_config(
+    args: &Args,
+    game_config: &GameConfig,
+    exit_app: &mut MessageWriter<AppExit>,
+) -> Option<GameMapConfig> {
+    let game_map_path = game_config.map_dir().join(&args.map_path);
+    let map_config: GameMapConfig = match read_json(game_map_path) {
+        Ok(c) => c,
+        Err(err) => {
+            error!("Failed to read map from {:?}: {}", args.map_path, err);
             exit_app.write(AppExit::error());
             return None;
         }
     };
+    Some(map_config)
+}
 
-    Some(game_lib)
+fn create_world_info(game_config: &GameConfig, map_config: &GameMapConfig) -> WorldInfo {
+    let world_width = game_config.cell_size * map_config.col_count as f32;
+    let world_height = game_config.cell_size * map_config.row_count as f32;
+    let player_pos = arr_to_vec2(&map_config.player.pos);
+    WorldInfo::new(
+        world_width,
+        world_height,
+        game_config.window_width(),
+        game_config.window_height(),
+        game_config.window_ext_size,
+        &player_pos,
+    )
+}
+
+fn load_game_map(
+    map_config: &GameMapConfig,
+    cell_size: f32,
+    world_info: &mut WorldInfo,
+    game_obj_lib: &mut GameObjLib,
+    game_lib: &GameLib,
+    commands: &mut Commands,
+    exit_app: &mut MessageWriter<AppExit>,
+) -> Option<GameMap> {
+    let mut game_map = GameMap::new(map_config.row_count, map_config.col_count, cell_size);
+    let mut add_func = |map_obj_config: &GameMapObjConfig| -> bool {
+        match add_obj_by_config(
+            map_obj_config,
+            &mut game_map,
+            world_info,
+            game_obj_lib,
+            game_lib,
+            commands,
+        ) {
+            Ok(()) => true,
+            Err(err) => {
+                error!("Failed to add obj: {}", err);
+                exit_app.write(AppExit::error());
+                false
+            }
+        }
+    };
+
+    if !add_func(&map_config.player) {
+        return None;
+    }
+    for map_obj_config in map_config.objs.iter() {
+        if !add_func(map_obj_config) {
+            return None;
+        }
+    }
+
+    Some(game_map)
 }
 
 fn init_window(game_config: &GameConfig, window: &mut Window) {
     window
         .resolution
         .set(game_config.window_width(), game_config.window_height());
-}
-
-fn load_game_map<P: AsRef<Path>>(
-    map_path: P,
-    cell_size: f32,
-    game_lib: &GameLib,
-    game_obj_lib: &mut GameObjLib,
-    commands: &mut Commands,
-    exit_app: &mut MessageWriter<AppExit>,
-) -> Option<GameMap> {
-    let game_map = match GameMap::load(map_path, cell_size, game_lib, game_obj_lib, commands) {
-        Ok(map) => map,
-        Err(err) => {
-            error!("Failed to load GameMap: {}", err);
-            exit_app.write(AppExit::error());
-            return None;
-        }
-    };
-
-    Some(game_map)
 }

@@ -9,7 +9,7 @@ pub fn process_mouse_button(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     q_window: Single<&Window, With<PrimaryWindow>>,
     q_camera: Single<(&Camera, &GlobalTransform)>,
-    game_map: Res<GameMap>,
+    world_info: Res<WorldInfo>,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
 ) {
@@ -18,7 +18,7 @@ pub fn process_mouse_button(
             q_window.into_inner(),
             q_camera.0,
             q_camera.1,
-            game_map.as_ref(),
+            world_info.as_ref(),
         ) else {
             return;
         };
