@@ -1,6 +1,67 @@
+use core::f32;
 use crate::game::*;
 use crate::game_utils::*;
 use bevy::prelude::*;
+
+pub fn check_collide_bounds(
+    pos: &Vec2,
+    velocity: &Vec2,
+    collide_span: f32,
+    world_width: f32,
+    world_height: f32,
+    time_delta: f32
+) -> (bool, f32) {
+    if velocity.x == 0.0 && velocity.y == 0.0 {
+        return (false, time_delta);
+    }
+
+    let tx = if velocity.x > 0.0 {
+        (world_width - pos.x - collide_span) / velocity.x
+    } else if velocity.x < 0.0 {
+        (pos.x - collide_span) / (-velocity.x)
+    } else {
+        f32::INFINITY
+    };
+
+    let ty = if velocity.y > 0.0 {
+        (world_height - pos.y - collide_span) / velocity.y
+    } else if velocity.y < 0.0 {
+        (pos.y - collide_span) / (-velocity.y)
+    } else {
+        f32::INFINITY
+    };
+
+    let t = tx.min(ty);
+    
+    if t < time_delta {
+        (true, t)
+    } else {
+        (false, time_delta)
+    }
+}
+
+pub fn check_collide_obj(
+    pos1: &Vec2,
+    velocity: &Vec2,
+    collide_span1: f32,
+    pos2: &Vec2,
+    collide_span2: f32,
+    time_delta: f32
+) -> (bool, f32) {
+    let span = collide_span1 + collide_span2;
+    let dx = (pos1.x - pos2.x).abs();
+    let dy = (pos1.y - pos2.y).abs();
+
+    if dx >= span && velocity.x.signum() * (pos2.x - pos1.x).signum() <= 0.0 {
+        return (false, time_delta);
+    } else if dy >= span && velocity.y.signum() * (pos2.y - pos1.y).signum() <= 0.0 {
+        return (false, time_delta);
+    }
+
+
+
+    todo!()
+}
 
 pub fn get_bot_pos_after_collide_bounds(
     pos: &Vec2,
