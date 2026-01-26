@@ -1,16 +1,19 @@
-use core::f32;
+use crate::config::*;
 use crate::game::*;
 use crate::game_utils::*;
 use bevy::prelude::*;
+use core::f32;
 
 pub fn check_collide_bounds(
     pos: &Vec2,
-    velocity: &Vec2,
+    direction: &Vec2,
+    speed: f32,
     collide_span: f32,
     world_width: f32,
     world_height: f32,
-    time_delta: f32
+    time_delta: f32,
 ) -> (bool, f32) {
+    let velocity = direction * speed;
     if velocity.x == 0.0 && velocity.y == 0.0 {
         return (false, time_delta);
     }
@@ -32,7 +35,7 @@ pub fn check_collide_bounds(
     };
 
     let t = tx.min(ty);
-    
+
     if t < time_delta {
         (true, t)
     } else {
@@ -42,25 +45,156 @@ pub fn check_collide_bounds(
 
 pub fn check_collide_obj(
     pos1: &Vec2,
-    velocity: &Vec2,
+    direction: &Vec2,
+    speed: f32,
     collide_span1: f32,
     pos2: &Vec2,
     collide_span2: f32,
-    time_delta: f32
+    time_delta: f32,
 ) -> (bool, f32) {
+    let velocity = direction * speed;
     let span = collide_span1 + collide_span2;
-    let dx = (pos1.x - pos2.x).abs();
-    let dy = (pos1.y - pos2.y).abs();
+    let d = pos2 - pos1;
 
-    if dx >= span && velocity.x.signum() * (pos2.x - pos1.x).signum() <= 0.0 {
-        return (false, time_delta);
-    } else if dy >= span && velocity.y.signum() * (pos2.y - pos1.y).signum() <= 0.0 {
+    if (d.x >= span && velocity.x <= 0.0)
+        || (d.x <= -span && velocity.x >= 0.0)
+        || (d.y >= span && velocity.y <= 0.0)
+        || (d.y <= -span && velocity.y >= 0.0)
+    {
         return (false, time_delta);
     }
 
+    let abs_d = d.abs();
+    let abs_vel = velocity.abs();
 
+    if abs_d.x >= span && abs_d.y >= span {
+        let tx = (abs_d.x - span) / abs_vel.x;
+        let ty = (abs_d.y - span) / abs_vel.y;
 
-    todo!()
+        if (tx < ty && ty < time_delta.min((abs_d.x + span) / abs_vel.x))
+            || (ty < tx && tx < time_delta.min((abs_d.y + span) / abs_vel.y))
+            || (tx == ty && tx < time_delta)
+        {
+            (true, tx.max(ty))
+        } else {
+            (false, time_delta)
+        }
+    } else if abs_d.y >= span {
+        let ty = (abs_d.y - span) / abs_vel.y;
+
+        if (abs_vel.x > 0.0 && ty < time_delta.min((abs_d.x + span) / abs_vel.x))
+            || (abs_vel.x == 0.0 && ty < time_delta)
+        {
+            (true, ty)
+        } else {
+            (false, time_delta)
+        }
+    } else {
+        let tx = (abs_d.x - span) / abs_vel.x;
+
+        if (abs_vel.y > 0.0 && tx < time_delta.min((abs_d.y + span) / abs_vel.y))
+            || (abs_vel.y == 0.0 && tx < time_delta)
+        {
+            (true, tx)
+        } else {
+            (false, time_delta)
+        }
+    }
+}
+
+pub fn check_obj_collide(
+    pos: &Vec2,
+    direction: &Vec2,
+    speed: f32,
+    obj_config: &GameObjConfig,
+    game_map: &GameMap,
+    game_obj_lib: &GameObjLib,
+    world_info: &WorldInfo,
+    game_lib: &GameLib,
+    despawn_pool: &DespawnPool,
+    time_delta: f32,
+) -> (bool, f32) {
+    let (collide_bounds, time_delta) = check_collide_bounds(
+        pos,
+        direction,
+        speed,
+        obj_config.collide_span,
+        world_info.world_width(),
+        world_info.world_height(),
+        time_delta,
+    );
+
+    let (collide_obj, time_delta) = check_obj_collide_objs(
+        pos,
+        direction,
+        speed,
+        obj_config,
+        game_map,
+        game_obj_lib,
+        world_info,
+        game_lib,
+        despawn_pool,
+        time_delta,
+    );
+
+    (collide_bounds || collide_obj, time_delta)
+}
+
+fn check_obj_collide_objs(
+    pos: &Vec2,
+    direction: &Vec2,
+    speed: f32,
+    obj_config: &GameObjConfig,
+    game_map: &GameMap,
+    game_obj_lib: &GameObjLib,
+    world_info: &WorldInfo,
+    game_lib: &GameLib,
+    despawn_pool: &DespawnPool,
+    time_delta: f32,
+) -> (bool, f32) {
+    let mut time_delta = time_delta;
+    let end_pos = pos + direction * speed * time_delta;
+    let region =
+        game_map.get_collide_region_bot(pos, &end_pos, obj_config.collide_span, world_info);
+    let mut collide_obj = false;
+    let func = |entity: &Entity| -> bool {
+        if despawn_pool.contains(entity) {
+            return true;
+        }
+
+        let Some(obj) = game_obj_lib.get(entity) else {
+            error!("Cannot find entity in GameObjLib");
+            return true;
+        };
+        let obj_config2 = game_lib.get_game_obj_config(obj.config_index);
+
+        if obj_config2.obj_type == GameObjType::Missile
+            || obj_config2.obj_type == GameObjType::Explosion
+        {
+            return true;
+        }
+
+        let (collide, new_time_delta) = check_collide_obj(
+            pos,
+            direction,
+            speed,
+            obj_config.collide_span,
+            &obj.pos,
+            obj_config2.collide_span,
+            time_delta,
+        );
+
+        if collide {
+            collide_obj = true;
+            time_delta = new_time_delta;
+        }
+
+        true
+    };
+
+    game_map.run_on_region(&region, func);
+
+    (collide_obj, time_delta)
 }
 
 pub fn get_bot_pos_after_collide_bounds(
