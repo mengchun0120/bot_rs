@@ -1,5 +1,6 @@
 use crate::game::*;
 use crate::game_utils::*;
+use crate::misc::*;
 use bevy::prelude::*;
 use std::collections::HashSet;
 
@@ -23,16 +24,21 @@ pub fn update_player(
     };
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
 
-    let (_, new_pos) = get_bot_new_pos(
+    let (_, time_delta) = check_collide(
         &q_player.0,
-        &obj,
+        &obj.pos,
+        &obj.direction,
         q_player.1.speed,
+        obj_config,
         game_map.as_ref(),
-        world_info.as_ref(),
         game_obj_lib.as_ref(),
+        world_info.as_ref(),
         game_lib.as_ref(),
-        time.as_ref(),
+        despawn_pool.as_ref(),
+        time.delta_secs(),
     );
+
+    let new_pos = obj.pos + obj.direction * q_player.1.speed * time_delta;
 
     update_obj_pos(
         q_player.0,
