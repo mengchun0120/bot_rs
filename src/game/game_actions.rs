@@ -297,15 +297,12 @@ pub fn explode(
     Ok(())
 }
 
-pub fn get_cursor_pos(
-    window: &Window,
+pub fn translate_cursor_pos(
+    cursor_pos: Vec2,
     camera: &Camera,
     transform: &GlobalTransform,
     world_info: &WorldInfo,
 ) -> Option<Vec2> {
-    let Some(cursor_pos) = window.cursor_position() else {
-        return None;
-    };
     let pos = match camera.viewport_to_world_2d(transform, cursor_pos) {
         Ok(p) => p,
         Err(err) => {

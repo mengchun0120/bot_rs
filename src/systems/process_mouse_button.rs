@@ -14,12 +14,14 @@ pub fn process_mouse_button(
     game_lib: Res<GameLib>,
 ) {
     if mouse_button_input.just_pressed(MouseButton::Right) {
-        let Some(cursor_pos) = get_cursor_pos(
-            q_window.into_inner(),
-            q_camera.0,
-            q_camera.1,
-            world_info.as_ref(),
-        ) else {
+        let Some(cursor_pos) = q_window.cursor_position() else {
+            warn!("Failed to get cursor position");
+            return;
+        };
+
+        let Some(cursor_pos) =
+            translate_cursor_pos(cursor_pos, q_camera.0, q_camera.1, world_info.as_ref())
+        else {
             return;
         };
         let Some(obj) = game_obj_lib.get_mut(&q_player.0) else {
