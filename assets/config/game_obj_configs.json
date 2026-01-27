@@ -51,7 +51,8 @@
                 }
             ],
             "fire_duration": 1.0
-        }
+        },
+        "ai": "regular_chase_shoot"
     },
     {
         "name": "steel_tile",

@@ -13,6 +13,7 @@ pub struct GameLib {
     images: HashMap<String, Handle<Image>>,
     gun_configs: HashMap<String, GunConfig>,
     texture_atlas_layouts: HashMap<String, Handle<TextureAtlasLayout>>,
+    ai_configs: HashMap<String, AIConfig>,
 }
 
 impl GameLib {
@@ -29,11 +30,13 @@ impl GameLib {
             game_obj_config_indices: HashMap::new(),
             gun_configs: HashMap::new(),
             texture_atlas_layouts: HashMap::new(),
+            ai_configs: HashMap::new(),
         };
 
         game_lib.load_images(asset_server)?;
         game_lib.load_game_obj_configs(layouts)?;
         game_lib.load_gun_configs()?;
+        game_lib.load_ai_configs()?;
 
         info!("GameLib initialized");
 
@@ -87,6 +90,17 @@ impl GameLib {
             Some(layout) => Ok(layout.clone()),
             None => {
                 error!("Cannot find TextureAtlasLayout: {}", name);
+                Err(MyError::NotFound(name.clone()))
+            }
+        }
+    }
+
+    #[inline]
+    pub fn get_ai_config(&self, name: &String) -> Result<&AIConfig, MyError> {
+        match self.ai_configs.get(name) {
+            Some(ai_config) => Ok(ai_config),
+            None => {
+                error!("Cannot find AIConfig {}", name);
                 Err(MyError::NotFound(name.clone()))
             }
         }
@@ -150,6 +164,11 @@ impl GameLib {
 
     fn load_gun_configs(&mut self) -> Result<(), MyError> {
         self.gun_configs = read_json(self.game_config.gun_config_file())?;
+        Ok(())
+    }
+
+    fn load_ai_configs(&mut self) -> Result<(), MyError> {
+        self.ai_configs = read_json(self.game_config.ai_config_file())?;
         Ok(())
     }
 

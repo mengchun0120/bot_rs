@@ -1,0 +1,10 @@
+{
+    "regular_chase_shoot": {
+        "ChaseShoot": {
+            "chase_prob": 0.5,
+            "keep_direction_duration": 2.0,
+            "chase_duration": 5.0,
+            "shoot_duration": 5.0
+        }
+    }
+}

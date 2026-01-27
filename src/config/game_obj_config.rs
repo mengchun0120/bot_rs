@@ -25,6 +25,7 @@ pub struct GameObjConfig {
     pub damage: Option<f32>,
     pub play_config: Option<PlayConfig>,
     pub explosion: Option<String>,
+    pub ai: Option<String>,
 }
 
 impl GameObjConfig {
