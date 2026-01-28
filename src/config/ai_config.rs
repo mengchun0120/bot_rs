@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize, Resource)]
+#[derive(Debug, Deserialize, Resource, Copy, Clone)]
 pub struct ChaseShootAIConfig {
     pub chase_prob: f32,
     pub keep_direction_duration: f32,
@@ -9,7 +9,7 @@ pub struct ChaseShootAIConfig {
     pub shoot_duration: f32,
 }
 
-#[derive(Debug, Deserialize, Resource)]
+#[derive(Debug, Deserialize, Resource, Copy, Clone)]
 pub enum AIConfig {
     ChaseShoot(ChaseShootAIConfig),
 }

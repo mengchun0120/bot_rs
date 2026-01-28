@@ -1,3 +1,11 @@
+pub mod ai {
+    pub mod ai_engine;
+    pub mod chase_shoot_ai_engine;
+
+    pub use ai_engine::*;
+    pub use chase_shoot_ai_engine::*;
+}
+
 pub mod config {
     pub mod ai_config;
     pub mod game_config;
