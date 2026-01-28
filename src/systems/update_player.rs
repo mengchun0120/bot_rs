@@ -23,22 +23,20 @@ pub fn update_player(
         return;
     };
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
+    let new_pos = obj.pos + obj.direction * q_player.1.speed * time.delta_secs();
 
-    let (_, time_delta) = check_collide(
+    let (collide, new_pos) = check_collide(
         &q_player.0,
         &obj.pos,
+        &new_pos,
         &obj.direction,
-        q_player.1.speed,
-        obj_config,
+        obj_config.collide_span,
         game_map.as_ref(),
-        game_obj_lib.as_ref(),
         world_info.as_ref(),
+        game_obj_lib.as_ref(),
         game_lib.as_ref(),
         despawn_pool.as_ref(),
-        time.delta_secs(),
     );
-
-    let new_pos = obj.pos + obj.direction * q_player.1.speed * time_delta;
 
     update_obj_pos(
         q_player.0,

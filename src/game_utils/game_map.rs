@@ -95,23 +95,6 @@ impl GameMap {
     }
 
     #[inline]
-    pub fn get_collide_region_bot(
-        &self,
-        start_pos: &Vec2,
-        end_pos: &Vec2,
-        collide_span: f32,
-        world_info: &WorldInfo,
-    ) -> MapRegion {
-        let span = world_info.max_collide_span() + collide_span;
-        self.get_region(
-            start_pos.x.min(end_pos.x) - span,
-            start_pos.y.min(end_pos.y) - span,
-            start_pos.x.max(end_pos.x) + span,
-            start_pos.y.max(end_pos.y) + span,
-        )
-    }
-
-    #[inline]
     pub fn get_region(&self, left: f32, bottom: f32, right: f32, top: f32) -> MapRegion {
         MapRegion {
             start_row: self.get_row(bottom),

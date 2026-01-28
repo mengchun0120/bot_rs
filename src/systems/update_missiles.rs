@@ -23,26 +23,26 @@ pub fn update_missiles(
             continue;
         };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);
-
-        let (collide, time_delta) = check_collide(
-            &entity,
-            &obj.pos,
-            &obj.direction,
-            move_comp.speed,
-            obj_config,
-            game_map.as_ref(),
-            game_obj_lib.as_ref(),
-            world_info.as_ref(),
-            game_lib.as_ref(),
-            despawn_pool.as_ref(),
-            time.delta_secs(),
-        );
-        let new_pos = obj.pos + obj.direction * move_comp.speed * time_delta;
+        let new_pos = obj.pos + obj.direction * move_comp.speed * time.delta_secs();
 
         if !world_info.check_pos_visible(&new_pos) {
             despawn_pool.insert(entity);
             continue;
         }
+
+        let (collide, new_pos) = check_collide(
+            &entity,
+            &obj.pos,
+            &new_pos,
+            &obj.direction,
+            obj_config.collide_span,
+            game_map.as_ref(),
+            world_info.as_ref(),
+            game_obj_lib.as_ref(),
+            game_lib.as_ref(),
+            despawn_pool.as_ref(),
+        );
+
 
         if collide {
             if let Some(explosion) = obj_config.explosion.as_ref() {
