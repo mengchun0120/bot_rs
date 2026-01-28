@@ -25,27 +25,34 @@ pub fn update_player(
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
     let new_pos = obj.pos + obj.direction * q_player.1.speed * time.delta_secs();
 
-    let (collide, new_pos) = check_collide(
+    if !check_collide(
         &q_player.0,
-        &obj.pos,
         &new_pos,
-        &obj.direction,
         obj_config.collide_span,
         game_map.as_ref(),
         world_info.as_ref(),
         game_obj_lib.as_ref(),
         game_lib.as_ref(),
         despawn_pool.as_ref(),
-    );
-
-    update_obj_pos(
-        q_player.0,
-        &new_pos,
-        game_map.as_mut(),
-        world_info.as_ref(),
-        game_obj_lib.as_mut(),
-        q_player.2.as_mut(),
-    );
+    ) {
+        update_obj_pos(
+            q_player.0,
+            &new_pos,
+            game_map.as_mut(),
+            world_info.as_ref(),
+            game_obj_lib.as_mut(),
+            q_player.2.as_mut(),
+        );
+        update_origin(
+            &new_pos,
+            game_map.as_mut(),
+            world_info.as_mut(),
+            game_obj_lib.as_ref(),
+            game_lib.as_ref(),
+            despawn_pool.as_mut(),
+            &mut commands,
+        );
+    }
 
     let mut captured_missiles: HashSet<Entity> = HashSet::new();
 
@@ -72,16 +79,6 @@ pub fn update_player(
             &mut commands,
         );
     }
-
-    update_origin(
-        &new_pos,
-        game_map.as_mut(),
-        world_info.as_mut(),
-        game_obj_lib.as_ref(),
-        game_lib.as_ref(),
-        despawn_pool.as_mut(),
-        &mut commands,
-    );
 }
 
 fn update_origin(

@@ -166,7 +166,7 @@ pub fn capture_missiles(
 
         if obj_config.obj_type == GameObjType::Missile
             && obj_config.side != side
-            && check_missile_collide_obj(pos, collide_span, &obj.pos, obj_config.collide_span)
+            && check_collide_obj(pos, collide_span, &obj.pos, obj_config.collide_span)
         {
             captured_missiles.insert(entity.clone());
         }
@@ -310,7 +310,7 @@ fn do_damage(
 
         if obj_config.obj_type == GameObjType::Bot
             && obj_config.side != side
-            && check_missile_collide_obj(pos, span, &obj.pos, obj_config.collide_span)
+            && check_collide_obj(pos, span, &obj.pos, obj_config.collide_span)
             && let Some(hp) = obj.hp.as_mut()
         {
             *hp = (*hp - damage).max(0.0);

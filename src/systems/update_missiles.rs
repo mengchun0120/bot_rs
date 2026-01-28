@@ -30,21 +30,16 @@ pub fn update_missiles(
             continue;
         }
 
-        let (collide, new_pos) = check_collide(
+        if check_collide(
             &entity,
-            &obj.pos,
             &new_pos,
-            &obj.direction,
             obj_config.collide_span,
             game_map.as_ref(),
             world_info.as_ref(),
             game_obj_lib.as_ref(),
             game_lib.as_ref(),
             despawn_pool.as_ref(),
-        );
-
-
-        if collide {
+        ) {
             if let Some(explosion) = obj_config.explosion.as_ref() {
                 if explode(
                     explosion,
@@ -62,16 +57,15 @@ pub fn update_missiles(
                 }
             }
             despawn_pool.insert(entity);
-            continue;
+        } else {
+            update_obj_pos(
+                entity,
+                &new_pos,
+                game_map.as_mut(),
+                world_info.as_ref(),
+                game_obj_lib.as_mut(),
+                transform.as_mut(),
+            );
         }
-
-        update_obj_pos(
-            entity,
-            &new_pos,
-            game_map.as_mut(),
-            world_info.as_ref(),
-            game_obj_lib.as_mut(),
-            transform.as_mut(),
-        );
     }
 }
