@@ -1,3 +1,5 @@
+use crate::config::*;
+use crate::game::*;
 use crate::game_utils::*;
 use bevy::prelude::*;
 
@@ -5,12 +7,10 @@ pub trait AIEngine {
     fn run(
         &mut self,
         entity: &Entity,
-        game_map: &mut GameMap,
-        world_info: &WorldInfo,
+        move_comp: &mut MoveComponent,
+        weapon_comp: &mut WeaponComponent,
         game_obj_lib: &mut GameObjLib,
-        despawn_pool: &mut DespawnPool,
-        game_lib: &GameLib,
-        commands: &mut Commands,
+        player_pos: &Vec2,
         time: &Time,
     );
 }
