@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use std::collections::HashSet;
 
 pub fn update_player(
-    mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<PlayerComponent>>,
+    mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<Player>>,
     game_lib: Res<GameLib>,
     mut game_map: ResMut<GameMap>,
     mut world_info: ResMut<WorldInfo>,

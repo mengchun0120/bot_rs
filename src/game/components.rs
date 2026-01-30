@@ -1,3 +1,4 @@
+use crate::ai::*;
 use crate::config::*;
 use crate::game_utils::*;
 use crate::misc::{my_error::*, utils::*};
@@ -9,10 +10,10 @@ pub struct MoveComponent {
 }
 
 #[derive(Component)]
-pub struct PlayerComponent;
+pub struct Player;
 
 #[derive(Component)]
-pub struct AIComponent;
+pub struct AIBot;
 
 #[derive(Component)]
 pub struct MissileComponent;
@@ -24,6 +25,11 @@ pub struct ExplosionComponent;
 pub struct PlayComponent {
     pub timer: Timer,
     pub last_index: usize,
+}
+
+#[derive(Component)]
+pub struct AIComponent {
+    pub engine: Box<dyn AIEngine>,
 }
 
 #[derive(Component)]

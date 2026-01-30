@@ -186,9 +186,9 @@ impl GameObj {
 
         if obj_config.obj_type == GameObjType::Bot {
             if obj_config.side == GameObjSide::AI {
-                entity_cmd.insert(AIComponent);
+                entity_cmd.insert(AIBot);
             } else if obj_config.side == GameObjSide::Player {
-                entity_cmd.insert(PlayerComponent);
+                entity_cmd.insert(Player);
             }
         } else if obj_config.obj_type == GameObjType::Missile {
             entity_cmd.insert(MissileComponent);

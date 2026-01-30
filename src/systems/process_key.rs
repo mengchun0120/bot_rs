@@ -10,7 +10,7 @@ pub fn process_key(
             &mut WeaponComponent,
             &mut Transform,
         ),
-        With<PlayerComponent>,
+        With<Player>,
     >,
     key_input: Res<ButtonInput<KeyCode>>,
     mut game_map: ResMut<GameMap>,

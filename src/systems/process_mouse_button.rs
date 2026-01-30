@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
 pub fn process_mouse_button(
-    mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<PlayerComponent>>,
+    mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<Player>>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     q_window: Single<&Window, With<PrimaryWindow>>,
     q_camera: Single<(&Camera, &GlobalTransform)>,
