@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 pub fn cleanup(
     mut commands: Commands,
-    mut game_map: ResMut<GameMap>,
+    mut game_world: ResMut<GameWorld>,
     mut game_obj_lib: ResMut<GameObjLib>,
     mut despawn_pool: ResMut<DespawnPool>,
 ) {
@@ -13,7 +13,7 @@ pub fn cleanup(
             continue;
         };
 
-        game_map.remove(entity, &map_pos);
+        game_world.remove(entity, &map_pos);
         game_obj_lib.remove(entity);
 
         let mut entity_cmd = commands.entity(entity.clone());

@@ -7,8 +7,7 @@ use std::collections::HashSet;
 pub fn update_player(
     mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<Player>>,
     game_lib: Res<GameLib>,
-    mut game_map: ResMut<GameMap>,
-    mut world_info: ResMut<WorldInfo>,
+    mut game_world: ResMut<GameWorld>,
     mut game_obj_lib: ResMut<GameObjLib>,
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
@@ -29,8 +28,7 @@ pub fn update_player(
         &q_player.0,
         &new_pos,
         obj_config.collide_span,
-        game_map.as_ref(),
-        world_info.as_ref(),
+        game_world.as_ref(),
         game_obj_lib.as_ref(),
         game_lib.as_ref(),
         despawn_pool.as_ref(),
@@ -38,15 +36,13 @@ pub fn update_player(
         update_obj_pos(
             q_player.0,
             &new_pos,
-            game_map.as_mut(),
-            world_info.as_ref(),
+            game_world.as_mut(),
             game_obj_lib.as_mut(),
             q_player.2.as_mut(),
         );
         update_origin(
             &new_pos,
-            game_map.as_mut(),
-            world_info.as_mut(),
+            game_world.as_mut(),
             game_obj_lib.as_ref(),
             game_lib.as_ref(),
             despawn_pool.as_mut(),
@@ -61,8 +57,7 @@ pub fn update_player(
         obj_config.collide_span,
         obj_config.side,
         &mut captured_missiles,
-        game_map.as_ref(),
-        world_info.as_ref(),
+        game_world.as_ref(),
         game_obj_lib.as_ref(),
         game_lib.as_ref(),
         despawn_pool.as_ref(),
@@ -72,8 +67,7 @@ pub fn update_player(
         explode_all(
             &mut captured_missiles,
             game_obj_lib.as_mut(),
-            game_map.as_mut(),
-            world_info.as_mut(),
+            game_world.as_mut(),
             game_lib.as_ref(),
             despawn_pool.as_mut(),
             &mut commands,
@@ -83,22 +77,21 @@ pub fn update_player(
 
 fn update_origin(
     origin: &Vec2,
-    game_map: &mut GameMap,
-    world_info: &mut WorldInfo,
+    game_world: &mut GameWorld,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) {
-    let old_visible_region = game_map.get_region_from_rect(world_info.visible_region());
+    let old_visible_region = game_world.get_region_from_rect(game_world.visible_region());
 
-    world_info.set_origin(origin);
-    let new_visible_region = game_map.get_region_from_rect(world_info.visible_region());
+    game_world.set_origin(origin);
+    let new_visible_region = game_world.get_region_from_rect(game_world.visible_region());
 
     hide_offscreen_objs(
         &old_visible_region,
         &new_visible_region,
-        game_map,
+        game_world,
         game_obj_lib,
         game_lib,
         despawn_pool,
@@ -108,8 +101,7 @@ fn update_origin(
     update_onscreen_screen_pos(
         &old_visible_region,
         &new_visible_region,
-        game_map,
-        world_info,
+        game_world,
         game_obj_lib,
         commands,
     );
@@ -117,8 +109,7 @@ fn update_origin(
     show_newscreen_objs(
         &old_visible_region,
         &new_visible_region,
-        game_map,
-        world_info,
+        game_world,
         game_obj_lib,
         commands,
     );
@@ -127,7 +118,7 @@ fn update_origin(
 fn hide_offscreen_objs(
     old_visible_region: &MapRegion,
     new_visible_region: &MapRegion,
-    game_map: &GameMap,
+    game_world: &GameWorld,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
@@ -154,14 +145,13 @@ fn hide_offscreen_objs(
         true
     };
 
-    game_map.run_on_regions(&offscreen_regions, func);
+    game_world.run_on_regions(&offscreen_regions, func);
 }
 
 fn update_onscreen_screen_pos(
     old_visible_region: &MapRegion,
     new_visible_region: &MapRegion,
-    game_map: &GameMap,
-    world_info: &WorldInfo,
+    game_world: &GameWorld,
     game_obj_lib: &GameObjLib,
     commands: &mut Commands,
 ) {
@@ -170,7 +160,7 @@ fn update_onscreen_screen_pos(
         let Some(obj) = game_obj_lib.get(entity) else {
             return true;
         };
-        let screen_pos = world_info.get_screen_pos(&obj.pos);
+        let screen_pos = game_world.get_screen_pos(&obj.pos);
         commands
             .entity(entity.clone())
             .entry::<Transform>()
@@ -182,14 +172,13 @@ fn update_onscreen_screen_pos(
         true
     };
 
-    game_map.run_on_regions(&onscreen_regions, func);
+    game_world.run_on_regions(&onscreen_regions, func);
 }
 
 fn show_newscreen_objs(
     old_visible_region: &MapRegion,
     new_visible_region: &MapRegion,
-    game_map: &GameMap,
-    world_info: &WorldInfo,
+    game_world: &GameWorld,
     game_obj_lib: &GameObjLib,
     commands: &mut Commands,
 ) {
@@ -198,7 +187,7 @@ fn show_newscreen_objs(
         let Some(obj) = game_obj_lib.get(entity) else {
             return true;
         };
-        let screen_pos = world_info.get_screen_pos(&obj.pos);
+        let screen_pos = game_world.get_screen_pos(&obj.pos);
         let mut entity = commands.entity(entity.clone());
 
         entity.entry::<Transform>().and_modify(move |mut t| {
@@ -213,5 +202,5 @@ fn show_newscreen_objs(
         true
     };
 
-    game_map.run_on_regions(&newscreen_regions, func);
+    game_world.run_on_regions(&newscreen_regions, func);
 }

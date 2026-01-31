@@ -9,7 +9,7 @@ pub fn process_mouse_button(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     q_window: Single<&Window, With<PrimaryWindow>>,
     q_camera: Single<(&Camera, &GlobalTransform)>,
-    world_info: Res<WorldInfo>,
+    game_world: Res<GameWorld>,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
 ) {
@@ -20,7 +20,7 @@ pub fn process_mouse_button(
         };
 
         let Some(cursor_pos) =
-            translate_cursor_pos(cursor_pos, q_camera.0, q_camera.1, world_info.as_ref())
+            translate_cursor_pos(cursor_pos, q_camera.0, q_camera.1, game_world.as_ref())
         else {
             return;
         };

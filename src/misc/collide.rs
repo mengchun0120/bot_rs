@@ -7,8 +7,7 @@ pub fn check_collide(
     entity: &Entity,
     pos: &Vec2,
     collide_span: f32,
-    game_map: &GameMap,
-    world_info: &WorldInfo,
+    game_world: &GameWorld,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
@@ -16,14 +15,13 @@ pub fn check_collide(
     check_collide_bounds(
         pos,
         collide_span,
-        world_info.world_width(),
-        world_info.world_height(),
+        game_world.world_width(),
+        game_world.world_height(),
     ) || check_collide_objs(
         entity,
         pos,
         collide_span,
-        game_map,
-        world_info,
+        game_world,
         game_obj_lib,
         game_lib,
         despawn_pool,
@@ -34,11 +32,10 @@ pub fn check_collide(
 pub fn get_collide_region(
     pos: &Vec2,
     collide_span: f32,
-    game_map: &GameMap,
-    world_info: &WorldInfo,
+    game_world: &GameWorld,
 ) -> MapRegion {
-    let span = world_info.max_collide_span() + collide_span;
-    game_map.get_region(pos.x - span, pos.y - span, pos.x + span, pos.y + span)
+    let span = game_world.max_collide_span() + collide_span;
+    game_world.get_region(pos.x - span, pos.y - span, pos.x + span, pos.y + span)
 }
 
 #[inline]
@@ -60,14 +57,13 @@ fn check_collide_objs(
     entity: &Entity,
     pos: &Vec2,
     collide_span: f32,
-    game_map: &GameMap,
-    world_info: &WorldInfo,
+    game_world: &GameWorld,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
     let mut collide = false;
-    let collide_region = get_collide_region(pos, collide_span, game_map, world_info);
+    let collide_region = get_collide_region(pos, collide_span, game_world);
 
     let func = |e: &Entity| -> bool {
         if entity == e || despawn_pool.contains(e) {
@@ -94,7 +90,7 @@ fn check_collide_objs(
         true
     };
 
-    game_map.run_on_region(&collide_region, func);
+    game_world.run_on_region(&collide_region, func);
 
     collide
 }

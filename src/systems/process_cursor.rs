@@ -7,7 +7,7 @@ pub fn process_cursor(
     mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<Player>>,
     mut cursor_reader: MessageReader<CursorMoved>,
     q_camera: Single<(&Camera, &GlobalTransform)>,
-    world_info: Res<WorldInfo>,
+    game_world: Res<GameWorld>,
     mut game_obj_lib: ResMut<GameObjLib>,
 ) {
     for cursor_moved in cursor_reader.read() {
@@ -15,7 +15,7 @@ pub fn process_cursor(
             cursor_moved.position,
             q_camera.0,
             q_camera.1,
-            world_info.as_ref(),
+            game_world.as_ref(),
         ) else {
             return;
         };

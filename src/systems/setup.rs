@@ -27,25 +27,23 @@ pub fn setup_game(
         return;
     };
 
-    let mut world_info = create_world_info(&game_config, &map_config);
+    let mut game_world = create_game_world(&game_config, &map_config);
     let mut game_obj_lib = GameObjLib::new();
 
-    let Some(game_map) = load_game_map(
+    if !load_game_world(
+        &mut game_world,
         &map_config,
-        game_config.cell_size,
-        &mut world_info,
         &mut game_obj_lib,
         &game_lib,
         &mut commands,
         &mut exit_app,
-    ) else {
+    ) {
         return;
-    };
+    }
 
     init_window(game_config, window.as_mut());
     commands.spawn(Camera2d);
-    commands.insert_resource(game_map);
-    commands.insert_resource(world_info);
+    commands.insert_resource(game_world);
     commands.insert_resource(game_obj_lib);
     commands.insert_resource(game_lib);
     commands.insert_resource(DespawnPool::new());
@@ -86,13 +84,12 @@ fn read_map_config(
     Some(map_config)
 }
 
-fn create_world_info(game_config: &GameConfig, map_config: &GameMapConfig) -> WorldInfo {
-    let world_width = game_config.cell_size * map_config.col_count as f32;
-    let world_height = game_config.cell_size * map_config.row_count as f32;
+fn create_game_world(game_config: &GameConfig, map_config: &GameMapConfig) -> GameWorld {
     let player_pos = arr_to_vec2(&map_config.player.pos);
-    WorldInfo::new(
-        world_width,
-        world_height,
+    GameWorld::new(
+        game_config.cell_size,
+        map_config.row_count,
+        map_config.col_count,
         game_config.window_width(),
         game_config.window_height(),
         game_config.window_ext_size,
@@ -100,21 +97,18 @@ fn create_world_info(game_config: &GameConfig, map_config: &GameMapConfig) -> Wo
     )
 }
 
-fn load_game_map(
+fn load_game_world(
+    game_world: &mut GameWorld,
     map_config: &GameMapConfig,
-    cell_size: f32,
-    world_info: &mut WorldInfo,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
     exit_app: &mut MessageWriter<AppExit>,
-) -> Option<GameMap> {
-    let mut game_map = GameMap::new(map_config.row_count, map_config.col_count, cell_size);
+) -> bool {
     let mut add_func = |map_obj_config: &GameMapObjConfig| -> bool {
         match add_obj_by_config(
             map_obj_config,
-            &mut game_map,
-            world_info,
+            game_world,
             game_obj_lib,
             game_lib,
             commands,
@@ -129,15 +123,15 @@ fn load_game_map(
     };
 
     if !add_func(&map_config.player) {
-        return None;
+        return false;
     }
     for map_obj_config in map_config.objs.iter() {
         if !add_func(map_obj_config) {
-            return None;
+            return false;
         }
     }
 
-    Some(game_map)
+    true
 }
 
 fn init_window(game_config: &GameConfig, window: &mut Window) {
