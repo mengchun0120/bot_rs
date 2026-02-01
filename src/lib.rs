@@ -24,12 +24,14 @@ pub mod config {
 
 pub mod game {
     pub mod components;
+    pub mod create_obj;
     pub mod game_actions;
     pub mod game_obj;
     pub mod game_obj_side;
     pub mod game_obj_type;
 
     pub use components::*;
+    pub use create_obj::*;
     pub use game_actions::*;
     pub use game_obj::*;
     pub use game_obj_side::*;

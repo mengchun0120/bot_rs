@@ -22,6 +22,9 @@ pub struct MissileComponent;
 pub struct ExplosionComponent;
 
 #[derive(Component)]
+pub struct TileComponent;
+
+#[derive(Component)]
 pub struct PlayComponent {
     pub timer: Timer,
     pub last_index: usize,

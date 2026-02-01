@@ -4,7 +4,7 @@ use crate::game_utils::*;
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 
-#[derive(Clone, Resource)]
+#[derive(Clone)]
 pub struct GameObj {
     pub config_index: usize,
     pub pos: Vec2,
