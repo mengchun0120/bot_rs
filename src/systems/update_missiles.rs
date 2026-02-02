@@ -43,7 +43,7 @@ pub fn update_missiles(
             if let Some(explosion) = obj_config.explosion.as_ref() {
                 if explode(
                     explosion,
-                    &new_pos,
+                    new_pos,
                     game_obj_lib.as_mut(),
                     game_map.as_mut(),
                     world_info.as_mut(),
@@ -60,7 +60,7 @@ pub fn update_missiles(
         } else {
             update_obj_pos(
                 entity,
-                &new_pos,
+                new_pos,
                 game_map.as_mut(),
                 world_info.as_ref(),
                 game_obj_lib.as_mut(),

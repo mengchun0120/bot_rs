@@ -37,7 +37,7 @@ pub fn update_player(
     ) {
         update_obj_pos(
             q_player.0,
-            &new_pos,
+            new_pos,
             game_map.as_mut(),
             world_info.as_ref(),
             game_obj_lib.as_mut(),

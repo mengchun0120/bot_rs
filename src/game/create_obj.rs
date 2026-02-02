@@ -4,13 +4,38 @@ use crate::game_utils::*;
 use crate::misc::*;
 use bevy::prelude::*;
 
+pub fn create_obj_by_config(
+    map_obj_config: &GameMapObjConfig,
+    world_info: &mut WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
+    game_lib: &GameLib,
+    commands: &mut Commands,
+) -> Result<(), MyError> {
+    let config_index = game_lib.get_game_obj_config_index(&map_obj_config.config_name)?;
+    let pos = arr_to_vec2(&map_obj_config.pos);
+    let direction = arr_to_vec2(&map_obj_config.direction).normalize();
+
+    create_obj_by_index(
+        config_index,
+        pos,
+        direction,
+        None,
+        world_info,
+        game_map,
+        game_obj_lib,
+        game_lib,
+        commands,
+    )
+}
+
 pub fn create_obj_by_index(
     config_index: usize,
     pos: Vec2,
-    direction: Option<Vec2>,
+    direction: Vec2,
     speed: Option<f32>,
-    game_map: &mut GameMap,
     world_info: &mut WorldInfo,
+    game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
@@ -75,7 +100,7 @@ pub fn create_obj_by_index(
 fn create_bot(
     config_index: usize,
     pos: Vec2,
-    direction: Option<Vec2>,
+    direction: Vec2,
     speed: Option<f32>,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
@@ -84,7 +109,6 @@ fn create_bot(
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
-    let direction = get_direction(&direction);
     match obj_config.side {
         GameObjSide::Player => create_player(
             config_index,
@@ -133,24 +157,13 @@ fn create_player(
     let visible = world_info.check_pos_visible(&pos);
     let main_body = create_main_body(obj_config, visible, game_lib, commands)?;
     let transform = create_transform(&pos, &direction, obj_config, world_info);
-    let speed = match speed {
-        Some(s) => s,
-        None => 0.0,
-    };
-    let move_comp = MoveComponent::new(speed);
-    let Some(weapon_config) = obj_config.weapon_config.as_ref() else {
-        let msg = "Failed to create player: WeaponConfig not specified".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
-    };
-    let weapon_comp = WeaponComponent::new(weapon_config, game_lib)?;
+    let move_comp = MoveComponent::new(speed.unwrap_or(0.0));
     let mut cmd = commands.entity(main_body);
 
     cmd.insert(transform);
     cmd.insert(Player);
     cmd.insert(move_comp);
-    cmd.insert(weapon_comp);
-    add_guns(main_body, weapon_config, game_lib, commands)?;
+    create_weapon(main_body, obj_config, game_lib, commands)?;
 
     add_obj(
         main_body,
@@ -182,24 +195,13 @@ fn create_ai_bot(
     let visible = world_info.check_pos_visible(&pos);
     let main_body = create_main_body(obj_config, visible, game_lib, commands)?;
     let transform = create_transform(&pos, &direction, obj_config, world_info);
-    let speed = match speed {
-        Some(s) => s,
-        None => 0.0,
-    };
-    let move_comp = MoveComponent::new(speed);
-    let Some(weapon_config) = obj_config.weapon_config.as_ref() else {
-        let msg = "Failed to create player: WeaponConfig not specified".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
-    };
-    let weapon_comp = WeaponComponent::new(weapon_config, game_lib)?;
+    let move_comp = MoveComponent::new(speed.unwrap_or(0.0));
     let mut cmd = commands.entity(main_body);
 
     cmd.insert(transform);
-    cmd.insert(Player);
+    cmd.insert(AIBot);
     cmd.insert(move_comp);
-    cmd.insert(weapon_comp);
-    add_guns(main_body, weapon_config, game_lib, commands)?;
+    create_weapon(main_body, obj_config, game_lib, commands)?;
 
     add_obj(
         main_body,
@@ -219,7 +221,7 @@ fn create_ai_bot(
 fn create_tile(
     config_index: usize,
     pos: Vec2,
-    direction: Option<Vec2>,
+    direction: Vec2,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
@@ -229,7 +231,6 @@ fn create_tile(
 ) -> Result<(), MyError> {
     let visible = world_info.check_pos_visible(&pos);
     let entity = create_main_body(obj_config, visible, game_lib, commands)?;
-    let direction = get_direction(&direction);
     let transform = create_transform(&pos, &direction, obj_config, world_info);
     let mut cmd = commands.entity(entity);
 
@@ -254,7 +255,7 @@ fn create_tile(
 fn create_missile(
     config_index: usize,
     pos: Vec2,
-    direction: Option<Vec2>,
+    direction: Vec2,
     speed: Option<f32>,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
@@ -267,17 +268,12 @@ fn create_missile(
         return Ok(());
     }
     let entity = create_main_body(obj_config, true, game_lib, commands)?;
-    let direction = get_direction(&direction);
     let transform = create_transform(&pos, &direction, obj_config, world_info);
-    let speed = match speed {
-        Some(s) => s,
-        None => 0.0,
-    };
-    let move_comp = MoveComponent::new(speed);
+    let move_comp = MoveComponent::new(speed.unwrap_or(obj_config.speed));
     let mut cmd = commands.entity(entity);
 
     cmd.insert(transform);
-    cmd.insert(TileComponent);
+    cmd.insert(MissileComponent);
     cmd.insert(move_comp);
 
     add_obj(
@@ -298,7 +294,7 @@ fn create_missile(
 fn create_explosion(
     config_index: usize,
     pos: Vec2,
-    direction: Option<Vec2>,
+    direction: Vec2,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
@@ -317,7 +313,6 @@ fn create_explosion(
         return Err(MyError::Other(msg));
     };
     let layout = game_lib.get_tex_atlas_layout(&obj_config.name)?;
-    let direction = get_direction(&direction);
     let transform = create_transform(&pos, &direction, obj_config, world_info);
     let entity = commands
         .spawn((
@@ -385,6 +380,26 @@ fn create_transform(
     }
 }
 
+fn create_weapon(
+    main_body: Entity,
+    obj_config: &GameObjConfig,
+    game_lib: &GameLib,
+    commands: &mut Commands,
+) -> Result<(), MyError> {
+    let Some(weapon_config) = obj_config.weapon_config.as_ref() else {
+        let msg = "Failed to create ai_bot: WeaponConfig not specified".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    };
+
+    add_guns(main_body, weapon_config, game_lib, commands)?;
+
+    let weapon_comp = WeaponComponent::new(weapon_config, game_lib)?;
+    commands.entity(main_body).insert(weapon_comp);
+
+    Ok(())
+}
+
 fn add_guns(
     main_body: Entity,
     weapon_config: &WeaponConfig,
@@ -420,14 +435,6 @@ fn add_guns(
     }
 
     Ok(())
-}
-
-#[inline]
-fn get_direction(direction: &Option<Vec2>) -> Vec2 {
-    match direction {
-        Some(d) => d.clone(),
-        None => Vec2::new(1.0, 0.0),
-    }
 }
 
 fn add_obj(

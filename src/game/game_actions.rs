@@ -1,69 +1,8 @@
-use crate::config::*;
 use crate::game::*;
 use crate::game_utils::*;
 use crate::misc::*;
 use bevy::prelude::*;
 use std::collections::HashSet;
-
-pub fn add_obj_by_config(
-    map_obj_config: &GameMapObjConfig,
-    game_map: &mut GameMap,
-    world_info: &mut WorldInfo,
-    game_obj_lib: &mut GameObjLib,
-    game_lib: &GameLib,
-    commands: &mut Commands,
-) -> Result<(), MyError> {
-    let config_index = game_lib.get_game_obj_config_index(&map_obj_config.config_name)?;
-    let pos = arr_to_vec2(&map_obj_config.pos);
-    let direction = arr_to_vec2(&map_obj_config.direction).normalize();
-
-    add_obj_by_index(
-        config_index,
-        &pos,
-        &direction,
-        map_obj_config.speed,
-        game_map,
-        world_info,
-        game_obj_lib,
-        game_lib,
-        commands,
-    )?;
-
-    Ok(())
-}
-
-pub fn add_obj_by_index(
-    config_index: usize,
-    pos: &Vec2,
-    direction: &Vec2,
-    speed: Option<f32>,
-    game_map: &mut GameMap,
-    world_info: &mut WorldInfo,
-    game_obj_lib: &mut GameObjLib,
-    game_lib: &GameLib,
-    commands: &mut Commands,
-) -> Result<(), MyError> {
-    let obj_config = game_lib.get_game_obj_config(config_index);
-    let Some((obj, entity)) = GameObj::create(
-        config_index,
-        pos,
-        direction,
-        speed,
-        game_map,
-        world_info,
-        game_lib,
-        commands,
-    )?
-    else {
-        return Ok(());
-    };
-
-    game_map.add(&obj.map_pos, entity);
-    world_info.update_max_collide_span(obj_config.collide_span);
-    game_obj_lib.insert(entity, obj);
-
-    Ok(())
-}
 
 pub fn fire_missiles(
     entity: Entity,
@@ -94,13 +33,13 @@ pub fn fire_missiles(
             continue;
         }
 
-        add_obj_by_index(
+        create_obj_by_index(
             missile_config_index,
-            &pos,
-            &direction,
+            pos,
+            direction,
             speed,
-            game_map,
             world_info,
+            game_map,
             game_obj_lib,
             game_lib,
             commands,
@@ -112,7 +51,7 @@ pub fn fire_missiles(
 
 pub fn update_obj_pos(
     entity: Entity,
-    new_pos: &Vec2,
+    new_pos: Vec2,
     game_map: &mut GameMap,
     world_info: &WorldInfo,
     game_obj_lib: &mut GameObjLib,
@@ -123,7 +62,7 @@ pub fn update_obj_pos(
         return;
     };
 
-    obj.pos = new_pos.clone();
+    obj.pos = new_pos;
 
     let map_pos = game_map.get_map_pos(&obj.pos);
     if map_pos != obj.map_pos {
@@ -204,7 +143,7 @@ pub fn explode_all(
 
         let _ = explode(
             explosion,
-            &pos,
+            pos,
             game_obj_lib,
             game_map,
             world_info,
@@ -221,7 +160,7 @@ pub fn explode_all(
 
 pub fn explode(
     explosion: &String,
-    pos: &Vec2,
+    pos: Vec2,
     game_obj_lib: &mut GameObjLib,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
@@ -233,13 +172,13 @@ pub fn explode(
     let explosion_config = game_lib.get_game_obj_config(config_index);
     let direction = Vec2::new(1.0, 0.0);
 
-    add_obj_by_index(
+    create_obj_by_index(
         config_index,
         pos,
-        &direction,
+        direction,
         None,
-        game_map,
         world_info,
+        game_map,
         game_obj_lib,
         game_lib,
         commands,
@@ -280,7 +219,7 @@ pub fn translate_cursor_pos(
 }
 
 fn do_damage(
-    pos: &Vec2,
+    pos: Vec2,
     side: GameObjSide,
     damage: f32,
     span: f32,
@@ -310,7 +249,7 @@ fn do_damage(
 
         if obj_config.obj_type == GameObjType::Bot
             && obj_config.side != side
-            && check_collide_obj(pos, span, &obj.pos, obj_config.collide_span)
+            && check_collide_obj(&pos, span, &obj.pos, obj_config.collide_span)
             && let Some(hp) = obj.hp.as_mut()
         {
             *hp = (*hp - damage).max(0.0);

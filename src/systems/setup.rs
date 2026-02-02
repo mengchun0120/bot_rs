@@ -111,10 +111,10 @@ fn load_game_map(
 ) -> Option<GameMap> {
     let mut game_map = GameMap::new(map_config.row_count, map_config.col_count, cell_size);
     let mut add_func = |map_obj_config: &GameMapObjConfig| -> bool {
-        match add_obj_by_config(
+        match create_obj_by_config(
             map_obj_config,
-            &mut game_map,
             world_info,
+            &mut game_map,
             game_obj_lib,
             game_lib,
             commands,
