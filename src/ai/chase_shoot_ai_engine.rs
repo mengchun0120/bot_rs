@@ -14,7 +14,6 @@ pub struct ChaseShootAIEngine {
     direction_keep_timer: Timer,
     directions: Vec<WeightedDirection>,
 }
-
 struct WeightedDirection {
     direction: Vec2,
     weight: f32,

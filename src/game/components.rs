@@ -1,7 +1,8 @@
 use crate::ai::*;
 use crate::config::*;
+use crate::game::*;
 use crate::game_utils::*;
-use crate::misc::{my_error::*, utils::*};
+use crate::misc::*;
 use bevy::prelude::*;
 
 #[derive(Component)]
@@ -101,5 +102,34 @@ impl PlayComponent {
             timer: Timer::from_seconds(frame_duration, TimerMode::Repeating),
             last_index: play_config.frame_count - 1,
         }
+    }
+}
+
+impl AIComponent {
+    pub fn new(
+        ai_config: &AIConfig,
+        obj: &mut GameObj,
+        transform: &mut Transform,
+        move_comp: &mut MoveComponent,
+        weapon_comp: &mut WeaponComponent,
+        player_pos: &Vec2,
+        game_lib: &GameLib,
+    ) -> Self {
+        let engine = match ai_config {
+            AIConfig::ChaseShoot(config) => {
+                let ai_engine = ChaseShootAIEngine::new(
+                    *config,
+                    obj,
+                    transform,
+                    move_comp,
+                    weapon_comp,
+                    player_pos,
+                    game_lib,
+                );
+                Box::new(ai_engine)
+            }
+        };
+
+        AIComponent { engine }
     }
 }
