@@ -52,7 +52,6 @@ pub fn create_obj_by_index(
         pos,
         direction,
         map_pos: game_map.get_map_pos(&pos),
-        hp: obj_config.hp,
     };
     match obj_config.obj_type {
         GameObjType::Bot => create_bot(
@@ -150,12 +149,14 @@ fn create_player(
     let transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
     let move_comp = MoveComponent::new(speed.unwrap_or(0.0));
     let weapon_comp = create_weapon(main_body, obj_config, game_lib, commands)?;
+    let hp_comp = create_hp_comp(obj_config)?;
     let mut cmd = commands.entity(main_body);
 
     cmd.insert(transform);
     cmd.insert(Player);
     cmd.insert(move_comp);
     cmd.insert(weapon_comp);
+    cmd.insert(hp_comp);
 
     world_info.update_player_pos(Some(obj.pos));
 
@@ -186,6 +187,7 @@ fn create_ai_bot(
     let mut transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
     let mut move_comp = MoveComponent::new(speed.unwrap_or(0.0));
     let mut weapon_comp = create_weapon(main_body, obj_config, game_lib, commands)?;
+    let hp_comp = create_hp_comp(obj_config)?;
     let ai_comp = create_ai_comp(
         obj,
         obj_config,
@@ -201,6 +203,7 @@ fn create_ai_bot(
     cmd.insert(AIBot);
     cmd.insert(move_comp);
     cmd.insert(weapon_comp);
+    cmd.insert(hp_comp);
     cmd.insert(ai_comp);
 
     add_obj(
@@ -408,6 +411,18 @@ fn add_obj(
     game_map.add(&obj.map_pos, entity);
     game_obj_lib.insert(entity, obj.clone());
     world_info.update_max_collide_span(obj_config.collide_span);
+}
+
+fn create_hp_comp(
+    obj_config: &GameObjConfig,
+) -> Result<HPComponent, MyError> {
+    let Some(hp) = obj_config.hp else {
+        let msg = "Failed to create HPComponent: HP is missing".to_string();
+        error!(msg);
+        return Err(MyError::NotFound(msg));
+    };
+
+    Ok(HPComponent::new(hp))
 }
 
 fn create_ai_comp(

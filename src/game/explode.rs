@@ -9,6 +9,7 @@ pub fn explode_all(
     game_obj_lib: &mut GameObjLib,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
+    hp_query: &mut Query<&mut HPComponent>,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
@@ -35,6 +36,7 @@ pub fn explode_all(
             game_obj_lib,
             game_map,
             world_info,
+            hp_query,
             game_lib,
             despawn_pool,
             commands,
@@ -52,6 +54,7 @@ pub fn explode(
     game_obj_lib: &mut GameObjLib,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
+    hp_query: &mut Query<&mut HPComponent>,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
@@ -80,6 +83,7 @@ pub fn explode(
             explosion_config.collide_span,
             game_map,
             world_info,
+            hp_query,
             game_obj_lib,
             game_lib,
             despawn_pool,
@@ -96,6 +100,7 @@ fn do_damage(
     span: f32,
     game_map: &GameMap,
     world_info: &WorldInfo,
+    hp_query: &mut Query<&mut HPComponent>,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
@@ -121,11 +126,11 @@ fn do_damage(
         if obj_config.obj_type == GameObjType::Bot
             && obj_config.side != side
             && check_collide_obj(&pos, span, &obj.pos, obj_config.collide_span)
-            && let Some(hp) = obj.hp.as_mut()
+            && let Ok(mut hp_comp) = hp_query.get_mut(*entity)
         {
-            *hp = (*hp - damage).max(0.0);
-            if *hp == 0.0 {
-                despawn_pool.insert(entity.clone());
+            hp_comp.update(-damage);
+            if hp_comp.hp() == 0.0 {
+                despawn_pool.insert(*entity);
             }
         }
 
