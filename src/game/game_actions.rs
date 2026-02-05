@@ -45,22 +45,17 @@ pub fn fire_missiles(
 
 pub fn update_obj_pos(
     entity: Entity,
+    obj: &mut GameObj,
     new_pos: Vec2,
     game_map: &mut GameMap,
     world_info: &WorldInfo,
-    obj_query: &mut Query<&mut GameObj>,
     transform: &mut Transform,
 ) {
-    let Ok(mut obj) = obj_query.get_mut(entity) else {
-        error!("Cannot find GameObj");
-        return;
-    };
-
     obj.pos = new_pos;
 
     let map_pos = game_map.get_map_pos(&obj.pos);
     if map_pos != obj.map_pos {
-        game_map.relocate(entity.clone(), &obj.map_pos, &map_pos);
+        game_map.relocate(entity, &obj.map_pos, &map_pos);
         obj.map_pos = map_pos;
     }
 

@@ -4,18 +4,22 @@ use crate::misc::*;
 use bevy::prelude::*;
 use std::collections::HashSet;
 
-pub fn explode_all(
+pub fn explode_all<'a, 'b, T, U>(
     missiles: &mut HashSet<Entity>,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
-    obj_query: &Query<&mut GameObj>, 
-    hp_query: &mut Query<&mut HPComponent>,
+    obj_mapper: &T,
+    hp_mapper: &mut U,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
-) {
+)
+where
+    T: Mapper<Entity, GameObj>,
+    U: MutMapper<Entity, HPComponent>,
+{
     for entity in missiles.iter() {
-        let Ok(obj) = obj_query.get(*entity) else {
+        let Some(obj) = obj_mapper.get(*entity) else {
             error!("Cannot find GameObj");
             continue;
         };
@@ -32,8 +36,8 @@ pub fn explode_all(
             obj.pos,
             game_map,
             world_info,
-            obj_query,
-            hp_query,
+            obj_mapper,
+            hp_mapper,
             game_lib,
             despawn_pool,
             commands,
@@ -45,17 +49,21 @@ pub fn explode_all(
     missiles.clear();
 }
 
-pub fn explode(
+pub fn explode<T, U>(
     explosion: &String,
     pos: Vec2,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
-    obj_query: &Query<&mut GameObj>, 
-    hp_query: &mut Query<&mut HPComponent>,
+    obj_mapper: &T,
+    hp_mapper: &mut U,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
-) -> Result<(), MyError> {
+) -> Result<(), MyError>
+where
+    T: Mapper<Entity, GameObj>,
+    U: MutMapper<Entity, HPComponent>,
+{
     let config_index = game_lib.get_game_obj_config_index(explosion)?;
     let explosion_config = game_lib.get_game_obj_config(config_index);
     let direction = Vec2::new(1.0, 0.0);
@@ -79,8 +87,8 @@ pub fn explode(
             explosion_config.collide_span,
             game_map,
             world_info,
-            obj_query,
-            hp_query,
+            obj_mapper,
+            hp_mapper,
             game_lib,
             despawn_pool,
         );
@@ -89,18 +97,22 @@ pub fn explode(
     Ok(())
 }
 
-fn do_damage(
+fn do_damage<T, U>(
     pos: Vec2,
     side: GameObjSide,
     damage: f32,
     span: f32,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    obj_query: &Query<&mut GameObj>,
-    hp_query: &mut Query<&mut HPComponent>,
+    obj_mapper: &T,
+    hp_mapper: &mut U,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
-) {
+)
+where
+    T: Mapper<Entity, GameObj>,
+    U: MutMapper<Entity, HPComponent>,
+{
     let total_span = span + world_info.max_collide_span();
     let region = game_map.get_region(
         pos.x - total_span,
@@ -113,7 +125,7 @@ fn do_damage(
             return true;
         }
 
-        let Ok(obj) = obj_query.get(*entity) else {
+        let Some(obj) = obj_mapper.get(*entity) else {
             error!("Cannot find GameObj");
             return true;
         };
@@ -122,7 +134,7 @@ fn do_damage(
         if obj_config.obj_type == GameObjType::Bot
             && obj_config.side != side
             && check_collide_obj(&pos, span, &obj.pos, obj_config.collide_span)
-            && let Ok(mut hp_comp) = hp_query.get_mut(*entity)
+            && let Some(hp_comp) = hp_mapper.get(*entity)
         {
             hp_comp.update(-damage);
             if hp_comp.hp() == 0.0 {

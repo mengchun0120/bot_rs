@@ -1,18 +1,21 @@
 use crate::game::*;
 use crate::game_utils::*;
+use crate::misc::*;
 use bevy::prelude::*;
-use core::f32;
 
-pub fn check_collide(
+pub fn check_collide<T>(
     entity: &Entity,
     pos: &Vec2,
     collide_span: f32,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    obj_query: &Query<&mut GameObj>,
+    obj_mapper: T,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
-) -> bool {
+) -> bool
+where
+    T: Mapper<Entity, GameObj>,
+{
     check_collide_bounds(
         pos,
         collide_span,
@@ -24,7 +27,7 @@ pub fn check_collide(
         collide_span,
         game_map,
         world_info,
-        obj_query,
+        obj_mapper,
         game_lib,
         despawn_pool,
     )
@@ -56,16 +59,19 @@ fn check_collide_bounds(new_pos: &Vec2, collide_span: f32, width: f32, height: f
         || new_pos.y + collide_span > height
 }
 
-fn check_collide_objs(
+fn check_collide_objs<T>(
     entity: &Entity,
     pos: &Vec2,
     collide_span: f32,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    obj_query: &Query<&mut GameObj>,
+    obj_mapper: T,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
-) -> bool {
+) -> bool
+where
+    T: Mapper<Entity, GameObj>,
+{
     let mut collide = false;
     let collide_region = get_collide_region(pos, collide_span, game_map, world_info);
 
@@ -74,7 +80,7 @@ fn check_collide_objs(
             return true;
         }
 
-        let Ok(obj2) = obj_query.get(*e) else {
+        let Some(obj2) = obj_mapper.get(*e) else {
             error!("Cannot find GameObj");
             return true;
         };

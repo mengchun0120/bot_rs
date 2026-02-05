@@ -4,7 +4,10 @@ use crate::misc::*;
 use bevy::prelude::*;
 
 pub fn update_missiles(
-    mut q_missile: Query<(Entity, &mut GameObj, &MoveComponent, &mut Transform), With<MissileComponent>>,
+    mut q_missile: Query<
+        (Entity, &MoveComponent, &mut Transform),
+        With<MissileComponent>,
+    >,
     mut game_map: ResMut<GameMap>,
     mut world_info: ResMut<WorldInfo>,
     mut obj_query: Query<&mut GameObj>,
@@ -14,10 +17,14 @@ pub fn update_missiles(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, mut obj, move_comp, mut transform) in q_missile.iter_mut() {
+    for (entity, move_comp, mut transform) in q_missile.iter_mut() {
         if despawn_pool.contains(&entity) {
             continue;
         }
+
+        let Ok(obj) = obj_query.get(entity).cloned() else {
+            continue;
+        };
 
         let obj_config = game_lib.get_game_obj_config(obj.config_index);
         let new_pos = obj.pos + obj.direction * move_comp.speed * time.delta_secs();
@@ -33,7 +40,7 @@ pub fn update_missiles(
             obj_config.collide_span,
             game_map.as_ref(),
             world_info.as_ref(),
-            &obj_query,
+            QueryMapperByMut::new(&obj_query),
             game_lib.as_ref(),
             despawn_pool.as_ref(),
         ) {
@@ -43,8 +50,8 @@ pub fn update_missiles(
                     new_pos,
                     game_map.as_mut(),
                     world_info.as_mut(),
-                    &obj_query,
-                    &mut hp_query,
+                    &QueryMapperByMut::new(&obj_query),
+                    &mut MutQueryMapper::new(&mut hp_query),
                     game_lib.as_ref(),
                     despawn_pool.as_mut(),
                     &mut commands,
@@ -56,14 +63,20 @@ pub fn update_missiles(
             }
             despawn_pool.insert(entity);
         } else {
-            update_obj_pos(
-                entity,
-                new_pos,
-                game_map.as_mut(),
-                world_info.as_ref(),
-                &mut obj_query,
-                transform.as_mut(),
-            );
+            obj_query.get_mut(entity).and_then(|mut obj| {
+                update_obj_pos(
+                    entity,
+                    obj.as_mut(),
+                    new_pos,
+                    game_map.as_mut(),
+                    world_info.as_ref(),
+                    transform.as_mut(),
+                );
+                Ok(())
+            });
+
+
+
         }
     }
 }

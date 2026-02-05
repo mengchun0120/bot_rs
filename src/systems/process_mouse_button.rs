@@ -5,7 +5,10 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
 pub fn process_mouse_button(
-    mut player_query: Single<(Entity, &mut GameObj, &mut MoveComponent, &mut Transform), With<Player>>,
+    mut player_query: Single<
+        (Entity, &mut GameObj, &mut MoveComponent, &mut Transform),
+        With<Player>,
+    >,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     window_query: Single<&Window, With<PrimaryWindow>>,
     camera_query: Single<(&Camera, &GlobalTransform)>,
@@ -18,12 +21,17 @@ pub fn process_mouse_button(
             return;
         };
 
-        let Some(cursor_pos) =
-            translate_cursor_pos(cursor_pos, camera_query.0, camera_query.1, world_info.as_ref())
-        else {
+        let Some(cursor_pos) = translate_cursor_pos(
+            cursor_pos,
+            camera_query.0,
+            camera_query.1,
+            world_info.as_ref(),
+        ) else {
             return;
         };
-        let speed = game_lib.get_game_obj_config(player_query.1.config_index).speed;
+        let speed = game_lib
+            .get_game_obj_config(player_query.1.config_index)
+            .speed;
 
         player_query.2.speed = speed;
 
