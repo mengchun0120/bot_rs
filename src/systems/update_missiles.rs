@@ -4,25 +4,21 @@ use crate::misc::*;
 use bevy::prelude::*;
 
 pub fn update_missiles(
-    mut q_missile: Query<(Entity, &MoveComponent, &mut Transform), With<MissileComponent>>,
+    mut q_missile: Query<(Entity, &mut GameObj, &MoveComponent, &mut Transform), With<MissileComponent>>,
     mut game_map: ResMut<GameMap>,
     mut world_info: ResMut<WorldInfo>,
+    mut obj_query: Query<&mut GameObj>,
     mut hp_query: Query<&mut HPComponent>,
-    mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, move_comp, mut transform) in q_missile.iter_mut() {
+    for (entity, mut obj, move_comp, mut transform) in q_missile.iter_mut() {
         if despawn_pool.contains(&entity) {
             continue;
         }
 
-        let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-            error!("Cannot find entity in GameObjLib");
-            continue;
-        };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);
         let new_pos = obj.pos + obj.direction * move_comp.speed * time.delta_secs();
 
@@ -37,7 +33,7 @@ pub fn update_missiles(
             obj_config.collide_span,
             game_map.as_ref(),
             world_info.as_ref(),
-            game_obj_lib.as_ref(),
+            &obj_query,
             game_lib.as_ref(),
             despawn_pool.as_ref(),
         ) {
@@ -45,9 +41,9 @@ pub fn update_missiles(
                 if explode(
                     explosion,
                     new_pos,
-                    game_obj_lib.as_mut(),
                     game_map.as_mut(),
                     world_info.as_mut(),
+                    &obj_query,
                     &mut hp_query,
                     game_lib.as_ref(),
                     despawn_pool.as_mut(),
@@ -65,7 +61,7 @@ pub fn update_missiles(
                 new_pos,
                 game_map.as_mut(),
                 world_info.as_ref(),
-                game_obj_lib.as_mut(),
+                &mut obj_query,
                 transform.as_mut(),
             );
         }

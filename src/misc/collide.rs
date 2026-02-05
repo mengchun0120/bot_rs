@@ -9,7 +9,7 @@ pub fn check_collide(
     collide_span: f32,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    game_obj_lib: &GameObjLib,
+    obj_query: &Query<&mut GameObj>,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
@@ -24,7 +24,7 @@ pub fn check_collide(
         collide_span,
         game_map,
         world_info,
-        game_obj_lib,
+        obj_query,
         game_lib,
         despawn_pool,
     )
@@ -62,7 +62,7 @@ fn check_collide_objs(
     collide_span: f32,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    game_obj_lib: &GameObjLib,
+    obj_query: &Query<&mut GameObj>,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
@@ -74,8 +74,8 @@ fn check_collide_objs(
             return true;
         }
 
-        let Some(obj2) = game_obj_lib.get(e) else {
-            error!("Cannot find entity in GameObjLib");
+        let Ok(obj2) = obj_query.get(*e) else {
+            error!("Cannot find GameObj");
             return true;
         };
         let obj_config2 = game_lib.get_game_obj_config(obj2.config_index);

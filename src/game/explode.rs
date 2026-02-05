@@ -6,7 +6,6 @@ use std::collections::HashSet;
 
 pub fn explode_all(
     missiles: &mut HashSet<Entity>,
-    game_obj_lib: &mut GameObjLib,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
     obj_query: &Query<&mut GameObj>, 
@@ -16,15 +15,12 @@ pub fn explode_all(
     commands: &mut Commands,
 ) {
     for entity in missiles.iter() {
-        let Some((config_index, pos)) = game_obj_lib
-            .get(entity)
-            .map(|obj| (obj.config_index, obj.pos))
-        else {
-            error!("Cannot find entity in GameObjLib");
+        let Ok(obj) = obj_query.get(*entity) else {
+            error!("Cannot find GameObj");
             continue;
         };
         let Some(explosion) = game_lib
-            .get_game_obj_config(config_index)
+            .get_game_obj_config(obj.config_index)
             .explosion
             .as_ref()
         else {
@@ -33,7 +29,7 @@ pub fn explode_all(
 
         let _ = explode(
             explosion,
-            pos,
+            obj.pos,
             game_map,
             world_info,
             obj_query,

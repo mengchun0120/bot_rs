@@ -1,22 +1,22 @@
+use crate::game::*;
 use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn cleanup(
     mut commands: Commands,
     mut game_map: ResMut<GameMap>,
-    mut game_obj_lib: ResMut<GameObjLib>,
+    obj_query: Query<&GameObj>,
     mut despawn_pool: ResMut<DespawnPool>,
 ) {
     for entity in despawn_pool.iter() {
-        let Some(map_pos) = game_obj_lib.get(entity).map(|obj| obj.map_pos) else {
-            error!("Failed to find entity in GameObjLib {:?}", entity);
+        let Ok(obj) = obj_query.get(*entity) else {
+            error!("Cannot find GameObj");
             continue;
         };
 
-        game_map.remove(entity, &map_pos);
-        game_obj_lib.remove(entity);
+        game_map.remove(entity, &obj.map_pos);
 
-        let mut entity_cmd = commands.entity(entity.clone());
+        let mut entity_cmd = commands.entity(*entity);
         entity_cmd.despawn_children();
         entity_cmd.despawn();
     }

@@ -5,44 +5,40 @@ use bevy::prelude::*;
 use std::collections::HashSet;
 
 pub fn update_player(
-    mut q_player: Single<(Entity, &mut MoveComponent, &mut Transform), With<Player>>,
+    mut player_query: Single<(Entity, &mut GameObj, &mut MoveComponent, &mut Transform), With<Player>>,
     game_lib: Res<GameLib>,
     mut game_map: ResMut<GameMap>,
     mut world_info: ResMut<WorldInfo>,
+    mut obj_query: Query<&mut GameObj>,
     mut hp_query: Query<&mut HPComponent>,
-    mut game_obj_lib: ResMut<GameObjLib>,
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    if q_player.1.speed == 0.0 {
+    if player_query.2.speed == 0.0 {
         return;
     }
 
-    let Some(obj) = game_obj_lib.get(&q_player.0).cloned() else {
-        error!("Cannot find player in GameObjLib");
-        return;
-    };
-    let obj_config = game_lib.get_game_obj_config(obj.config_index);
-    let new_pos = obj.pos + obj.direction * q_player.1.speed * time.delta_secs();
+    let obj_config = game_lib.get_game_obj_config(player_query.1.config_index);
+    let new_pos = player_query.1.pos + player_query.1.direction * player_query.2.speed * time.delta_secs();
 
     if !check_collide(
-        &q_player.0,
+        &player_query.0,
         &new_pos,
         obj_config.collide_span,
         game_map.as_ref(),
         world_info.as_ref(),
-        game_obj_lib.as_ref(),
+        &obj_query,
         game_lib.as_ref(),
         despawn_pool.as_ref(),
     ) {
         update_obj_pos(
-            q_player.0,
+            player_query.0,
             new_pos,
             game_map.as_mut(),
             world_info.as_ref(),
-            game_obj_lib.as_mut(),
-            q_player.2.as_mut(),
+            &mut obj_query,
+            player_query.3.as_mut(),
         );
         update_origin(
             &new_pos,
