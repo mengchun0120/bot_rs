@@ -5,26 +5,21 @@ use bevy::prelude::*;
 use std::collections::HashSet;
 
 pub fn fire_missiles(
-    entity: Entity,
+    pos: Vec2,
+    direction: Vec2,
     missile_config_index: usize,
     fire_points: &Vec<Vec2>,
     fire_directions: &Vec<Vec2>,
     base_velocity: &Vec2,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
-    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-        error!("Cannot find entity in GameObjLib");
-        return Err(MyError::NotFound("entity".into()));
-    };
-
     for i in 0..fire_points.len() {
         let missile_config = game_lib.get_game_obj_config(missile_config_index);
-        let pos = obj.pos + obj.direction.rotate(fire_points[i]);
-        let relative_direction = obj.direction.rotate(fire_directions[i]);
+        let pos = pos + direction.rotate(fire_points[i]);
+        let relative_direction = direction.rotate(fire_directions[i]);
         let velocity = relative_direction * missile_config.speed + base_velocity;
         let direction = velocity.normalize();
         let speed = Some(velocity.length());
@@ -40,7 +35,6 @@ pub fn fire_missiles(
             speed,
             world_info,
             game_map,
-            game_obj_lib,
             game_lib,
             commands,
         )?;
@@ -54,11 +48,11 @@ pub fn update_obj_pos(
     new_pos: Vec2,
     game_map: &mut GameMap,
     world_info: &WorldInfo,
-    game_obj_lib: &mut GameObjLib,
+    obj_query: &mut Query<&mut GameObj>,
     transform: &mut Transform,
 ) {
-    let Some(obj) = game_obj_lib.get_mut(&entity) else {
-        error!("Cannot find entity in GameObjLib");
+    let Ok(mut obj) = obj_query.get_mut(entity) else {
+        error!("Cannot find GameObj");
         return;
     };
 
@@ -82,7 +76,7 @@ pub fn capture_missiles(
     captured_missiles: &mut HashSet<Entity>,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    game_obj_lib: &GameObjLib,
+    obj_query: &Query<&mut GameObj>,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) {
@@ -98,7 +92,7 @@ pub fn capture_missiles(
             return true;
         }
 
-        let Some(obj) = game_obj_lib.get(entity) else {
+        let Ok(obj) = obj_query.get(*entity) else {
             return true;
         };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);

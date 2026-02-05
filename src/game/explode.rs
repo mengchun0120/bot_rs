@@ -9,6 +9,7 @@ pub fn explode_all(
     game_obj_lib: &mut GameObjLib,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
+    obj_query: &Query<&mut GameObj>, 
     hp_query: &mut Query<&mut HPComponent>,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
@@ -33,9 +34,9 @@ pub fn explode_all(
         let _ = explode(
             explosion,
             pos,
-            game_obj_lib,
             game_map,
             world_info,
+            obj_query,
             hp_query,
             game_lib,
             despawn_pool,
@@ -51,9 +52,9 @@ pub fn explode_all(
 pub fn explode(
     explosion: &String,
     pos: Vec2,
-    game_obj_lib: &mut GameObjLib,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
+    obj_query: &Query<&mut GameObj>, 
     hp_query: &mut Query<&mut HPComponent>,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
@@ -70,7 +71,6 @@ pub fn explode(
         None,
         world_info,
         game_map,
-        game_obj_lib,
         game_lib,
         commands,
     )?;
@@ -83,8 +83,8 @@ pub fn explode(
             explosion_config.collide_span,
             game_map,
             world_info,
+            obj_query,
             hp_query,
-            game_obj_lib,
             game_lib,
             despawn_pool,
         );
@@ -100,8 +100,8 @@ fn do_damage(
     span: f32,
     game_map: &GameMap,
     world_info: &WorldInfo,
+    obj_query: &Query<&mut GameObj>,
     hp_query: &mut Query<&mut HPComponent>,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
 ) {
@@ -117,8 +117,8 @@ fn do_damage(
             return true;
         }
 
-        let Some(obj) = game_obj_lib.get_mut(entity) else {
-            error!("Cannot find entity in GameObjLib");
+        let Ok(obj) = obj_query.get(*entity) else {
+            error!("Cannot find GameObj");
             return true;
         };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);

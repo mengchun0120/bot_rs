@@ -15,7 +15,7 @@ pub fn process_key(
     key_input: Res<ButtonInput<KeyCode>>,
     mut game_map: ResMut<GameMap>,
     mut world_info: ResMut<WorldInfo>,
-    mut game_obj_lib: ResMut<GameObjLib>,
+    obj_query: &Query<&mut GameObj>,
     game_lib: Res<GameLib>,
     mut commands: Commands,
     mut exit_app: MessageWriter<AppExit>,

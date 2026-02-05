@@ -27,7 +27,6 @@ pub mod game {
     pub mod create_obj;
     pub mod explode;
     pub mod game_actions;
-    pub mod game_obj;
     pub mod game_obj_side;
     pub mod game_obj_type;
 
@@ -35,7 +34,6 @@ pub mod game {
     pub use create_obj::*;
     pub use explode::*;
     pub use game_actions::*;
-    pub use game_obj::*;
     pub use game_obj_side::*;
     pub use game_obj_type::*;
 }

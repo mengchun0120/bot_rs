@@ -8,7 +8,6 @@ pub fn create_obj_by_config(
     map_obj_config: &GameMapObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
@@ -23,7 +22,6 @@ pub fn create_obj_by_config(
         None,
         world_info,
         game_map,
-        game_obj_lib,
         game_lib,
         commands,
     )
@@ -36,7 +34,6 @@ pub fn create_obj_by_index(
     speed: Option<f32>,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
@@ -47,7 +44,7 @@ pub fn create_obj_by_index(
     }
 
     let obj_config = game_lib.get_game_obj_config(config_index);
-    let mut obj = GameObj {
+    let obj = GameObj {
         config_index,
         pos,
         direction,
@@ -55,76 +52,33 @@ pub fn create_obj_by_index(
     };
     match obj_config.obj_type {
         GameObjType::Bot => create_bot(
-            &mut obj,
-            speed,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
+            obj, speed, obj_config, world_info, game_map, game_lib, commands,
         ),
-        GameObjType::Tile => create_tile(
-            &obj,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-        ),
+        GameObjType::Tile => create_tile(obj, obj_config, world_info, game_map, game_lib, commands),
         GameObjType::Missile => create_missile(
-            &obj,
-            speed,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
+            obj, speed, obj_config, world_info, game_map, game_lib, commands,
         ),
-        GameObjType::Explosion => create_explosion(
-            &obj,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-        ),
+        GameObjType::Explosion => {
+            create_explosion(obj, obj_config, world_info, game_map, game_lib, commands)
+        }
     }
 }
 
 fn create_bot(
-    obj: &mut GameObj,
+    obj: GameObj,
     speed: Option<f32>,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
     match obj_config.side {
         GameObjSide::Player => create_player(
-            obj,
-            speed,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
+            obj, speed, obj_config, world_info, game_map, game_lib, commands,
         ),
         GameObjSide::AI => create_ai_bot(
-            obj,
-            speed,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
+            obj, speed, obj_config, world_info, game_map, game_lib, commands,
         ),
         GameObjSide::Neutral => {
             let msg = "Cannot create netural bot".to_string();
@@ -135,12 +89,11 @@ fn create_bot(
 }
 
 fn create_player(
-    obj: &GameObj,
+    obj: GameObj,
     speed: Option<f32>,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
@@ -152,33 +105,26 @@ fn create_player(
     let hp_comp = create_hp_comp(obj_config)?;
     let mut cmd = commands.entity(main_body);
 
+    world_info.update_player_pos(Some(obj.pos));
+
+    add_obj(main_body, &obj, obj_config, world_info, game_map);
+
+    cmd.insert(obj);
     cmd.insert(transform);
     cmd.insert(Player);
     cmd.insert(move_comp);
     cmd.insert(weapon_comp);
     cmd.insert(hp_comp);
 
-    world_info.update_player_pos(Some(obj.pos));
-
-    add_obj(
-        main_body,
-        obj,
-        obj_config,
-        world_info,
-        game_map,
-        game_obj_lib,
-    );
-
     Ok(())
 }
 
 fn create_ai_bot(
-    obj: &mut GameObj,
+    mut obj: GameObj,
     speed: Option<f32>,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
@@ -189,7 +135,7 @@ fn create_ai_bot(
     let mut weapon_comp = create_weapon(main_body, obj_config, game_lib, commands)?;
     let hp_comp = create_hp_comp(obj_config)?;
     let ai_comp = create_ai_comp(
-        obj,
+        &mut obj,
         obj_config,
         world_info,
         &mut transform,
@@ -199,6 +145,9 @@ fn create_ai_bot(
     )?;
     let mut cmd = commands.entity(main_body);
 
+    add_obj(main_body, &obj, obj_config, world_info, game_map);
+
+    cmd.insert(obj);
     cmd.insert(transform);
     cmd.insert(AIBot);
     cmd.insert(move_comp);
@@ -206,24 +155,14 @@ fn create_ai_bot(
     cmd.insert(hp_comp);
     cmd.insert(ai_comp);
 
-    add_obj(
-        main_body,
-        obj,
-        obj_config,
-        world_info,
-        game_map,
-        game_obj_lib,
-    );
-
     Ok(())
 }
 
 fn create_tile(
-    obj: &GameObj,
+    obj: GameObj,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
@@ -232,21 +171,21 @@ fn create_tile(
     let transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
     let mut cmd = commands.entity(entity);
 
+    add_obj(entity, &obj, obj_config, world_info, game_map);
+
+    cmd.insert(obj);
     cmd.insert(transform);
     cmd.insert(TileComponent);
-
-    add_obj(entity, obj, obj_config, world_info, game_map, game_obj_lib);
 
     Ok(())
 }
 
 fn create_missile(
-    obj: &GameObj,
+    obj: GameObj,
     speed: Option<f32>,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
@@ -258,21 +197,21 @@ fn create_missile(
     let move_comp = MoveComponent::new(speed.unwrap_or(obj_config.speed));
     let mut cmd = commands.entity(entity);
 
+    add_obj(entity, &obj, obj_config, world_info, game_map);
+
+    cmd.insert(obj);
     cmd.insert(transform);
     cmd.insert(MissileComponent);
     cmd.insert(move_comp);
-
-    add_obj(entity, obj, obj_config, world_info, game_map, game_obj_lib);
 
     Ok(())
 }
 
 fn create_explosion(
-    obj: &GameObj,
+    obj: GameObj,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
@@ -298,7 +237,9 @@ fn create_explosion(
         ))
         .id();
 
-    add_obj(entity, obj, obj_config, world_info, game_map, game_obj_lib);
+    add_obj(entity, &obj, obj_config, world_info, game_map);
+
+    commands.entity(entity).insert(obj);
 
     Ok(())
 }
@@ -406,16 +347,12 @@ fn add_obj(
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
     game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
 ) {
     game_map.add(&obj.map_pos, entity);
-    game_obj_lib.insert(entity, obj.clone());
     world_info.update_max_collide_span(obj_config.collide_span);
 }
 
-fn create_hp_comp(
-    obj_config: &GameObjConfig,
-) -> Result<HPComponent, MyError> {
+fn create_hp_comp(obj_config: &GameObjConfig) -> Result<HPComponent, MyError> {
     let Some(hp) = obj_config.hp else {
         let msg = "Failed to create HPComponent: HP is missing".to_string();
         error!(msg);
