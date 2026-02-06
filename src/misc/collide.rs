@@ -6,9 +6,9 @@ pub fn check_collide(
     entity: &Entity,
     pos: &Vec2,
     collide_span: f32,
+    obj_query: &Query<&mut GameObj>,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    obj_query: &Query<&mut GameObj>,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
@@ -21,9 +21,9 @@ pub fn check_collide(
         entity,
         pos,
         collide_span,
+        obj_query,
         game_map,
         world_info,
-        obj_query,
         game_lib,
         despawn_pool,
     )
@@ -59,9 +59,9 @@ fn check_collide_objs(
     entity: &Entity,
     pos: &Vec2,
     collide_span: f32,
+    obj_query: &Query<&mut GameObj>,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    obj_query: &Query<&mut GameObj>,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {

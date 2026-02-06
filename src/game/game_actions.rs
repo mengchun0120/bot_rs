@@ -43,7 +43,7 @@ pub fn fire_missiles(
     Ok(())
 }
 
-pub fn update_obj_pos(
+/*pub fn update_obj_pos(
     entity: Entity,
     new_pos: Vec2,
     game_map: &mut GameMap,
@@ -71,49 +71,7 @@ pub fn update_obj_pos(
     let screen_pos = world_info.get_screen_pos(&obj.pos);
     transform.translation.x = screen_pos.x;
     transform.translation.y = screen_pos.y;
-}
-
-pub fn capture_missiles(
-    pos: &Vec2,
-    collide_span: f32,
-    side: GameObjSide,
-    captured_missiles: &mut HashSet<Entity>,
-    game_map: &GameMap,
-    world_info: &WorldInfo,
-    obj_query: &Query<&mut GameObj>,
-    game_lib: &GameLib,
-    despawn_pool: &DespawnPool,
-) {
-    let total_span = collide_span + world_info.max_collide_span();
-    let region = game_map.get_region(
-        pos.x - total_span,
-        pos.y - total_span,
-        pos.x + total_span,
-        pos.y + total_span,
-    );
-    let func = |entity: &Entity| -> bool {
-        if despawn_pool.contains(entity) {
-            return true;
-        }
-
-        let Ok(obj) = obj_query.get(*entity) else {
-            error!("Cannot find GameObj");
-            return true;
-        };
-        let obj_config = game_lib.get_game_obj_config(obj.config_index);
-
-        if obj_config.obj_type == GameObjType::Missile
-            && obj_config.side != side
-            && check_collide_obj(pos, collide_span, &obj.pos, obj_config.collide_span)
-        {
-            captured_missiles.insert(*entity);
-        }
-
-        true
-    };
-
-    game_map.run_on_region(&region, func);
-}
+}*/
 
 pub fn translate_cursor_pos(
     cursor_pos: Vec2,

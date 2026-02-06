@@ -1,3 +1,4 @@
+use crate::ai::*;
 use crate::game::*;
 use crate::game_utils::*;
 use bevy::prelude::*;
@@ -13,4 +14,6 @@ pub trait AIEngine: Send + Sync {
         game_lib: &GameLib,
         time: &Time,
     );
+
+    fn cur_action(&self) -> AIAction;
 }

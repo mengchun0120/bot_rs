@@ -29,6 +29,7 @@ pub mod game {
     pub mod game_actions;
     pub mod game_obj_side;
     pub mod game_obj_type;
+    pub mod move_obj;
 
     pub use components::*;
     pub use create_obj::*;
@@ -36,6 +37,7 @@ pub mod game {
     pub use game_actions::*;
     pub use game_obj_side::*;
     pub use game_obj_type::*;
+    pub use move_obj::*;
 }
 
 pub mod game_utils {
@@ -72,6 +74,8 @@ pub mod systems {
     pub mod process_key;
     pub mod process_mouse_button;
     pub mod setup;
+    pub mod update_ai;
+    pub mod update_ai_bots;
     pub mod update_explosions;
     pub mod update_missiles;
     pub mod update_player;
@@ -81,6 +85,8 @@ pub mod systems {
     pub use process_key::*;
     pub use process_mouse_button::*;
     pub use setup::*;
+    pub use update_ai::*;
+    pub use update_ai_bots::*;
     pub use update_explosions::*;
     pub use update_missiles::*;
     pub use update_player::*;

@@ -6,13 +6,13 @@ use std::collections::HashSet;
 
 pub fn update_player(
     player_query: Single<(Entity, &mut MoveComponent), With<Player>>,
-    game_lib: Res<GameLib>,
-    mut game_map: ResMut<GameMap>,
-    mut world_info: ResMut<WorldInfo>,
     mut obj_query: Query<&mut GameObj>,
     mut transform_query: Query<&mut Transform>,
     mut visibility_query: Query<&mut Visibility>,
+    mut game_map: ResMut<GameMap>,
+    mut world_info: ResMut<WorldInfo>,
     mut hp_query: Query<&mut HPComponent>,
+    game_lib: Res<GameLib>,
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
     time: Res<Time>,

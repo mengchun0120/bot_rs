@@ -6,10 +6,10 @@ use std::collections::HashSet;
 
 pub fn explode_all(
     missiles: &mut HashSet<Entity>,
-    game_map: &mut GameMap,
-    world_info: &mut WorldInfo,
     obj_query: &Query<&mut GameObj>,
     hp_query: &mut Query<&mut HPComponent>,
+    game_map: &mut GameMap,
+    world_info: &mut WorldInfo,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
@@ -30,10 +30,10 @@ pub fn explode_all(
         let _ = explode(
             explosion,
             obj.pos,
-            game_map,
-            world_info,
             obj_query,
             hp_query,
+            game_map,
+            world_info,
             game_lib,
             despawn_pool,
             commands,
@@ -48,10 +48,10 @@ pub fn explode_all(
 pub fn explode(
     explosion: &String,
     pos: Vec2,
-    game_map: &mut GameMap,
-    world_info: &mut WorldInfo,
     obj_query: &Query<&mut GameObj>,
     hp_query: &mut Query<&mut HPComponent>,
+    game_map: &mut GameMap,
+    world_info: &mut WorldInfo,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,

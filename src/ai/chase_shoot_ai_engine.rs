@@ -219,4 +219,8 @@ impl AIEngine for ChaseShootAIEngine {
             }
         }
     }
+
+    fn cur_action(&self) -> AIAction {
+        self.action
+    }
 }

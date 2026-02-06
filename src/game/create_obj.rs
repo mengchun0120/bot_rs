@@ -105,8 +105,6 @@ fn create_player(
     let hp_comp = create_hp_comp(obj_config)?;
     let mut cmd = commands.entity(main_body);
 
-    world_info.update_player_pos(Some(obj.pos));
-
     add_obj(main_body, &obj, obj_config, world_info, game_map);
 
     cmd.insert(obj);

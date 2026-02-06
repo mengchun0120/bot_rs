@@ -12,7 +12,6 @@ pub struct WorldInfo {
     visible_span: Vec2,
     visible_region: RectRegion,
     max_collide_span: f32,
-    player_pos: Option<Vec2>,
 }
 
 impl WorldInfo {
@@ -40,7 +39,6 @@ impl WorldInfo {
             ),
             visible_region: RectRegion::default(),
             max_collide_span: 0.0,
-            player_pos: None,
         };
 
         world_info.set_origin(&origin);
@@ -101,20 +99,10 @@ impl WorldInfo {
     }
 
     #[inline]
-    pub fn player_pos(&self) -> Option<Vec2> {
-        self.player_pos
-    }
-
-    #[inline]
     pub fn update_max_collide_span(&mut self, collide_span: f32) {
         if self.max_collide_span < collide_span {
             self.max_collide_span = collide_span;
         }
-    }
-
-    #[inline]
-    pub fn update_player_pos(&mut self, player_pos: Option<Vec2>) {
-        self.player_pos = player_pos;
     }
 
     #[inline]
