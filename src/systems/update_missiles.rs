@@ -38,7 +38,7 @@ pub fn update_missiles(
             obj_config.collide_span,
             game_map.as_ref(),
             world_info.as_ref(),
-            QueryMapperByMut::new(&obj_query),
+            &obj_query,
             game_lib.as_ref(),
             despawn_pool.as_ref(),
         ) {
@@ -48,8 +48,8 @@ pub fn update_missiles(
                     new_pos,
                     game_map.as_mut(),
                     world_info.as_mut(),
-                    &QueryMapperByMut::new(&obj_query),
-                    &mut MutQueryMapper::new(&mut hp_query),
+                    &obj_query,
+                    &mut hp_query,
                     game_lib.as_ref(),
                     despawn_pool.as_mut(),
                     &mut commands,
@@ -66,8 +66,8 @@ pub fn update_missiles(
                 new_pos,
                 game_map.as_mut(),
                 world_info.as_mut(),
-                MutQueryMapper::new(&mut obj_query),
-                MutQueryMapper::new(&mut transform_query),
+                &mut obj_query,
+                &mut transform_query,
             );
         }
     }

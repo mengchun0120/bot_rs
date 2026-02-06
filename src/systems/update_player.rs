@@ -35,7 +35,7 @@ pub fn update_player(
         obj_config.collide_span,
         game_map.as_ref(),
         world_info.as_ref(),
-        QueryMapperByMut::new(&obj_query),
+        &obj_query,
         game_lib.as_ref(),
         despawn_pool.as_ref(),
     ) {
@@ -44,17 +44,17 @@ pub fn update_player(
             new_pos,
             game_map.as_mut(),
             world_info.as_ref(),
-            MutQueryMapper::new(&mut obj_query),
-            MutQueryMapper::new(&mut transform_query),
+            &mut obj_query,
+            &mut transform_query,
         );
 
         update_origin(
             &new_pos,
             game_map.as_mut(),
             world_info.as_mut(),
-            &QueryMapperByMut::new(&obj_query),
-            &mut MutQueryMapper::new(&mut transform_query),
-            &mut MutQueryMapper::new(&mut visibility_query),
+            &obj_query,
+            &mut transform_query,
+            &mut visibility_query,
             game_lib.as_ref(),
             despawn_pool.as_mut(),
         );
@@ -69,7 +69,7 @@ pub fn update_player(
         &mut captured_missiles,
         game_map.as_ref(),
         world_info.as_ref(),
-        &QueryMapperByMut::new(&obj_query),
+        &obj_query,
         game_lib.as_ref(),
         despawn_pool.as_ref(),
     );
@@ -79,8 +79,8 @@ pub fn update_player(
             &mut captured_missiles,
             game_map.as_mut(),
             world_info.as_mut(),
-            &QueryMapperByMut::new(&obj_query),
-            &mut MutQueryMapper::new(&mut hp_query),
+            &obj_query,
+            &mut hp_query,
             game_lib.as_ref(),
             despawn_pool.as_mut(),
             &mut commands,
@@ -88,20 +88,16 @@ pub fn update_player(
     }
 }
 
-fn update_origin<T, U, W>(
+fn update_origin(
     origin: &Vec2,
     game_map: &mut GameMap,
     world_info: &mut WorldInfo,
-    obj_mapper: &T,
-    transform_mapper: &mut U,
-    visibility_mapper: &mut W,
+    obj_query: &Query<&mut GameObj>,
+    transform_query: &mut Query<&mut Transform>,
+    visibility_query: &mut Query<&mut Visibility>,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
-) where
-    T: Mapper<Entity, GameObj>,
-    U: MutMapper<Entity, Transform>,
-    W: MutMapper<Entity, Visibility>,
-{
+) {
     let old_visible_region = game_map.get_region_from_rect(world_info.visible_region());
 
     world_info.set_origin(origin);
@@ -111,8 +107,8 @@ fn update_origin<T, U, W>(
         &old_visible_region,
         &new_visible_region,
         game_map,
-        obj_mapper,
-        visibility_mapper,
+        obj_query,
+        visibility_query,
         game_lib,
         despawn_pool,
     );
@@ -122,8 +118,8 @@ fn update_origin<T, U, W>(
         &new_visible_region,
         game_map,
         world_info,
-        obj_mapper,
-        transform_mapper,
+        obj_query,
+        transform_query,
     );
 
     show_newscreen_objs(
@@ -131,31 +127,28 @@ fn update_origin<T, U, W>(
         &new_visible_region,
         game_map,
         world_info,
-        obj_mapper,
-        transform_mapper,
-        visibility_mapper,
+        obj_query,
+        transform_query,
+        visibility_query,
     );
 }
 
-fn hide_offscreen_objs<T, U>(
+fn hide_offscreen_objs(
     old_visible_region: &MapRegion,
     new_visible_region: &MapRegion,
     game_map: &GameMap,
-    obj_mapper: &T,
-    visibility_mapper: &mut U,
+    obj_query: &Query<&mut GameObj>,
+    visibility_query: &mut Query<&mut Visibility>,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
-) where
-    T: Mapper<Entity, GameObj>,
-    U: MutMapper<Entity, Visibility>,
-{
+) {
     let offscreen_regions = old_visible_region.sub(&new_visible_region);
     let func = |entity: &Entity| -> bool {
-        let Some(obj) = obj_mapper.get(*entity) else {
+        let Ok(obj) = obj_query.get(*entity) else {
             error!("Cannot find GameObj");
             return true;
         };
-        let Some(visibility) = visibility_mapper.get(*entity) else {
+        let Ok(mut visibility) = visibility_query.get_mut(*entity) else {
             error!("Cannot find Visibility");
             return true;
         };
@@ -174,24 +167,21 @@ fn hide_offscreen_objs<T, U>(
     game_map.run_on_regions(&offscreen_regions, func);
 }
 
-fn update_onscreen_screen_pos<T, U>(
+fn update_onscreen_screen_pos(
     old_visible_region: &MapRegion,
     new_visible_region: &MapRegion,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    obj_mapper: &T,
-    transform_mapper: &mut U,
-) where
-    T: Mapper<Entity, GameObj>,
-    U: MutMapper<Entity, Transform>,
-{
+    obj_query: &Query<&mut GameObj>,
+    transform_query: &mut Query<&mut Transform>,
+) {
     let onscreen_regions = old_visible_region.intersect(&new_visible_region);
     let func = |entity: &Entity| -> bool {
-        let Some(obj) = obj_mapper.get(*entity) else {
+        let Ok(obj) = obj_query.get(*entity) else {
             error!("Cannot find GameObj");
             return true;
         };
-        let Some(transform) = transform_mapper.get(*entity) else {
+        let Ok(mut transform) = transform_query.get_mut(*entity) else {
             error!("Cannot find Transform");
             return true;
         };
@@ -206,28 +196,24 @@ fn update_onscreen_screen_pos<T, U>(
     game_map.run_on_regions(&onscreen_regions, func);
 }
 
-fn show_newscreen_objs<T, U, W>(
+fn show_newscreen_objs(
     old_visible_region: &MapRegion,
     new_visible_region: &MapRegion,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    obj_mapper: &T,
-    transform_mapper: &mut U,
-    visibility_mapper: &mut W,
-) where
-    T: Mapper<Entity, GameObj>,
-    U: MutMapper<Entity, Transform>,
-    W: MutMapper<Entity, Visibility>,
-{
+    obj_query: &Query<&mut GameObj>,
+    transform_query: &mut Query<&mut Transform>,
+    visibility_query: &mut Query<&mut Visibility>,
+) {
     let newscreen_regions = new_visible_region.sub(&old_visible_region);
     let func = |entity: &Entity| -> bool {
-        let Some(obj) = obj_mapper.get(*entity) else {
+        let Ok(obj) = obj_query.get(*entity) else {
             return true;
         };
-        let Some(transform) = transform_mapper.get(*entity) else {
+        let Ok(mut transform) = transform_query.get_mut(*entity) else {
             return true;
         };
-        let Some(visibility) = visibility_mapper.get(*entity) else {
+        let Ok(mut visibility) = visibility_query.get_mut(*entity) else {
             return true;
         };
         let screen_pos = world_info.get_screen_pos(&obj.pos);
