@@ -13,8 +13,7 @@ pub fn explode_all<'a, 'b, T, U>(
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
-)
-where
+) where
     T: Mapper<Entity, GameObj>,
     U: MutMapper<Entity, HPComponent>,
 {
@@ -108,8 +107,7 @@ fn do_damage<T, U>(
     hp_mapper: &mut U,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
-)
-where
+) where
     T: Mapper<Entity, GameObj>,
     U: MutMapper<Entity, HPComponent>,
 {

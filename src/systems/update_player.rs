@@ -5,16 +5,13 @@ use bevy::prelude::*;
 use std::collections::HashSet;
 
 pub fn update_player(
-    mut player_query: Single<
-        (Entity, &mut MoveComponent),
-        With<Player>,
-    >,
+    player_query: Single<(Entity, &mut MoveComponent), With<Player>>,
     game_lib: Res<GameLib>,
     mut game_map: ResMut<GameMap>,
     mut world_info: ResMut<WorldInfo>,
+    mut obj_query: Query<&mut GameObj>,
     mut transform_query: Query<&mut Transform>,
     mut visibility_query: Query<&mut Visibility>,
-    mut obj_query: Query<&mut GameObj>,
     mut hp_query: Query<&mut HPComponent>,
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
@@ -30,8 +27,7 @@ pub fn update_player(
     };
 
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
-    let new_pos =
-        obj.pos + obj.direction * player_query.1.speed * time.delta_secs();
+    let new_pos = obj.pos + obj.direction * player_query.1.speed * time.delta_secs();
 
     if !check_collide(
         &player_query.0,
@@ -48,17 +44,19 @@ pub fn update_player(
             new_pos,
             game_map.as_mut(),
             world_info.as_ref(),
-            &mut obj_query,
-            player_query.3.as_mut(),
+            MutQueryMapper::new(&mut obj_query),
+            MutQueryMapper::new(&mut transform_query),
         );
+
         update_origin(
             &new_pos,
             game_map.as_mut(),
             world_info.as_mut(),
-            game_obj_lib.as_ref(),
+            &QueryMapperByMut::new(&obj_query),
+            &mut MutQueryMapper::new(&mut transform_query),
+            &mut MutQueryMapper::new(&mut visibility_query),
             game_lib.as_ref(),
             despawn_pool.as_mut(),
-            &mut commands,
         );
     }
 
@@ -71,7 +69,7 @@ pub fn update_player(
         &mut captured_missiles,
         game_map.as_ref(),
         world_info.as_ref(),
-        game_obj_lib.as_ref(),
+        &QueryMapperByMut::new(&obj_query),
         game_lib.as_ref(),
         despawn_pool.as_ref(),
     );
@@ -79,10 +77,10 @@ pub fn update_player(
     if !captured_missiles.is_empty() {
         explode_all(
             &mut captured_missiles,
-            game_obj_lib.as_mut(),
             game_map.as_mut(),
             world_info.as_mut(),
-            &mut hp_query,
+            &QueryMapperByMut::new(&obj_query),
+            &mut MutQueryMapper::new(&mut hp_query),
             game_lib.as_ref(),
             despawn_pool.as_mut(),
             &mut commands,
@@ -99,8 +97,7 @@ fn update_origin<T, U, W>(
     visibility_mapper: &mut W,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
-)
-where
+) where
     T: Mapper<Entity, GameObj>,
     U: MutMapper<Entity, Transform>,
     W: MutMapper<Entity, Visibility>,
@@ -148,8 +145,7 @@ fn hide_offscreen_objs<T, U>(
     visibility_mapper: &mut U,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
-)
-where
+) where
     T: Mapper<Entity, GameObj>,
     U: MutMapper<Entity, Visibility>,
 {
@@ -185,10 +181,9 @@ fn update_onscreen_screen_pos<T, U>(
     world_info: &WorldInfo,
     obj_mapper: &T,
     transform_mapper: &mut U,
-)
-where
+) where
     T: Mapper<Entity, GameObj>,
-    U: MutMapper<Entity, Transform>
+    U: MutMapper<Entity, Transform>,
 {
     let onscreen_regions = old_visible_region.intersect(&new_visible_region);
     let func = |entity: &Entity| -> bool {
@@ -219,8 +214,7 @@ fn show_newscreen_objs<T, U, W>(
     obj_mapper: &T,
     transform_mapper: &mut U,
     visibility_mapper: &mut W,
-)
-where
+) where
     T: Mapper<Entity, GameObj>,
     U: MutMapper<Entity, Transform>,
     W: MutMapper<Entity, Visibility>,

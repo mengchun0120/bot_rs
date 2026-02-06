@@ -4,20 +4,18 @@ use crate::misc::*;
 use bevy::prelude::*;
 
 pub fn update_missiles(
-    mut q_missile: Query<
-        (Entity, &MoveComponent, &mut Transform),
-        With<MissileComponent>,
-    >,
+    mut q_missile: Query<(Entity, &MoveComponent), With<MissileComponent>>,
     mut game_map: ResMut<GameMap>,
     mut world_info: ResMut<WorldInfo>,
     mut obj_query: Query<&mut GameObj>,
+    mut transform_query: Query<&mut Transform>,
     mut hp_query: Query<&mut HPComponent>,
     game_lib: Res<GameLib>,
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, move_comp, mut transform) in q_missile.iter_mut() {
+    for (entity, move_comp) in q_missile.iter_mut() {
         if despawn_pool.contains(&entity) {
             continue;
         }
@@ -63,20 +61,14 @@ pub fn update_missiles(
             }
             despawn_pool.insert(entity);
         } else {
-            obj_query.get_mut(entity).and_then(|mut obj| {
-                update_obj_pos(
-                    entity,
-                    obj.as_mut(),
-                    new_pos,
-                    game_map.as_mut(),
-                    world_info.as_ref(),
-                    transform.as_mut(),
-                );
-                Ok(())
-            });
-
-
-
+            update_obj_pos(
+                entity,
+                new_pos,
+                game_map.as_mut(),
+                world_info.as_mut(),
+                MutQueryMapper::new(&mut obj_query),
+                MutQueryMapper::new(&mut transform_query),
+            );
         }
     }
 }

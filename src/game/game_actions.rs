@@ -43,14 +43,26 @@ pub fn fire_missiles(
     Ok(())
 }
 
-pub fn update_obj_pos(
+pub fn update_obj_pos<T, U>(
     entity: Entity,
-    obj: &mut GameObj,
     new_pos: Vec2,
     game_map: &mut GameMap,
     world_info: &WorldInfo,
-    transform: &mut Transform,
-) {
+    mut obj_mapper: T,
+    mut transform_mapper: U,
+) where
+    T: MutMapper<Entity, GameObj>,
+    U: MutMapper<Entity, Transform>,
+{
+    let Some(obj) = obj_mapper.get(entity) else {
+        error!("Cannot find GameObj");
+        return;
+    };
+    let Some(transform) = transform_mapper.get(entity) else {
+        error!("Cannot find Transform");
+        return;
+    };
+
     obj.pos = new_pos;
 
     let map_pos = game_map.get_map_pos(&obj.pos);
@@ -64,17 +76,19 @@ pub fn update_obj_pos(
     transform.translation.y = screen_pos.y;
 }
 
-pub fn capture_missiles(
+pub fn capture_missiles<T>(
     pos: &Vec2,
     collide_span: f32,
     side: GameObjSide,
     captured_missiles: &mut HashSet<Entity>,
     game_map: &GameMap,
     world_info: &WorldInfo,
-    obj_query: &Query<&mut GameObj>,
+    obj_mapper: &T,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
-) {
+) where
+    T: Mapper<Entity, GameObj>,
+{
     let total_span = collide_span + world_info.max_collide_span();
     let region = game_map.get_region(
         pos.x - total_span,
@@ -87,7 +101,8 @@ pub fn capture_missiles(
             return true;
         }
 
-        let Ok(obj) = obj_query.get(*entity) else {
+        let Some(obj) = obj_mapper.get(*entity) else {
+            error!("Cannot find GameObj");
             return true;
         };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);
@@ -96,7 +111,7 @@ pub fn capture_missiles(
             && obj_config.side != side
             && check_collide_obj(pos, collide_span, &obj.pos, obj_config.collide_span)
         {
-            captured_missiles.insert(entity.clone());
+            captured_missiles.insert(*entity);
         }
 
         true

@@ -59,14 +59,14 @@ pub mod game_utils {
 pub mod misc {
     pub mod collide;
     pub mod my_error;
-    pub mod query_mapper;
     pub mod mytraits;
+    pub mod query_mapper;
     pub mod utils;
 
     pub use collide::*;
     pub use my_error::*;
-    pub use query_mapper::*;
     pub use mytraits::*;
+    pub use query_mapper::*;
     pub use utils::*;
 }
 
