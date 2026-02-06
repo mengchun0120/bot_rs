@@ -120,7 +120,7 @@ fn create_player(
 }
 
 fn create_ai_bot(
-    mut obj: GameObj,
+    obj: GameObj,
     speed: Option<f32>,
     obj_config: &GameObjConfig,
     world_info: &mut WorldInfo,
@@ -130,19 +130,11 @@ fn create_ai_bot(
 ) -> Result<(), MyError> {
     let visible = world_info.check_pos_visible(&obj.pos);
     let main_body = create_main_body(obj_config, visible, game_lib, commands)?;
-    let mut transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
-    let mut move_comp = MoveComponent::new(speed.unwrap_or(0.0));
-    let mut weapon_comp = create_weapon(main_body, obj_config, game_lib, commands)?;
+    let transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
+    let move_comp = MoveComponent::new(speed.unwrap_or(0.0));
+    let weapon_comp = create_weapon(main_body, obj_config, game_lib, commands)?;
     let hp_comp = create_hp_comp(obj_config)?;
-    let ai_comp = create_ai_comp(
-        &mut obj,
-        obj_config,
-        world_info,
-        &mut transform,
-        &mut move_comp,
-        &mut weapon_comp,
-        game_lib,
-    )?;
+    let ai_comp = create_ai_comp(obj_config, game_lib)?;
     let mut cmd = commands.entity(main_body);
 
     add_obj(main_body, &obj, obj_config, world_info, game_map);
@@ -362,36 +354,15 @@ fn create_hp_comp(obj_config: &GameObjConfig) -> Result<HPComponent, MyError> {
     Ok(HPComponent::new(hp))
 }
 
-fn create_ai_comp(
-    obj: &mut GameObj,
-    obj_config: &GameObjConfig,
-    world_info: &WorldInfo,
-    transform: &mut Transform,
-    move_comp: &mut MoveComponent,
-    weapon_comp: &mut WeaponComponent,
-    game_lib: &GameLib,
-) -> Result<AIComponent, MyError> {
+fn create_ai_comp(obj_config: &GameObjConfig, game_lib: &GameLib) -> Result<AIComponent, MyError> {
     let Some(ai_config_name) = obj_config.ai.as_ref() else {
         let msg = "AI config is missing".to_string();
         error!(msg);
         return Err(MyError::Other(msg));
     };
     let ai_config = game_lib.get_ai_config(ai_config_name)?;
-    let Some(player_pos) = world_info.player_pos() else {
-        let msg = "Player-pos not specified".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
-    };
 
-    let ai_comp = AIComponent::new(
-        ai_config,
-        obj,
-        transform,
-        move_comp,
-        weapon_comp,
-        &player_pos,
-        game_lib,
-    );
+    let ai_comp = AIComponent::new(ai_config);
 
     Ok(ai_comp)
 }

@@ -14,6 +14,7 @@ pub struct ChaseShootAIEngine {
     direction_keep_timer: Timer,
     directions: Vec<WeightedDirection>,
 }
+
 struct WeightedDirection {
     direction: Vec2,
     weight: f32,
@@ -23,27 +24,14 @@ const DIRECTION_WEIGHTS: [f32; 4] = [1.0, 1.0, 3.0, 5.0];
 const TOTAL_WEIGHTS: f32 = 10.0;
 
 impl ChaseShootAIEngine {
-    pub fn new(
-        config: ChaseShootAIConfig,
-        obj: &mut GameObj,
-        transform: &mut Transform,
-        move_comp: &mut MoveComponent,
-        weapon_comp: &mut WeaponComponent,
-        player_pos: &Vec2,
-        game_lib: &GameLib,
-    ) -> Self {
-        let (action, action_duration, direction_keeptime) = Self::rand_action(&config);
-        let mut engine = Self {
+    pub fn new(config: ChaseShootAIConfig) -> Self {
+        Self {
             config,
-            action,
-            action_timer: Timer::from_seconds(action_duration, TimerMode::Repeating),
-            direction_keep_timer: Timer::from_seconds(direction_keeptime, TimerMode::Repeating),
+            action: AIAction::DoNothing,
+            action_timer: Timer::from_seconds(0.0, TimerMode::Repeating),
+            direction_keep_timer: Timer::from_seconds(0.0, TimerMode::Repeating),
             directions: Self::init_directions(),
-        };
-
-        engine.init(obj, transform, move_comp, weapon_comp, player_pos, game_lib);
-
-        engine
+        }
     }
 
     fn run_chase(
@@ -149,30 +137,6 @@ impl ChaseShootAIEngine {
         obj.direction = direction;
     }
 
-    fn init(
-        &mut self,
-        obj: &mut GameObj,
-        transform: &mut Transform,
-        move_comp: &mut MoveComponent,
-        weapon_comp: &mut WeaponComponent,
-        player_pos: &Vec2,
-        game_lib: &GameLib,
-    ) {
-        Self::set_direction(obj, transform, (player_pos - obj.pos).normalize());
-
-        match self.action {
-            AIAction::Chase => {
-                let obj_config = game_lib.get_game_obj_config(obj.config_index);
-                move_comp.speed = obj_config.speed;
-            }
-            AIAction::Shoot => {
-                move_comp.speed = 0.0;
-                weapon_comp.fire_timer.reset();
-            }
-            _ => {}
-        }
-    }
-
     fn reconfig_direction(
         &mut self,
         obj: &mut GameObj,
@@ -236,19 +200,23 @@ impl AIEngine for ChaseShootAIEngine {
         game_lib: &GameLib,
         time: &Time,
     ) {
-        self.action_timer.tick(time.delta());
-        if self.action_timer.is_finished() {
+        if self.action == AIAction::DoNothing {
             self.reset_action(obj, transform, move_comp, weapon_comp, player_pos, game_lib);
         } else {
-            match self.action {
-                AIAction::Chase => {
-                    self.run_chase(obj, transform, move_comp, player_pos, game_lib, time);
-                }
-                AIAction::Shoot => {
-                    self.run_shoot(obj, transform, player_pos, time);
-                }
-                _ => {}
-            };
+            self.action_timer.tick(time.delta());
+            if self.action_timer.is_finished() {
+                self.reset_action(obj, transform, move_comp, weapon_comp, player_pos, game_lib);
+            } else {
+                match self.action {
+                    AIAction::Chase => {
+                        self.run_chase(obj, transform, move_comp, player_pos, game_lib, time);
+                    }
+                    AIAction::Shoot => {
+                        self.run_shoot(obj, transform, player_pos, time);
+                    }
+                    _ => {}
+                };
+            }
         }
     }
 }

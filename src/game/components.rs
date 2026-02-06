@@ -118,28 +118,9 @@ impl PlayComponent {
 }
 
 impl AIComponent {
-    pub fn new(
-        ai_config: &AIConfig,
-        obj: &mut GameObj,
-        transform: &mut Transform,
-        move_comp: &mut MoveComponent,
-        weapon_comp: &mut WeaponComponent,
-        player_pos: &Vec2,
-        game_lib: &GameLib,
-    ) -> Self {
+    pub fn new(ai_config: &AIConfig) -> Self {
         let engine = match ai_config {
-            AIConfig::ChaseShoot(config) => {
-                let ai_engine = ChaseShootAIEngine::new(
-                    *config,
-                    obj,
-                    transform,
-                    move_comp,
-                    weapon_comp,
-                    player_pos,
-                    game_lib,
-                );
-                Box::new(ai_engine)
-            }
+            AIConfig::ChaseShoot(config) => Box::new(ChaseShootAIEngine::new(*config)),
         };
 
         AIComponent { engine }
