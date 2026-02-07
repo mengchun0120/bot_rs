@@ -4,15 +4,16 @@ use crate::misc::*;
 use bevy::prelude::*;
 use std::collections::HashSet;
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MoveResult {
-    Moved,
+    Moved(Vec2),
     Collided,
     NotMoved,
 }
 
 pub fn move_bot(
     entity: Entity,
-    speed: f32,
+    move_comp: &mut MoveComponent,
     obj_query: &mut Query<&mut GameObj>,
     transform_query: &mut Query<&mut Transform>,
     visibility_query: &mut Query<&mut Visibility>,
@@ -24,7 +25,7 @@ pub fn move_bot(
     commands: &mut Commands,
     time: &Time,
 ) -> Result<MoveResult, MyError> {
-    if speed == 0.0 {
+    if move_comp.speed == 0.0 {
         return Ok(MoveResult::NotMoved);
     }
 
@@ -33,9 +34,8 @@ pub fn move_bot(
         error!(msg);
         return Err(MyError::NotFound(msg));
     };
-
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
-    let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
+    let new_pos = obj.pos + obj.direction * move_comp.speed * time.delta_secs();
     let collided = check_collide(
         &entity,
         &new_pos,
@@ -58,8 +58,10 @@ pub fn move_bot(
         )?;
 
         if obj_config.side == GameObjSide::AI {
-            update_obj_visibility(entity, &new_pos, visibility_query, world_info)?;
+            update_bot_visibility(entity, &new_pos, visibility_query, world_info)?;
         }
+    } else {
+        move_comp.speed = 0.0;
     }
 
     capture_missiles(
@@ -78,8 +80,77 @@ pub fn move_bot(
     Ok(if collided {
         MoveResult::Collided
     } else {
-        MoveResult::Moved
+        MoveResult::Moved(new_pos)
     })
+}
+
+pub fn move_missile(
+    entity: Entity,
+    move_comp: &MoveComponent,
+    obj_query: &mut Query<&mut GameObj>,
+    transform_query: &mut Query<&mut Transform>,
+    hp_query: &mut Query<&mut HPComponent>,
+    game_map: &mut GameMap,
+    world_info: &mut WorldInfo,
+    game_lib: &GameLib,
+    despawn_pool: &mut DespawnPool,
+    commands: &mut Commands,
+    time: &Time,
+) -> Result<MoveResult, MyError> {
+    if move_comp.speed == 0.0 {
+        return Ok(MoveResult::NotMoved);
+    }
+
+    let Ok(obj) = obj_query.get(entity).cloned() else {
+        let msg = "Cannot find GameObj".to_string();
+        error!(msg);
+        return Err(MyError::NotFound(msg));
+    };
+    let obj_config = game_lib.get_game_obj_config(obj.config_index);
+    let new_pos = obj.pos + obj.direction * move_comp.speed * time.delta_secs();
+
+    if !world_info.check_pos_visible(&new_pos) {
+        despawn_pool.insert(entity);
+        return Ok(MoveResult::NotMoved);
+    }
+
+    let collided = check_collide(
+        &entity,
+        &new_pos,
+        obj_config.collide_span,
+        &obj_query,
+        game_map,
+        world_info,
+        game_lib,
+        despawn_pool,
+    );
+    if collided {
+        if let Some(explosion) = obj_config.explosion.as_ref() {
+            explode(
+                explosion,
+                new_pos,
+                obj_query,
+                hp_query,
+                game_map,
+                world_info,
+                game_lib,
+                despawn_pool,
+                commands,
+            )?;
+        }
+        despawn_pool.insert(entity);
+        Ok(MoveResult::Collided)
+    } else {
+        update_obj_pos(
+            entity,
+            new_pos,
+            obj_query,
+            transform_query,
+            game_map,
+            world_info,
+        )?;
+        Ok(MoveResult::Moved(new_pos))
+    }
 }
 
 fn update_obj_pos(
@@ -116,7 +187,7 @@ fn update_obj_pos(
     Ok(())
 }
 
-fn update_obj_visibility(
+fn update_bot_visibility(
     entity: Entity,
     pos: &Vec2,
     visibility_query: &mut Query<&mut Visibility>,

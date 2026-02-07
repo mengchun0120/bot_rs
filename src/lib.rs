@@ -30,6 +30,7 @@ pub mod game {
     pub mod game_obj_side;
     pub mod game_obj_type;
     pub mod move_obj;
+    pub mod shoot;
 
     pub use components::*;
     pub use create_obj::*;
@@ -38,6 +39,7 @@ pub mod game {
     pub use game_obj_side::*;
     pub use game_obj_type::*;
     pub use move_obj::*;
+    pub use shoot::*;
 }
 
 pub mod game_utils {
