@@ -3,8 +3,9 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn update_missiles(
-    q_missile: Query<(Entity, &MoveComponent), With<MissileComponent>>,
+    q_missile: Query<Entity, With<MissileComponent>>,
     mut obj_query: Query<&mut GameObj>,
+    move_comp_query: Query<&mut MoveComponent>,
     mut transform_query: Query<&mut Transform>,
     mut hp_query: Query<&mut HPComponent>,
     mut game_map: ResMut<GameMap>,
@@ -14,14 +15,14 @@ pub fn update_missiles(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, move_comp) in q_missile.iter() {
+    for entity in q_missile.iter() {
         if despawn_pool.contains(&entity) {
             continue;
         }
 
         if move_missile(
             entity,
-            move_comp,
+            &move_comp_query,
             &mut obj_query,
             &mut transform_query,
             &mut hp_query,

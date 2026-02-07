@@ -19,6 +19,9 @@ pub struct ExplosionComponent;
 #[derive(Component)]
 pub struct TileComponent;
 
+#[derive(Component)]
+pub struct InView;
+
 #[derive(Clone, Component)]
 pub struct GameObj {
     pub config_index: usize,

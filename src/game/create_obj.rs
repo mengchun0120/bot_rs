@@ -145,6 +145,10 @@ fn create_ai_bot(
     cmd.insert(hp_comp);
     cmd.insert(ai_comp);
 
+    if visible {
+        cmd.insert(InView);
+    }
+
     Ok(())
 }
 

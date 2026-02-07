@@ -13,7 +13,7 @@ pub enum MoveResult {
 
 pub fn move_bot(
     entity: Entity,
-    move_comp: &mut MoveComponent,
+    move_comp_query: &mut Query<&mut MoveComponent>,
     obj_query: &mut Query<&mut GameObj>,
     transform_query: &mut Query<&mut Transform>,
     visibility_query: &mut Query<&mut Visibility>,
@@ -25,6 +25,12 @@ pub fn move_bot(
     commands: &mut Commands,
     time: &Time,
 ) -> Result<MoveResult, MyError> {
+    let Ok(mut move_comp) = move_comp_query.get_mut(entity) else {
+        let msg = "Cannot find MoveComponent".to_string();
+        error!(msg);
+        return Err(MyError::NotFound(msg));
+    };
+
     if move_comp.speed == 0.0 {
         return Ok(MoveResult::NotMoved);
     }
@@ -58,7 +64,7 @@ pub fn move_bot(
         )?;
 
         if obj_config.side == GameObjSide::AI {
-            update_bot_visibility(entity, &new_pos, visibility_query, world_info)?;
+            update_bot_visibility(entity, &new_pos, visibility_query, world_info, commands)?;
         }
     } else {
         move_comp.speed = 0.0;
@@ -84,9 +90,24 @@ pub fn move_bot(
     })
 }
 
+pub fn stop_bot(
+    entity: Entity,
+    move_comp_query: &mut Query<&mut MoveComponent>,
+) -> Result<(), MyError> {
+    let Ok(mut move_comp) = move_comp_query.get_mut(entity) else {
+        let msg = "Cannot find MoveComponent".to_string();
+        error!(msg);
+        return Err(MyError::NotFound(msg));
+    };
+
+    move_comp.speed = 0.0;
+
+    Ok(())
+}
+
 pub fn move_missile(
     entity: Entity,
-    move_comp: &MoveComponent,
+    move_comp_query: &Query<&mut MoveComponent>,
     obj_query: &mut Query<&mut GameObj>,
     transform_query: &mut Query<&mut Transform>,
     hp_query: &mut Query<&mut HPComponent>,
@@ -97,6 +118,12 @@ pub fn move_missile(
     commands: &mut Commands,
     time: &Time,
 ) -> Result<MoveResult, MyError> {
+    let Ok(move_comp) = move_comp_query.get(entity) else {
+        let msg = "Cannot find MoveComponent".to_string();
+        error!(msg);
+        return Err(MyError::NotFound(msg));
+    };
+
     if move_comp.speed == 0.0 {
         return Ok(MoveResult::NotMoved);
     }
@@ -192,6 +219,7 @@ fn update_bot_visibility(
     pos: &Vec2,
     visibility_query: &mut Query<&mut Visibility>,
     world_info: &WorldInfo,
+    commands: &mut Commands,
 ) -> Result<(), MyError> {
     let Ok(mut visibility) = visibility_query.get_mut(entity) else {
         let msg = "Cannot find visibility".to_string();
@@ -199,11 +227,13 @@ fn update_bot_visibility(
         return Err(MyError::NotFound(msg));
     };
 
-    *visibility = if world_info.check_pos_visible(pos) {
-        Visibility::Visible
+    if world_info.check_pos_visible(pos) {
+        commands.entity(entity).insert(InView);
+        *visibility = Visibility::Visible
     } else {
-        Visibility::Hidden
-    };
+        commands.entity(entity).remove::<InView>();
+        *visibility = Visibility::Hidden
+    }
 
     Ok(())
 }
