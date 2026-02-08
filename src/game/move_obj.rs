@@ -66,7 +66,7 @@ pub fn move_bot(
         if obj_config.side == GameObjSide::AI {
             update_bot_visibility(entity, &new_pos, visibility_query, world_info, commands)?;
         }
-    } else {
+    } else if obj_config.side == GameObjSide::AI {
         move_comp.speed = 0.0;
     }
 
