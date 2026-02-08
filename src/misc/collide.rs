@@ -65,35 +65,29 @@ fn check_collide_objs(
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
-    let mut collide = false;
     let collide_region = get_collide_region(pos, collide_span, game_map, world_info);
 
-    let func = |e: &Entity| -> bool {
-        if entity == e || despawn_pool.contains(e) {
-            return true;
+    for e in game_map.map_iter(&collide_region) {
+        if *entity == e || despawn_pool.contains(&e) {
+            continue;
         }
 
-        let Some(obj2) = game_obj_lib.get(e) else {
+        let Some(obj2) = game_obj_lib.get(&e) else {
             error!("Cannot find GameObj {} in GameObjLib", e);
-            return true;
+            continue;
         };
         let obj_config2 = game_lib.get_game_obj_config(obj2.config_index);
 
         if (obj_config2.obj_type != GameObjType::Bot && obj_config2.obj_type != GameObjType::Tile)
             || obj_config2.collide_span == 0.0
         {
-            return true;
+            continue;
         }
 
         if check_collide_obj(&pos, collide_span, &obj2.pos, obj_config2.collide_span) {
-            collide = true;
-            return false;
+            return true;
         }
+    }
 
-        true
-    };
-
-    game_map.run_on_region(&collide_region, func);
-
-    collide
+    false
 }

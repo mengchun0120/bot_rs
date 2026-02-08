@@ -167,6 +167,8 @@ fn create_player(
         game_obj_lib,
     );
 
+    debug!("created player {}", main_body);
+
     Ok(())
 }
 
@@ -209,6 +211,8 @@ fn create_ai_bot(
         game_obj_lib,
     );
 
+    debug!("created ai-bot {}", main_body);
+
     Ok(())
 }
 
@@ -230,6 +234,8 @@ fn create_tile(
     cmd.insert(TileComponent);
 
     add_obj(entity, obj, obj_config, world_info, game_map, game_obj_lib);
+
+    debug!("created tile {}", entity);
 
     Ok(())
 }
@@ -257,6 +263,8 @@ fn create_missile(
     cmd.insert(move_comp);
 
     add_obj(entity, obj, obj_config, world_info, game_map, game_obj_lib);
+
+    debug!("created missile {}", entity);
 
     Ok(())
 }
@@ -293,6 +301,8 @@ fn create_explosion(
         .id();
 
     add_obj(entity, obj, obj_config, world_info, game_map, game_obj_lib);
+
+    debug!("created explosion {}", entity);
 
     Ok(())
 }

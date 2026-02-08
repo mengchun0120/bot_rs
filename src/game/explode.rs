@@ -109,30 +109,27 @@ fn do_damage(
         pos.x + total_span,
         pos.y + total_span,
     );
-    let func = |entity: &Entity| -> bool {
-        if despawn_pool.contains(entity) {
-            return true;
+
+    for entity in game_map.map_iter(&region) {
+        if despawn_pool.contains(&entity) {
+            continue;
         }
 
-        let Some(obj) = game_obj_lib.get(entity) else {
+        let Some(obj) = game_obj_lib.get(&entity) else {
             error!("Cannot find GameObj {} in GameObjLib", entity);
-            return true;
+            continue;
         };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);
 
         if obj_config.obj_type == GameObjType::Bot
             && obj_config.side != side
             && check_collide_obj(&pos, span, &obj.pos, obj_config.collide_span)
-            && let Ok(mut hp_comp) = hp_query.get_mut(*entity)
+            && let Ok(mut hp_comp) = hp_query.get_mut(entity)
         {
             hp_comp.update(-damage);
             if hp_comp.hp() == 0.0 {
-                despawn_pool.insert(*entity);
+                despawn_pool.insert(entity);
             }
         }
-
-        true
-    };
-
-    game_map.run_on_region(&region, func);
+    }
 }

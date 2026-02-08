@@ -293,14 +293,15 @@ fn get_collided_missiles(
         pos.x + total_span,
         pos.y + total_span,
     );
-    let func = |entity: &Entity| -> bool {
-        if despawn_pool.contains(entity) {
-            return true;
+
+    for entity in game_map.map_iter(&region) {
+        if despawn_pool.contains(&entity) {
+            continue;
         }
 
-        let Some(obj) = game_obj_lib.get(entity) else {
+        let Some(obj) = game_obj_lib.get(&entity) else {
             error!("Cannot find GameObj");
-            return true;
+            continue;
         };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);
 
@@ -308,13 +309,9 @@ fn get_collided_missiles(
             && obj_config.side != side
             && check_collide_obj(pos, collide_span, &obj.pos, obj_config.collide_span)
         {
-            collided_missiles.insert(*entity);
+            collided_missiles.insert(entity);
         }
-
-        true
-    };
-
-    game_map.run_on_region(&region, func);
+    }
 
     collided_missiles
 }

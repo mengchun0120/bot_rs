@@ -1,12 +1,21 @@
 use crate::game_utils::*;
 use bevy::prelude::*;
-
-use std::collections::HashSet;
+use std::collections::{HashSet, hash_set::Iter};
 
 #[derive(Resource)]
 pub struct GameMap {
     cell_size: f32,
     pub map: Vec<Vec<HashSet<Entity>>>,
+}
+
+pub struct MapIterator<'a> {
+    game_map: &'a GameMap,
+    row: usize,
+    col: usize,
+    end_row: usize,
+    start_col: usize,
+    end_col: usize,
+    iter: Iter<'a, Entity>,
 }
 
 impl GameMap {
@@ -66,34 +75,6 @@ impl GameMap {
         i.clamp(0, (self.col_count() - 1) as i32) as usize
     }
 
-    pub fn run_on_regions<F>(&self, regions: &Vec<MapRegion>, mut func: F) -> bool
-    where
-        F: FnMut(&Entity) -> bool,
-    {
-        for region in regions.iter() {
-            if !self.run_on_region(region, &mut func) {
-                return false;
-            }
-        }
-        true
-    }
-
-    pub fn run_on_region<F>(&self, region: &MapRegion, mut func: F) -> bool
-    where
-        F: FnMut(&Entity) -> bool,
-    {
-        for row in region.start_row..=region.end_row {
-            for col in region.start_col..=region.end_col {
-                for entity in self.map[row][col].iter() {
-                    if !func(entity) {
-                        return false;
-                    }
-                }
-            }
-        }
-        true
-    }
-
     #[inline]
     pub fn get_region(&self, left: f32, bottom: f32, right: f32, top: f32) -> MapRegion {
         MapRegion {
@@ -112,5 +93,57 @@ impl GameMap {
             rect_region.right,
             rect_region.top,
         )
+    }
+
+    pub fn map_iter<'a>(&'a self, region: &MapRegion) -> MapIterator<'a> {
+        MapIterator::new(&self, region)
+    }
+}
+
+impl<'a> MapIterator<'a> 
+{
+    pub fn new(game_map: &'a GameMap, region: &MapRegion) -> Self {
+        Self {
+            game_map,
+            row: region.start_row,
+            col: region.start_col,
+            end_row: region.end_row,
+            start_col: region.start_col,
+            end_col: region.end_col,
+            iter: game_map.map[region.start_row][region.start_col].iter(),
+        }
+    }
+
+    fn move_to_next_cell(&mut self) -> bool {
+        if self.col < self.end_col {
+            self.col += 1;
+            self.iter = self.game_map.map[self.row][self.col].iter();
+            true
+        } else if self.row < self.end_row {
+            self.col = self.start_col;
+            self.row += 1;
+            self.iter = self.game_map.map[self.row][self.col].iter();
+            true
+        } else {
+            false
+        }
+    }
+
+}
+
+impl<'a> Iterator for MapIterator<'a> {
+    type Item = Entity;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(entity) = self.iter.next() {
+            Some(*entity)
+        } else {
+            while self.move_to_next_cell() {
+                if let Some(entity) = self.iter.next() {
+                    return Some(*entity);
+                }
+            }
+            None
+        }
     }
 }
