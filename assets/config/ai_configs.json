@@ -7,5 +7,14 @@
             "shoot_duration": 5.0,
             "shoot_direction_keeptime": 0.5
         }
+    },
+    "sniper": {
+        "ChaseShoot": {
+            "chase_prob": 0.0,
+            "chase_direction_keeptime": 2.0,
+            "chase_duration": 1.0,
+            "shoot_duration": 5.0,
+            "shoot_direction_keeptime": 0.5
+        }
     }
 }

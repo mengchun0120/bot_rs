@@ -114,7 +114,7 @@ fn do_damage(
         }
 
         let Ok(obj) = obj_query.get(*entity) else {
-            error!("Cannot find GameObj");
+            error!("Cannot find GameObj {}", entity);
             return true;
         };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);

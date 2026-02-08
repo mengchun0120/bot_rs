@@ -18,11 +18,6 @@
             "direction": [0.0, 1.0]
         },
         {
-            "config_name": "ai_bot",
-            "pos": [400.0, 120.0],
-            "direction": [1.0, 0.0]
-        },
-        {
             "config_name": "steel_tile",
             "pos": [600.0, 600.0],
             "direction": [1.0, 0.0]
@@ -46,11 +41,6 @@
             "config_name": "steel_tile",
             "pos": [100.0, 800.0],
             "direction": [1.0, 0.0]
-        },
-        {
-            "config_name": "orange_standard_missile",
-            "pos": [300.0, 400.0],
-            "direction": [0.0, -1.0]
         }
     ]
 }

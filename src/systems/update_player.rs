@@ -59,171 +59,58 @@ fn update_origin(
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) {
-    let old_visible_region = game_map.get_region_from_rect(world_info.visible_region());
+    let old_visible_region = world_info.visible_region().clone();
 
     world_info.set_origin(&origin);
-    let new_visible_region = game_map.get_region_from_rect(world_info.visible_region());
-
-    hide_offscreen_objs(
-        &old_visible_region,
-        &new_visible_region,
-        obj_query,
-        visibility_query,
-        game_map,
-        game_lib,
-        despawn_pool,
-        commands,
-    );
-
-    update_onscreen_screen_pos(
-        &old_visible_region,
-        &new_visible_region,
-        obj_query,
-        transform_query,
-        game_map,
-        world_info,
-        despawn_pool,
-    );
-
-    show_newscreen_objs(
-        &old_visible_region,
-        &new_visible_region,
-        obj_query,
-        transform_query,
-        visibility_query,
-        game_map,
-        world_info,
-        game_lib,
-        despawn_pool,
-        commands,
-    );
-}
-
-fn hide_offscreen_objs(
-    old_visible_region: &MapRegion,
-    new_visible_region: &MapRegion,
-    obj_query: &Query<&mut GameObj>,
-    visibility_query: &mut Query<&mut Visibility>,
-    game_map: &GameMap,
-    game_lib: &GameLib,
-    despawn_pool: &mut DespawnPool,
-    commands: &mut Commands,
-) {
-    let offscreen_regions = old_visible_region.sub(&new_visible_region);
+    let new_visible_region = world_info.visible_region();
+    let region = game_map.get_region(
+        old_visible_region.left.min(new_visible_region.left), 
+        old_visible_region.bottom.min(new_visible_region.bottom), 
+        old_visible_region.right.max(new_visible_region.right), 
+        old_visible_region.top.max(new_visible_region.top));
     let func = |entity: &Entity| -> bool {
         if despawn_pool.contains(entity) {
             return true;
         }
 
         let Ok(obj) = obj_query.get(*entity) else {
-            error!("Cannot find GameObj");
-            return true;
-        };
-        let Ok(mut visibility) = visibility_query.get_mut(*entity) else {
-            error!("Cannot find Visibility");
-            return true;
-        };
-        let obj_type = game_lib.get_game_obj_config(obj.config_index).obj_type;
-
-        match obj_type {
-            GameObjType::Bot => {
-                *visibility = Visibility::Hidden;
-                commands.entity(*entity).remove::<InView>();
-            }
-            GameObjType::Missile | GameObjType::Explosion => {
-                despawn_pool.insert(*entity);
-            }
-            GameObjType::Tile => {
-                *visibility = Visibility::Hidden;
-            }
-        }
-
-        true
-    };
-
-    game_map.run_on_regions(&offscreen_regions, func);
-}
-
-fn update_onscreen_screen_pos(
-    old_visible_region: &MapRegion,
-    new_visible_region: &MapRegion,
-    obj_query: &Query<&mut GameObj>,
-    transform_query: &mut Query<&mut Transform>,
-    game_map: &GameMap,
-    world_info: &WorldInfo,
-    despawn_pool: &DespawnPool,
-) {
-    let onscreen_regions = old_visible_region.intersect(&new_visible_region);
-    let func = |entity: &Entity| -> bool {
-        if despawn_pool.contains(entity) {
-            return true;
-        }
-
-        let Ok(obj) = obj_query.get(*entity) else {
-            error!("Cannot find GameObj");
-            return true;
-        };
-        let Ok(mut transform) = transform_query.get_mut(*entity) else {
-            error!("Cannot find Transform");
-            return true;
-        };
-        let screen_pos = world_info.get_screen_pos(&obj.pos);
-
-        transform.translation.x = screen_pos.x;
-        transform.translation.y = screen_pos.y;
-
-        true
-    };
-
-    game_map.run_on_regions(&onscreen_regions, func);
-}
-
-fn show_newscreen_objs(
-    old_visible_region: &MapRegion,
-    new_visible_region: &MapRegion,
-    obj_query: &Query<&mut GameObj>,
-    transform_query: &mut Query<&mut Transform>,
-    visibility_query: &mut Query<&mut Visibility>,
-    game_map: &GameMap,
-    world_info: &WorldInfo,
-    game_lib: &GameLib,
-    despawn_pool: &DespawnPool,
-    commands: &mut Commands,
-) {
-    let newscreen_regions = new_visible_region.sub(&old_visible_region);
-    let func = |entity: &Entity| -> bool {
-        if despawn_pool.contains(entity) {
-            return true;
-        }
-
-        let Ok(obj) = obj_query.get(*entity) else {
+            error!("Cannot find GameObj {}", entity);
             return true;
         };
         let obj_config = game_lib.get_game_obj_config(obj.config_index);
-
-        if obj_config.side == GameObjSide::Player {
-            return true;
-        }
-
         let Ok(mut transform) = transform_query.get_mut(*entity) else {
+            error!("Cannot find Transform {}", entity);
             return true;
         };
         let Ok(mut visibility) = visibility_query.get_mut(*entity) else {
+            error!("Cannot find Visibility {}", entity);
             return true;
         };
-        let screen_pos = world_info.get_screen_pos(&obj.pos);
 
-        transform.translation.x = screen_pos.x;
-        transform.translation.y = screen_pos.y;
-
-        *visibility = Visibility::Visible;
-
-        if obj_config.obj_type == GameObjType::Bot {
-            commands.entity(*entity).insert(InView);
+        if world_info.check_pos_visible(&obj.pos) {
+            let screen_pos = world_info.get_screen_pos(&obj.pos);
+            transform.translation.x = screen_pos.x;
+            transform.translation.y = screen_pos.y;
+            *visibility = Visibility::Visible;
+            if obj_config.obj_type == GameObjType::Bot {
+                commands.entity(*entity).insert(InView);
+            }
+        } else {
+            if obj_config.obj_type == GameObjType::Missile || obj_config.obj_type == GameObjType::Explosion {
+                despawn_pool.insert(*entity);
+            } else {
+                let screen_pos = world_info.get_screen_pos(&obj.pos);
+                transform.translation.x = screen_pos.x;
+                transform.translation.y = screen_pos.y;
+                *visibility = Visibility::Hidden;
+                if obj_config.obj_type == GameObjType::Bot {
+                    commands.entity(*entity).remove::<InView>();
+                }
+            }
         }
 
         true
     };
-
-    game_map.run_on_regions(&newscreen_regions, func);
+    
+    game_map.run_on_region(&region, func);
 }

@@ -10,7 +10,7 @@ pub fn cleanup(
 ) {
     for entity in despawn_pool.iter() {
         let Ok(obj) = obj_query.get(*entity) else {
-            error!("Cannot find GameObj");
+            error!("Cannot find GameObj {}", entity);
             continue;
         };
 

@@ -229,10 +229,10 @@ fn update_bot_visibility(
 
     if world_info.check_pos_visible(pos) {
         commands.entity(entity).insert(InView);
-        *visibility = Visibility::Visible
+        *visibility = Visibility::Visible;
     } else {
         commands.entity(entity).remove::<InView>();
-        *visibility = Visibility::Hidden
+        *visibility = Visibility::Hidden;
     }
 
     Ok(())

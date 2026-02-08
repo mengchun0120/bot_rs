@@ -74,7 +74,7 @@ fn check_collide_objs(
         }
 
         let Ok(obj2) = obj_query.get(*e) else {
-            error!("Cannot find GameObj");
+            error!("Cannot find GameObj {}", e);
             return true;
         };
         let obj_config2 = game_lib.get_game_obj_config(obj2.config_index);
