@@ -14,12 +14,12 @@ pub fn update_ai(
         ),
         With<AIBot>,
     >,
-    mut obj_query: Query<&mut GameObj>,
+    mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
     despawn_pool: Res<DespawnPool>,
     time: Res<Time>,
 ) {
-    let Ok(player_pos) = obj_query.get(player_query.entity()).map(|obj| obj.pos) else {
+    let Some(player_pos) = game_obj_lib.get(&player_query.entity()).map(|obj| obj.pos) else {
         error!("Cannot find Player");
         return;
     };
@@ -31,13 +31,13 @@ pub fn update_ai(
             continue;
         }
 
-        let Ok(mut obj) = obj_query.get_mut(entity) else {
+        let Some(obj) = game_obj_lib.get_mut(&entity) else {
             error!("Cannot find AIBot");
             continue;
         };
 
         ai_comp.engine.run(
-            obj.as_mut(),
+            obj,
             transform.as_mut(),
             move_comp.as_mut(),
             weapon_comp.as_mut(),

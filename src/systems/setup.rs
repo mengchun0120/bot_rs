@@ -28,11 +28,13 @@ pub fn setup_game(
     };
 
     let mut world_info = create_world_info(&game_config, &map_config);
+    let mut game_obj_lib = GameObjLib::new();
 
     let Some(game_map) = load_game_map(
         &map_config,
         game_config.cell_size,
         &mut world_info,
+        &mut game_obj_lib,
         &game_lib,
         &mut commands,
         &mut exit_app,
@@ -44,6 +46,7 @@ pub fn setup_game(
     commands.spawn(Camera2d);
     commands.insert_resource(game_map);
     commands.insert_resource(world_info);
+    commands.insert_resource(game_obj_lib);
     commands.insert_resource(game_lib);
     commands.insert_resource(DespawnPool::new());
 
@@ -101,6 +104,7 @@ fn load_game_map(
     map_config: &GameMapConfig,
     cell_size: f32,
     world_info: &mut WorldInfo,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
     exit_app: &mut MessageWriter<AppExit>,
@@ -111,6 +115,7 @@ fn load_game_map(
             map_obj_config,
             world_info,
             &mut game_map,
+            game_obj_lib,
             game_lib,
             commands,
         ) {

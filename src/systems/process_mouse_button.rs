@@ -5,22 +5,23 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
 pub fn process_mouse_button(
-    mut player_query: Single<
-        (Entity, &mut GameObj, &mut MoveComponent, &mut Transform),
-        With<Player>,
-    >,
+    mut player_query: Single<(Entity, &mut MoveComponent, &mut Transform), With<Player>>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     window_query: Single<&Window, With<PrimaryWindow>>,
     camera_query: Single<(&Camera, &GlobalTransform)>,
     world_info: Res<WorldInfo>,
+    mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
 ) {
     if mouse_button_input.just_pressed(MouseButton::Right) {
+        let Some(obj) = game_obj_lib.get_mut(&player_query.0) else {
+            error!("Cannot find Player");
+            return;
+        };
         let Some(cursor_pos) = window_query.cursor_position() else {
             warn!("Failed to get cursor position");
             return;
         };
-
         let Some(cursor_pos) = translate_cursor_pos(
             cursor_pos,
             camera_query.0,
@@ -29,14 +30,11 @@ pub fn process_mouse_button(
         ) else {
             return;
         };
-        let speed = game_lib
-            .get_game_obj_config(player_query.1.config_index)
-            .speed;
+        let obj_config = game_lib.get_game_obj_config(obj.config_index);
+        let direction = (cursor_pos - obj.pos).normalize();
 
-        player_query.2.speed = speed;
-
-        let direction = (cursor_pos - player_query.1.pos).normalize();
-        player_query.1.direction = direction.clone();
-        player_query.3.rotation = get_rotation(&direction);
+        obj.direction = direction;
+        player_query.1.speed = obj_config.speed;
+        player_query.2.rotation = get_rotation(&direction);
     }
 }

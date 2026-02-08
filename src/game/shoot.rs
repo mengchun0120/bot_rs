@@ -7,15 +7,15 @@ pub fn try_shoot(
     entity: Entity,
     move_comp_query: &Query<&mut MoveComponent>,
     weapon_comp_query: &mut Query<&mut WeaponComponent>,
-    obj_query: &Query<&mut GameObj>,
-    game_map: &mut GameMap,
     world_info: &mut WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
     time: &Time,
 ) -> Result<(), MyError> {
     let Ok(mut weapon_comp) = weapon_comp_query.get_mut(entity) else {
-        let msg = "Cannot find WeaponComponent".to_string();
+        let msg = format!("Cannot find WeaponComponent {}", entity);
         error!(msg);
         return Err(MyError::NotFound(msg));
     };
@@ -26,12 +26,12 @@ pub fn try_shoot(
     }
 
     let Ok(move_comp) = move_comp_query.get(entity) else {
-        let msg = "Cannot find MoveComponent".to_string();
+        let msg = format!("Cannot find MoveComponent {}", entity);
         error!(msg);
         return Err(MyError::NotFound(msg));
     };
-    let Ok(obj) = obj_query.get(entity) else {
-        let msg = "Cannot find GameObj".to_string();
+    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
+        let msg = format!("Cannot find GameObj {}", entity);
         error!(msg);
         return Err(MyError::NotFound(msg));
     };
@@ -57,6 +57,7 @@ pub fn try_shoot(
             speed,
             world_info,
             game_map,
+            game_obj_lib,
             game_lib,
             commands,
         )?;

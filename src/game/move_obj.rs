@@ -14,12 +14,12 @@ pub enum MoveResult {
 pub fn move_bot(
     entity: Entity,
     move_comp_query: &mut Query<&mut MoveComponent>,
-    obj_query: &mut Query<&mut GameObj>,
     transform_query: &mut Query<&mut Transform>,
     visibility_query: &mut Query<&mut Visibility>,
     hp_query: &mut Query<&mut HPComponent>,
-    game_map: &mut GameMap,
     world_info: &mut WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
@@ -35,7 +35,7 @@ pub fn move_bot(
         return Ok(MoveResult::NotMoved);
     }
 
-    let Ok(obj) = obj_query.get(entity).cloned() else {
+    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
         let msg = "Cannot find GameObj".to_string();
         error!(msg);
         return Err(MyError::NotFound(msg));
@@ -46,9 +46,9 @@ pub fn move_bot(
         &entity,
         &new_pos,
         obj_config.collide_span,
-        &obj_query,
-        game_map,
         world_info,
+        game_map,
+        game_obj_lib,
         game_lib,
         despawn_pool,
     );
@@ -57,10 +57,10 @@ pub fn move_bot(
         update_obj_pos(
             entity,
             new_pos,
-            obj_query,
             transform_query,
-            game_map,
             world_info,
+            game_map,
+            game_obj_lib,
         )?;
 
         if obj_config.side == GameObjSide::AI {
@@ -74,10 +74,10 @@ pub fn move_bot(
         &new_pos,
         obj_config.collide_span,
         obj_config.side,
-        obj_query,
         hp_query,
-        game_map,
         world_info,
+        game_map,
+        game_obj_lib,
         game_lib,
         despawn_pool,
         commands,
@@ -108,11 +108,11 @@ pub fn stop_bot(
 pub fn move_missile(
     entity: Entity,
     move_comp_query: &Query<&mut MoveComponent>,
-    obj_query: &mut Query<&mut GameObj>,
     transform_query: &mut Query<&mut Transform>,
     hp_query: &mut Query<&mut HPComponent>,
-    game_map: &mut GameMap,
     world_info: &mut WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
@@ -128,7 +128,7 @@ pub fn move_missile(
         return Ok(MoveResult::NotMoved);
     }
 
-    let Ok(obj) = obj_query.get(entity).cloned() else {
+    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
         let msg = "Cannot find GameObj".to_string();
         error!(msg);
         return Err(MyError::NotFound(msg));
@@ -145,9 +145,9 @@ pub fn move_missile(
         &entity,
         &new_pos,
         obj_config.collide_span,
-        &obj_query,
-        game_map,
         world_info,
+        game_map,
+        game_obj_lib,
         game_lib,
         despawn_pool,
     );
@@ -156,10 +156,10 @@ pub fn move_missile(
             explode(
                 explosion,
                 new_pos,
-                obj_query,
                 hp_query,
-                game_map,
                 world_info,
+                game_map,
+                game_obj_lib,
                 game_lib,
                 despawn_pool,
                 commands,
@@ -171,10 +171,10 @@ pub fn move_missile(
         update_obj_pos(
             entity,
             new_pos,
-            obj_query,
             transform_query,
-            game_map,
             world_info,
+            game_map,
+            game_obj_lib,
         )?;
         Ok(MoveResult::Moved(new_pos))
     }
@@ -183,12 +183,12 @@ pub fn move_missile(
 fn update_obj_pos(
     entity: Entity,
     new_pos: Vec2,
-    obj_query: &mut Query<&mut GameObj>,
     transform_query: &mut Query<&mut Transform>,
-    game_map: &mut GameMap,
     world_info: &WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
 ) -> Result<(), MyError> {
-    let Ok(mut obj) = obj_query.get_mut(entity) else {
+    let Some(obj) = game_obj_lib.get_mut(&entity) else {
         let msg = "Cannot find GameObj".to_string();
         error!(msg);
         return Err(MyError::NotFound(msg));
@@ -242,10 +242,10 @@ fn capture_missiles(
     pos: &Vec2,
     collide_span: f32,
     side: GameObjSide,
-    obj_query: &Query<&mut GameObj>,
     hp_query: &mut Query<&mut HPComponent>,
-    game_map: &mut GameMap,
     world_info: &mut WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
@@ -254,9 +254,9 @@ fn capture_missiles(
         pos,
         collide_span,
         side,
-        obj_query,
-        game_map,
         world_info,
+        game_map,
+        game_obj_lib,
         game_lib,
         despawn_pool,
     );
@@ -264,10 +264,10 @@ fn capture_missiles(
     if !collided_missiles.is_empty() {
         explode_all(
             &mut collided_missiles,
-            obj_query,
             hp_query,
-            game_map,
             world_info,
+            game_map,
+            game_obj_lib,
             game_lib,
             despawn_pool,
             commands,
@@ -279,9 +279,9 @@ fn get_collided_missiles(
     pos: &Vec2,
     collide_span: f32,
     side: GameObjSide,
-    obj_query: &Query<&mut GameObj>,
-    game_map: &GameMap,
     world_info: &WorldInfo,
+    game_map: &GameMap,
+    game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> HashSet<Entity> {
@@ -298,7 +298,7 @@ fn get_collided_missiles(
             return true;
         }
 
-        let Ok(obj) = obj_query.get(*entity) else {
+        let Some(obj) = game_obj_lib.get(entity) else {
             error!("Cannot find GameObj");
             return true;
         };

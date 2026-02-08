@@ -22,14 +22,6 @@ pub struct TileComponent;
 #[derive(Component)]
 pub struct InView;
 
-#[derive(Clone, Component)]
-pub struct GameObj {
-    pub config_index: usize,
-    pub pos: Vec2,
-    pub map_pos: MapPos,
-    pub direction: Vec2,
-}
-
 #[derive(Component)]
 pub struct MoveComponent {
     pub speed: f32,

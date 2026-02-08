@@ -4,15 +4,18 @@ use crate::misc::*;
 use bevy::prelude::*;
 
 pub fn process_cursor(
-    mut player_query: Single<
-        (Entity, &mut GameObj, &mut MoveComponent, &mut Transform),
-        With<Player>,
-    >,
+    mut player_query: Single<(Entity, &mut MoveComponent, &mut Transform), With<Player>>,
     mut cursor_reader: MessageReader<CursorMoved>,
     camera_query: Single<(&Camera, &GlobalTransform)>,
     world_info: Res<WorldInfo>,
+    mut game_obj_lib: ResMut<GameObjLib>,
 ) {
     for cursor_moved in cursor_reader.read() {
+        let Some(obj) = game_obj_lib.get_mut(&player_query.0) else {
+            error!("Cannot find Player");
+            return;
+        };
+
         let Some(cursor_pos) = translate_cursor_pos(
             cursor_moved.position,
             camera_query.0,
@@ -22,8 +25,8 @@ pub fn process_cursor(
             return;
         };
 
-        let direction = (cursor_pos - player_query.1.pos).normalize();
-        player_query.1.direction = direction;
-        player_query.3.rotation = get_rotation(&direction);
+        let direction = (cursor_pos - obj.pos).normalize();
+        obj.direction = direction;
+        player_query.2.rotation = get_rotation(&direction);
     }
 }

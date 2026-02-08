@@ -27,6 +27,7 @@ pub mod game {
     pub mod create_obj;
     pub mod explode;
     pub mod game_actions;
+    pub mod game_obj;
     pub mod game_obj_side;
     pub mod game_obj_type;
     pub mod move_obj;
@@ -36,6 +37,7 @@ pub mod game {
     pub use create_obj::*;
     pub use explode::*;
     pub use game_actions::*;
+    pub use game_obj::*;
     pub use game_obj_side::*;
     pub use game_obj_type::*;
     pub use move_obj::*;
@@ -46,6 +48,7 @@ pub mod game_utils {
     pub mod despawn_pool;
     pub mod game_lib;
     pub mod game_map;
+    pub mod game_obj_lib;
     pub mod map_pos;
     pub mod map_region;
     pub mod rect_region;
@@ -54,6 +57,7 @@ pub mod game_utils {
     pub use despawn_pool::*;
     pub use game_lib::*;
     pub use game_map::*;
+    pub use game_obj_lib::*;
     pub use map_pos::*;
     pub use map_region::*;
     pub use rect_region::*;
