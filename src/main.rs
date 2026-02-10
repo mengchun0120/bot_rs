@@ -26,6 +26,6 @@ fn main() {
                 update_explosions,
             ),
         )
-        .add_systems(PostUpdate, (cleanup, add_new_objs))
+        .add_systems(PostUpdate, (update_origin, cleanup, add_new_objs).chain())
         .run();
 }

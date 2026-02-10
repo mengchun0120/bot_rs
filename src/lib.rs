@@ -87,6 +87,7 @@ pub mod systems {
     pub mod update_ai_bots;
     pub mod update_explosions;
     pub mod update_missiles;
+    pub mod update_origin;
     pub mod update_player;
 
     pub use add_new_objs::*;
@@ -99,5 +100,6 @@ pub mod systems {
     pub use update_ai_bots::*;
     pub use update_explosions::*;
     pub use update_missiles::*;
+    pub use update_origin::*;
     pub use update_player::*;
 }
