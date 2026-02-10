@@ -11,8 +11,8 @@ pub fn explode_all(
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
     despawn_pool: &mut DespawnPool,
-    commands: &mut Commands,
 ) {
     for entity in missiles.iter() {
         let Some(obj) = game_obj_lib.get(entity) else {
@@ -35,8 +35,8 @@ pub fn explode_all(
             game_map,
             game_obj_lib,
             game_lib,
+            new_obj_queue,
             despawn_pool,
-            commands,
         );
 
         despawn_pool.insert(entity.clone());
@@ -53,8 +53,8 @@ pub fn explode(
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
     despawn_pool: &mut DespawnPool,
-    commands: &mut Commands,
 ) -> Result<(), MyError> {
     let config_index = game_lib.get_game_obj_config_index(explosion)?;
     let explosion_config = game_lib.get_game_obj_config(config_index);
@@ -75,17 +75,24 @@ pub fn explode(
         );
     }
 
-    create_obj_by_index(
+    // create_obj_by_index(
+    //     config_index,
+    //     pos,
+    //     direction,
+    //     None,
+    //     world_info,
+    //     game_map,
+    //     game_obj_lib,
+    //     game_lib,
+    //     commands,
+    // )?;
+
+    new_obj_queue.push(NewObj {
         config_index,
         pos,
         direction,
-        None,
-        world_info,
-        game_map,
-        game_obj_lib,
-        game_lib,
-        commands,
-    )?;
+        speed: None,
+    });
 
     Ok(())
 }

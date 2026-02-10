@@ -8,10 +8,9 @@ pub fn process_key(
     mut move_comp_query: Query<&mut MoveComponent>,
     mut weapon_comp_query: Query<&mut WeaponComponent>,
     mut world_info: ResMut<WorldInfo>,
-    mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
-    mut commands: Commands,
+    mut new_obj_queue: ResMut<NewObjQueue>,
     time: Res<Time>,
 ) {
     if key_input.just_pressed(KeyCode::KeyF) || key_input.pressed(KeyCode::KeyF) {
@@ -20,10 +19,9 @@ pub fn process_key(
             &move_comp_query,
             &mut weapon_comp_query,
             world_info.as_mut(),
-            game_map.as_mut(),
             game_obj_lib.as_mut(),
             game_lib.as_ref(),
-            &mut commands,
+            new_obj_queue.as_mut(),
             time.as_ref(),
         )
         .is_err()

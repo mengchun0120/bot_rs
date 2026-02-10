@@ -8,10 +8,9 @@ pub fn try_shoot(
     move_comp_query: &Query<&mut MoveComponent>,
     weapon_comp_query: &mut Query<&mut WeaponComponent>,
     world_info: &mut WorldInfo,
-    game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
-    commands: &mut Commands,
+    new_obj_queue: &mut NewObjQueue,
     time: &Time,
 ) -> Result<(), MyError> {
     let Ok(mut weapon_comp) = weapon_comp_query.get_mut(entity) else {
@@ -50,17 +49,12 @@ pub fn try_shoot(
             continue;
         }
 
-        create_obj_by_index(
-            weapon_comp.missile_config_index,
+        new_obj_queue.push(NewObj {
+            config_index: weapon_comp.missile_config_index,
             pos,
             direction,
             speed,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-        )?;
+        });
     }
 
     Ok(())

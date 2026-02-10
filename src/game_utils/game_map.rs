@@ -100,8 +100,7 @@ impl GameMap {
     }
 }
 
-impl<'a> MapIterator<'a> 
-{
+impl<'a> MapIterator<'a> {
     pub fn new(game_map: &'a GameMap, region: &MapRegion) -> Self {
         Self {
             game_map,
@@ -128,7 +127,6 @@ impl<'a> MapIterator<'a>
             false
         }
     }
-
 }
 
 impl<'a> Iterator for MapIterator<'a> {

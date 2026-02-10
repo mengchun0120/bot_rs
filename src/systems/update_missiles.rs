@@ -11,8 +11,8 @@ pub fn update_missiles(
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
+    mut new_obj_queue: ResMut<NewObjQueue>,
     mut despawn_pool: ResMut<DespawnPool>,
-    mut commands: Commands,
     time: Res<Time>,
 ) {
     for entity in q_missile.iter() {
@@ -29,8 +29,8 @@ pub fn update_missiles(
             game_map.as_mut(),
             game_obj_lib.as_mut(),
             game_lib.as_ref(),
+            new_obj_queue.as_mut(),
             despawn_pool.as_mut(),
-            &mut commands,
             time.as_ref(),
         )
         .is_err()

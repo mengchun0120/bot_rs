@@ -51,6 +51,7 @@ pub mod game_utils {
     pub mod game_obj_lib;
     pub mod map_pos;
     pub mod map_region;
+    pub mod new_obj_queue;
     pub mod rect_region;
     pub mod world_info;
 
@@ -60,6 +61,7 @@ pub mod game_utils {
     pub use game_obj_lib::*;
     pub use map_pos::*;
     pub use map_region::*;
+    pub use new_obj_queue::*;
     pub use rect_region::*;
     pub use world_info::*;
 }
@@ -75,6 +77,7 @@ pub mod misc {
 }
 
 pub mod systems {
+    pub mod add_new_objs;
     pub mod cleanup;
     pub mod process_cursor;
     pub mod process_key;
@@ -86,6 +89,7 @@ pub mod systems {
     pub mod update_missiles;
     pub mod update_player;
 
+    pub use add_new_objs::*;
     pub use cleanup::*;
     pub use process_cursor::*;
     pub use process_key::*;

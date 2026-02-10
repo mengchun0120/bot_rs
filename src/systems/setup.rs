@@ -48,6 +48,7 @@ pub fn setup_game(
     commands.insert_resource(world_info);
     commands.insert_resource(game_obj_lib);
     commands.insert_resource(game_lib);
+    commands.insert_resource(NewObjQueue::new());
     commands.insert_resource(DespawnPool::new());
 
     info!("Finished setup")

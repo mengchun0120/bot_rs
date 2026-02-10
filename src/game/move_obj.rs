@@ -21,6 +21,7 @@ pub fn move_bot(
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
     time: &Time,
@@ -79,8 +80,8 @@ pub fn move_bot(
         game_map,
         game_obj_lib,
         game_lib,
+        new_obj_queue,
         despawn_pool,
-        commands,
     );
 
     Ok(if collided {
@@ -114,8 +115,8 @@ pub fn move_missile(
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
     despawn_pool: &mut DespawnPool,
-    commands: &mut Commands,
     time: &Time,
 ) -> Result<MoveResult, MyError> {
     let Ok(move_comp) = move_comp_query.get(entity) else {
@@ -161,8 +162,8 @@ pub fn move_missile(
                 game_map,
                 game_obj_lib,
                 game_lib,
+                new_obj_queue,
                 despawn_pool,
-                commands,
             )?;
         }
         despawn_pool.insert(entity);
@@ -247,8 +248,8 @@ fn capture_missiles(
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
     despawn_pool: &mut DespawnPool,
-    commands: &mut Commands,
 ) {
     let mut collided_missiles = get_collided_missiles(
         pos,
@@ -269,8 +270,8 @@ fn capture_missiles(
             game_map,
             game_obj_lib,
             game_lib,
+            new_obj_queue,
             despawn_pool,
-            commands,
         );
     }
 }
