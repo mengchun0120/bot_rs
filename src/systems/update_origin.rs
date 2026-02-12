@@ -57,7 +57,7 @@ pub fn update_origin(
             transform.translation.x = screen_pos.x;
             transform.translation.y = screen_pos.y;
             *visibility = Visibility::Visible;
-            if obj_config.obj_type == GameObjType::Bot {
+            if obj_config.obj_type == GameObjType::Bot && obj_config.side == GameObjSide::AI {
                 commands.entity(entity).insert(InView);
             }
         } else {
