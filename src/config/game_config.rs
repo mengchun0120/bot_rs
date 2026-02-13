@@ -15,6 +15,7 @@ pub struct GameConfig {
     ai_config_file: String,
     pub cell_size: f32,
     pub window_ext_size: f32,
+    pub max_collide_span: f32,
 }
 
 impl GameConfig {

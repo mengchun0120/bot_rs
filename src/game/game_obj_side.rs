@@ -5,5 +5,4 @@ use serde::Deserialize;
 pub enum GameObjSide {
     Player,
     AI,
-    Neutral,
 }

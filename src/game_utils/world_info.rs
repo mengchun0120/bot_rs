@@ -11,7 +11,6 @@ pub struct WorldInfo {
     origin: Vec2,
     visible_span: Vec2,
     visible_region: RectRegion,
-    max_collide_span: f32,
 }
 
 impl WorldInfo {
@@ -38,7 +37,6 @@ impl WorldInfo {
                 window_height / 2.0 + visible_ext_size,
             ),
             visible_region: RectRegion::default(),
-            max_collide_span: 0.0,
         };
 
         world_info.set_origin(&origin);
@@ -91,18 +89,6 @@ impl WorldInfo {
     #[inline]
     pub fn contains(&self, pos: &Vec2) -> bool {
         self.world_region.covers(pos)
-    }
-
-    #[inline]
-    pub fn max_collide_span(&self) -> f32 {
-        self.max_collide_span
-    }
-
-    #[inline]
-    pub fn update_max_collide_span(&mut self, collide_span: f32) {
-        if self.max_collide_span < collide_span {
-            self.max_collide_span = collide_span;
-        }
     }
 
     #[inline]

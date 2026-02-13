@@ -12,12 +12,11 @@ pub fn create_obj_by_config(
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
-    let config_index = game_lib.get_game_obj_config_index(&map_obj_config.config_name)?;
     let pos = arr_to_vec2(&map_obj_config.pos);
     let direction = arr_to_vec2(&map_obj_config.direction).normalize();
 
-    create_obj_by_index(
-        config_index,
+    create_obj_by_name(
+        &map_obj_config.config_name,
         pos,
         direction,
         None,
@@ -29,8 +28,8 @@ pub fn create_obj_by_config(
     )
 }
 
-pub fn create_obj_by_index(
-    config_index: usize,
+pub fn create_obj_by_name(
+    config_name: &String,
     pos: Vec2,
     direction: Vec2,
     speed: Option<f32>,
@@ -46,274 +45,167 @@ pub fn create_obj_by_index(
         return Err(MyError::Other(msg));
     }
 
-    let obj_config = game_lib.get_game_obj_config(config_index);
-    let obj = GameObj {
-        config_index,
-        pos,
-        direction,
-        map_pos: game_map.get_map_pos(&pos),
+    let config = game_lib.get_game_obj_config(config_name)?;
+
+    let entity = match config {
+        GameObjConfig::Bot(config) => create_bot_entity(
+                &pos,
+                &direction,
+                speed,
+                config,
+                world_info,
+                game_lib,
+                commands,
+            )?,
+        GameObjConfig::Tile(config) => create_tile_entity(
+                &pos,
+                &direction,
+                config,
+                world_info,
+                game_lib,
+                commands,
+            )?,
+        GameObjConfig::Missile(config) => create_missile_entity(
+                &pos,
+                &direction,
+                speed,
+                config,
+                world_info,
+                game_lib,
+                commands,
+            )?,
+        GameObjConfig::Explosion(config) => create_explosion_entity(
+                config_name,
+                &pos,
+                &direction,
+                config,
+                world_info,
+                game_lib,
+                commands,
+            )?,
     };
-    match obj_config.obj_type {
-        GameObjType::Bot => create_bot(
-            obj,
-            speed,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-        ),
-        GameObjType::Tile => create_tile(
-            obj,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-        ),
-        GameObjType::Missile => create_missile(
-            obj,
-            speed,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-        ),
-        GameObjType::Explosion => create_explosion(
-            obj,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-        ),
-    }
-}
 
-fn create_bot(
-    obj: GameObj,
-    speed: Option<f32>,
-    obj_config: &GameObjConfig,
-    world_info: &mut WorldInfo,
-    game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
-    game_lib: &GameLib,
-    commands: &mut Commands,
-) -> Result<(), MyError> {
-    match obj_config.side {
-        GameObjSide::Player => create_player(
-            obj,
-            speed,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-        ),
-        GameObjSide::AI => create_ai_bot(
-            obj,
-            speed,
-            obj_config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-        ),
-        GameObjSide::Neutral => {
-            let msg = "Cannot create netural bot".to_string();
-            error!(msg);
-            Err(MyError::Other(msg))
-        }
-    }
-}
-
-fn create_player(
-    obj: GameObj,
-    speed: Option<f32>,
-    obj_config: &GameObjConfig,
-    world_info: &mut WorldInfo,
-    game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
-    game_lib: &GameLib,
-    commands: &mut Commands,
-) -> Result<(), MyError> {
-    let visible = world_info.check_pos_visible(&obj.pos);
-    let main_body = create_main_body(obj_config, visible, game_lib, commands)?;
-    let transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
-    let move_comp = MoveComponent::new(speed.unwrap_or(0.0));
-    let weapon_comp = create_weapon(main_body, obj_config, game_lib, commands)?;
-    let hp_comp = create_hp_comp(obj_config)?;
-    let mut cmd = commands.entity(main_body);
-
-    cmd.insert(transform);
-    cmd.insert(Player);
-    cmd.insert(move_comp);
-    cmd.insert(weapon_comp);
-    cmd.insert(hp_comp);
-
-    add_obj(
-        main_body,
-        obj,
-        obj_config,
-        world_info,
-        game_map,
-        game_obj_lib,
-    );
-
-    debug!("created player {}", main_body);
+    add_obj(entity, pos, direction, config, game_map, game_obj_lib);
 
     Ok(())
 }
 
-fn create_ai_bot(
-    obj: GameObj,
+fn create_bot_entity(
+    pos: &Vec2,
+    direction: &Vec2,
     speed: Option<f32>,
-    obj_config: &GameObjConfig,
-    world_info: &mut WorldInfo,
-    game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
+    config: &BotConfig,
+    world_info: &WorldInfo,
     game_lib: &GameLib,
     commands: &mut Commands,
-) -> Result<(), MyError> {
-    let visible = world_info.check_pos_visible(&obj.pos);
-    let main_body = create_main_body(obj_config, visible, game_lib, commands)?;
-    let transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
-    let move_comp = MoveComponent::new(speed.unwrap_or(0.0));
-    let weapon_comp = create_weapon(main_body, obj_config, game_lib, commands)?;
-    let hp_comp = create_hp_comp(obj_config)?;
-    let ai_comp = create_ai_comp(obj_config, game_lib)?;
-    let mut cmd = commands.entity(main_body);
-
-    cmd.insert(transform);
-    cmd.insert(AIBot);
-    cmd.insert(move_comp);
-    cmd.insert(weapon_comp);
-    cmd.insert(hp_comp);
-    cmd.insert(ai_comp);
-
-    if visible {
-        cmd.insert(InView);
-    }
-
-    add_obj(
-        main_body,
-        obj,
-        obj_config,
-        world_info,
-        game_map,
-        game_obj_lib,
-    );
-
-    debug!("created ai-bot {}", main_body);
-
-    Ok(())
-}
-
-fn create_tile(
-    obj: GameObj,
-    obj_config: &GameObjConfig,
-    world_info: &mut WorldInfo,
-    game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
-    game_lib: &GameLib,
-    commands: &mut Commands,
-) -> Result<(), MyError> {
-    let visible = world_info.check_pos_visible(&obj.pos);
-    let entity = create_main_body(obj_config, visible, game_lib, commands)?;
-    let transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
+) -> Result<Entity, MyError> {
+    let visible = world_info.check_pos_visible(pos);
+    let size = arr_to_vec2(&config.size);
+    let entity = create_main_body(&config.image, size, visible, game_lib, commands)?;
+    let weapon_comp = create_weapon(entity, &config.weapon_config, game_lib, commands)?;
     let mut cmd = commands.entity(entity);
 
-    cmd.insert(transform);
-    cmd.insert(TileComponent);
+    cmd.insert(create_transform(pos, direction, config.z, world_info));
+    cmd.insert(MoveComponent::new(speed.unwrap_or(0.0)));
+    cmd.insert(weapon_comp);
+    cmd.insert(HPComponent::new(config.hp));
 
-    add_obj(entity, obj, obj_config, world_info, game_map, game_obj_lib);
+    match config.side {
+        GameObjSide::Player => {
+            cmd.insert(PlayerComponent);
+        }
+        GameObjSide::AI => {
+            cmd.insert(AIBotComponent);
+            if let Some(ai_config_name) = config.ai.as_ref() {
+                let ai_comp = create_ai_comp(ai_config_name, game_lib)?;
+                cmd.insert(ai_comp);
+            }
+        }
+    }
+
+    debug!("created player {}", entity);
+
+    Ok(entity)
+}
+
+fn create_tile_entity(
+    pos: &Vec2,
+    direction: &Vec2,
+    tile_config: &TileConfig,
+    world_info: &WorldInfo,
+    game_lib: &GameLib,
+    commands: &mut Commands,
+) -> Result<Entity, MyError> {
+    let visible = world_info.check_pos_visible(pos);
+    let size = arr_to_vec2(&tile_config.size);
+    let entity = create_main_body(&tile_config.image, size, visible, game_lib, commands)?;
+    let mut cmd = commands.entity(entity);
+
+    cmd.insert(create_transform(pos, direction, tile_config.z, world_info));
+    cmd.insert(TileComponent);
 
     debug!("created tile {}", entity);
 
-    Ok(())
+    Ok(entity)
 }
 
-fn create_missile(
-    obj: GameObj,
+fn create_missile_entity(
+    pos: &Vec2,
+    direction: &Vec2,
     speed: Option<f32>,
-    obj_config: &GameObjConfig,
-    world_info: &mut WorldInfo,
-    game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
+    config: &MissileConfig,
+    world_info: &WorldInfo,
     game_lib: &GameLib,
     commands: &mut Commands,
-) -> Result<(), MyError> {
-    if !world_info.check_pos_visible(&obj.pos) {
-        return Ok(());
-    }
-    let entity = create_main_body(obj_config, true, game_lib, commands)?;
-    let transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
-    let move_comp = MoveComponent::new(speed.unwrap_or(obj_config.speed));
+) -> Result<Entity, MyError> {
+    let size = arr_to_vec2(&config.size);
+    let entity = create_main_body(&config.image, size, true, game_lib, commands)?;
     let mut cmd = commands.entity(entity);
 
-    cmd.insert(transform);
+    cmd.insert(create_transform(pos, direction, config.z, world_info));
+    cmd.insert(MoveComponent::new(speed.unwrap_or(config.speed)));
     cmd.insert(MissileComponent);
-    cmd.insert(move_comp);
-
-    add_obj(entity, obj, obj_config, world_info, game_map, game_obj_lib);
 
     debug!("created missile {}", entity);
 
-    Ok(())
+    Ok(entity)
 }
 
-fn create_explosion(
-    obj: GameObj,
-    obj_config: &GameObjConfig,
-    world_info: &mut WorldInfo,
-    game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
+fn create_explosion_entity(
+    config_name: &String,
+    pos: &Vec2,
+    direction: &Vec2,
+    config: &ExplosionConfig,
+    world_info: &WorldInfo,
     game_lib: &GameLib,
     commands: &mut Commands,
-) -> Result<(), MyError> {
-    if !world_info.check_pos_visible(&obj.pos) {
-        return Ok(());
-    }
-
-    let image = game_lib.get_image(&obj_config.image)?;
-    let Some(play_config) = obj_config.play_config.as_ref() else {
-        let msg = "Missing PlayConfig in GameObjConfig".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
-    };
-    let layout = game_lib.get_tex_atlas_layout(&obj_config.name)?;
-    let transform = create_transform(&obj.pos, &obj.direction, obj_config, world_info);
+) -> Result<Entity, MyError> {
+    let image = game_lib.get_image(&config.image)?;
+    let layout = game_lib.get_tex_atlas_layout(config_name)?;
+    let transform = create_transform(pos, direction, config.z, world_info);
     let entity = commands
         .spawn((
             Sprite::from_atlas_image(image, TextureAtlas { layout, index: 0 }),
             transform,
             Visibility::Visible,
-            PlayComponent::new(play_config),
+            PlayComponent::new(config.frames_per_second, config.frame_count),
             ExplosionComponent,
         ))
         .id();
 
-    add_obj(entity, obj, obj_config, world_info, game_map, game_obj_lib);
-
     debug!("created explosion {}", entity);
 
-    Ok(())
+    Ok(entity)
 }
 
 fn create_main_body(
-    obj_config: &GameObjConfig,
+    image_name: &String,
+    size: Vec2,
     visible: bool,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<Entity, MyError> {
-    let image = game_lib.get_image(&obj_config.image)?;
+    let image = game_lib.get_image(&image_name)?;
     let visibility = if visible {
         Visibility::Visible
     } else {
@@ -324,7 +216,7 @@ fn create_main_body(
         .spawn((
             Sprite {
                 image,
-                custom_size: Some(obj_config.size()),
+                custom_size: Some(size),
                 ..default()
             },
             visibility,
@@ -337,12 +229,12 @@ fn create_main_body(
 fn create_transform(
     pos: &Vec2,
     direction: &Vec2,
-    obj_config: &GameObjConfig,
+    z: f32,
     world_info: &WorldInfo,
 ) -> Transform {
     let screen_pos = world_info.get_screen_pos(pos);
     Transform {
-        translation: Vec3::new(screen_pos.x, screen_pos.y, obj_config.z),
+        translation: Vec3::new(screen_pos.x, screen_pos.y, z),
         rotation: get_rotation(direction),
         ..default()
     }
@@ -350,16 +242,10 @@ fn create_transform(
 
 fn create_weapon(
     main_body: Entity,
-    obj_config: &GameObjConfig,
+    weapon_config: &WeaponConfig,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<WeaponComponent, MyError> {
-    let Some(weapon_config) = obj_config.weapon_config.as_ref() else {
-        let msg = "Failed to create ai_bot: WeaponConfig not specified".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
-    };
-
     add_guns(main_body, weapon_config, game_lib, commands)?;
 
     let weapon_comp = WeaponComponent::new(weapon_config, game_lib)?;
@@ -406,36 +292,24 @@ fn add_guns(
 
 fn add_obj(
     entity: Entity,
-    obj: GameObj,
-    obj_config: &GameObjConfig,
-    world_info: &mut WorldInfo,
+    pos: Vec2,
+    direction: Vec2,
+    config: &GameObjConfig,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
 ) {
+    let obj = GameObj {
+        pos,
+        direction,
+        map_pos: game_map.get_map_pos(&pos),
+        config: config.clone(),
+    };
     game_map.add(&obj.map_pos, entity);
-    world_info.update_max_collide_span(obj_config.collide_span);
     game_obj_lib.insert(entity, obj);
 }
 
-fn create_hp_comp(obj_config: &GameObjConfig) -> Result<HPComponent, MyError> {
-    let Some(hp) = obj_config.hp else {
-        let msg = "Failed to create HPComponent: HP is missing".to_string();
-        error!(msg);
-        return Err(MyError::NotFound(msg));
-    };
-
-    Ok(HPComponent::new(hp))
-}
-
-fn create_ai_comp(obj_config: &GameObjConfig, game_lib: &GameLib) -> Result<AIComponent, MyError> {
-    let Some(ai_config_name) = obj_config.ai.as_ref() else {
-        let msg = "AI config is missing".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
-    };
+fn create_ai_comp(ai_config_name: &String, game_lib: &GameLib) -> Result<AIComponent, MyError> {
     let ai_config = game_lib.get_ai_config(ai_config_name)?;
-
     let ai_comp = AIComponent::new(ai_config);
-
     Ok(ai_comp)
 }

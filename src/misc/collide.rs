@@ -1,4 +1,4 @@
-use crate::game::*;
+use crate::config::*;
 use crate::game_utils::*;
 use bevy::prelude::*;
 
@@ -6,10 +6,10 @@ pub fn check_collide(
     entity: &Entity,
     pos: &Vec2,
     collide_span: f32,
+    max_collide_span: f32,
     world_info: &WorldInfo,
     game_map: &GameMap,
     game_obj_lib: &GameObjLib,
-    game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
     check_collide_bounds(
@@ -21,10 +21,9 @@ pub fn check_collide(
         entity,
         pos,
         collide_span,
-        world_info,
+        max_collide_span,
         game_map,
         game_obj_lib,
-        game_lib,
         despawn_pool,
     )
 }
@@ -33,10 +32,10 @@ pub fn check_collide(
 pub fn get_collide_region(
     pos: &Vec2,
     collide_span: f32,
+    max_collide_span: f32,
     game_map: &GameMap,
-    world_info: &WorldInfo,
 ) -> MapRegion {
-    let span = world_info.max_collide_span() + collide_span;
+    let span = max_collide_span + collide_span;
     game_map.get_region(pos.x - span, pos.y - span, pos.x + span, pos.y + span)
 }
 
@@ -59,13 +58,12 @@ fn check_collide_objs(
     entity: &Entity,
     pos: &Vec2,
     collide_span: f32,
-    world_info: &WorldInfo,
+    max_collide_span: f32,
     game_map: &GameMap,
     game_obj_lib: &GameObjLib,
-    game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
-    let collide_region = get_collide_region(pos, collide_span, game_map, world_info);
+    let collide_region = get_collide_region(pos, collide_span, max_collide_span, game_map);
 
     for e in game_map.map_iter(&collide_region) {
         if *entity == e || despawn_pool.contains(&e) {
@@ -76,15 +74,16 @@ fn check_collide_objs(
             error!("Cannot find GameObj {} in GameObjLib", e);
             continue;
         };
-        let obj_config2 = game_lib.get_game_obj_config(obj2.config_index);
 
-        if (obj_config2.obj_type != GameObjType::Bot && obj_config2.obj_type != GameObjType::Tile)
-            || obj_config2.collide_span == 0.0
-        {
-            continue;
-        }
+        let collide_span = match &obj2.config {
+            GameObjConfig::Bot(config) => config.collide_span,
+            GameObjConfig::Tile(config) => config.collide_span,
+            _ => {
+                continue;
+            }
+        };
 
-        if check_collide_obj(&pos, collide_span, &obj2.pos, obj_config2.collide_span) {
+        if check_collide_obj(&pos, collide_span, &obj2.pos, collide_span) {
             return true;
         }
     }

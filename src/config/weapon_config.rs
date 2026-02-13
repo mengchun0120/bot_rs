@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize, Resource)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct GunConfig {
     pub image: String,
     pub size: [f32; 2],
@@ -9,16 +9,16 @@ pub struct GunConfig {
     pub z: f32,
 }
 
-#[derive(Debug, Deserialize, Resource)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct GunComponentConfig {
     pub config_name: String,
     pub pos: [f32; 2],
     pub direction: [f32; 2],
 }
 
-#[derive(Debug, Deserialize, Resource)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct WeaponConfig {
-    pub missile: String,
+    pub missile_name: String,
     pub gun_components: Vec<GunComponentConfig>,
     pub fire_duration: f32,
 }

@@ -5,10 +5,10 @@ use crate::misc::*;
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct Player;
+pub struct PlayerComponent;
 
 #[derive(Component)]
-pub struct AIBot;
+pub struct AIBotComponent;
 
 #[derive(Component)]
 pub struct MissileComponent;
@@ -43,7 +43,7 @@ pub struct WeaponComponent {
     pub fire_timer: Timer,
     pub fire_points: Vec<Vec2>,
     pub fire_directions: Vec<Vec2>,
-    pub missile_config_index: usize,
+    pub missile_name: String,
 }
 
 #[derive(Component)]
@@ -62,13 +62,12 @@ impl WeaponComponent {
         let fire_timer = Timer::from_seconds(weapon_config.fire_duration, TimerMode::Repeating);
         let fire_points = Self::get_fire_points(weapon_config, game_lib)?;
         let fire_directions = Self::get_fire_directions(weapon_config);
-        let missile_config_index = game_lib.get_game_obj_config_index(&weapon_config.missile)?;
 
         Ok(Self {
             fire_timer,
             fire_points,
             fire_directions,
-            missile_config_index,
+            missile_name: weapon_config.missile_name.clone(),
         })
     }
 
@@ -103,11 +102,11 @@ impl WeaponComponent {
 }
 
 impl PlayComponent {
-    pub fn new(play_config: &PlayConfig) -> Self {
-        let frame_duration = 1.0 / play_config.frames_per_second as f32;
+    pub fn new(frames_per_second: usize, frame_count: usize) -> Self {
+        let frame_duration = 1.0 / frames_per_second as f32;
         Self {
             timer: Timer::from_seconds(frame_duration, TimerMode::Repeating),
-            last_index: play_config.frame_count - 1,
+            last_index: frame_count - 1,
         }
     }
 }

@@ -75,18 +75,6 @@ pub fn explode(
         );
     }
 
-    // create_obj_by_index(
-    //     config_index,
-    //     pos,
-    //     direction,
-    //     None,
-    //     world_info,
-    //     game_map,
-    //     game_obj_lib,
-    //     game_lib,
-    //     commands,
-    // )?;
-
     new_obj_queue.push(NewObj {
         config_index,
         pos,

@@ -8,8 +8,7 @@ use std::path::{Path, PathBuf};
 #[derive(Resource)]
 pub struct GameLib {
     pub game_config: GameConfig,
-    game_obj_configs: Vec<GameObjConfig>,
-    game_obj_config_indices: HashMap<String, usize>,
+    game_obj_configs: HashMap<String, GameObjConfig>,
     images: HashMap<String, Handle<Image>>,
     gun_configs: HashMap<String, GunConfig>,
     texture_atlas_layouts: HashMap<String, Handle<TextureAtlasLayout>>,
@@ -26,8 +25,7 @@ impl GameLib {
         let mut game_lib = GameLib {
             game_config,
             images: HashMap::new(),
-            game_obj_configs: Vec::new(),
-            game_obj_config_indices: HashMap::new(),
+            game_obj_configs: HashMap::new(),
             gun_configs: HashMap::new(),
             texture_atlas_layouts: HashMap::new(),
             ai_configs: HashMap::new(),
@@ -44,19 +42,15 @@ impl GameLib {
     }
 
     #[inline]
-    pub fn get_game_obj_config_index(&self, name: &String) -> Result<usize, MyError> {
-        match self.game_obj_config_indices.get(name) {
-            Some(index) => Ok(index.clone()),
+    pub fn get_game_obj_config(&self, name: &String) -> Result<&GameObjConfig, MyError> {
+        match self.game_obj_configs.get(name) {
+            Some(config) => Ok(config),
             None => {
-                error!("Cannot find GameObjConfig {}", name);
-                Err(MyError::NotFound(name.clone()))
+                let msg = format!("Cannot find GameObjConfig: {}", name);
+                error!(msg);
+                Err(MyError::NotFound(msg))
             }
         }
-    }
-
-    #[inline]
-    pub fn get_game_obj_config(&self, index: usize) -> &GameObjConfig {
-        &self.game_obj_configs[index]
     }
 
     #[inline]
@@ -139,22 +133,14 @@ impl GameLib {
     ) -> Result<(), MyError> {
         self.game_obj_configs = read_json(self.game_config.game_obj_config_file())?;
 
-        for i in 0..self.game_obj_configs.len() {
-            let name = &self.game_obj_configs[i].name;
-
-            if self.game_obj_config_indices.contains_key(name) {
-                error!("Duplicate GameObjConfig name {}", name);
-                return Err(MyError::DuplicateKey(name.clone()));
-            }
-
-            self.game_obj_config_indices.insert(name.clone(), i);
-
-            if let Some(play_config) = self.game_obj_configs[i].play_config.as_ref() {
+        for (name, config) in self.game_obj_configs.iter() {
+            if let GameObjConfig::Explosion(explosion_cfg) = config {
                 let layout = Self::create_tex_atlas_layout(
-                    &self.game_obj_configs[i].size,
-                    play_config.frame_count,
+                    &explosion_cfg.size,
+                    explosion_cfg.frame_count,
                     layouts,
                 );
+
                 self.texture_atlas_layouts.insert(name.clone(), layout);
             }
         }
