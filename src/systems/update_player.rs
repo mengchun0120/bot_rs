@@ -3,7 +3,10 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn update_player(
-    mut player_query: Query<(Entity, &mut Transform, &mut Visibility, &MoveComponent), With<PlayerComponent>>,
+    mut player_query: Query<
+        (Entity, &mut Transform, &mut Visibility, &MoveComponent),
+        With<PlayerComponent>,
+    >,
     mut hp_query: Query<&mut HPComponent>,
     mut game_map: ResMut<GameMap>,
     world_info: Res<WorldInfo>,

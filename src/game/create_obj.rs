@@ -286,6 +286,7 @@ fn add_obj(
         pos,
         direction,
         map_pos: game_map.get_map_pos(&pos),
+        is_phasing: false,
     };
     game_map.add(&obj.map_pos, entity);
     game_obj_lib.insert(entity, obj);

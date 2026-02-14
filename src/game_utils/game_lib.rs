@@ -14,6 +14,7 @@ pub struct GameLib {
     gun_configs: HashMap<String, GunConfig>,
     texture_atlas_layouts: HashMap<String, Handle<TextureAtlasLayout>>,
     ai_configs: HashMap<String, AIConfig>,
+    playout_configs: HashMap<String, PlayoutConfig>,
 }
 
 impl GameLib {
@@ -31,12 +32,14 @@ impl GameLib {
             gun_configs: HashMap::new(),
             texture_atlas_layouts: HashMap::new(),
             ai_configs: HashMap::new(),
+            playout_configs: HashMap::new(),
         };
 
         game_lib.load_images(asset_server)?;
         game_lib.load_game_obj_configs(layouts)?;
         game_lib.load_gun_configs()?;
         game_lib.load_ai_configs()?;
+        game_lib.load_playout_configs()?;
 
         info!("GameLib initialized");
 
@@ -111,6 +114,18 @@ impl GameLib {
         }
     }
 
+    #[inline]
+    pub fn get_playout_config(&self, name: &String) -> Result<&PlayoutConfig, MyError> {
+        match self.playout_configs.get(name) {
+            Some(playout_config) => Ok(playout_config),
+            None => {
+                let msg = format!("Cannot find PlayoutConfig {}", name);
+                error!(msg);
+                Err(MyError::NotFound(msg))
+            }
+        }
+    }
+
     fn load_images(&mut self, asset_server: &AssetServer) -> Result<(), MyError> {
         let assets_dir = PathBuf::from("assets");
         let image_dir = self.game_config.image_dir();
@@ -134,6 +149,8 @@ impl GameLib {
             let image = asset_server.load(image_relative_path);
             self.images.insert(name.clone(), image);
         }
+
+        info!("Images loaded successfully");
 
         Ok(())
     }
@@ -160,16 +177,26 @@ impl GameLib {
             }
         }
 
+        info!("game_obj_configs loaded successfully");
+
         Ok(())
     }
 
     fn load_gun_configs(&mut self) -> Result<(), MyError> {
         self.gun_configs = read_json(self.game_config.gun_config_file())?;
+        info!("gun_configs loaded successfully");
         Ok(())
     }
 
     fn load_ai_configs(&mut self) -> Result<(), MyError> {
         self.ai_configs = read_json(self.game_config.ai_config_file())?;
+        info!("ai_configs loaded successfully");
+        Ok(())
+    }
+
+    fn load_playout_configs(&mut self) -> Result<(), MyError> {
+        self.playout_configs = read_json(self.game_config.playout_config_file())?;
+        info!("playout_configs loaded successfully");
         Ok(())
     }
 

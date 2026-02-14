@@ -7,7 +7,7 @@
     "game_obj_config_file": "game_obj_configs.json",
     "image_config_file": "image_configs.json",
     "gun_config_file": "gun_configs.json",
-    "explosion_config_file": "explosion_configs.json",
+    "playout_config_file": "playout_configs.json",
     "window_ext_size": 100.0,
     "ai_config_file": "ai_configs.json",
     "max_collide_span": 25.0

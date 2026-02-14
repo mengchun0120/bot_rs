@@ -25,7 +25,9 @@ pub fn update_ai_bots(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, mut transform, mut visibility, mut move_comp, mut weapon_comp, ai_comp) in ai_bot_query.iter_mut() {
+    for (entity, mut transform, mut visibility, mut move_comp, mut weapon_comp, ai_comp) in
+        ai_bot_query.iter_mut()
+    {
         if despawn_pool.contains(&entity) {
             continue;
         }

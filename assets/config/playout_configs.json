@@ -1,0 +1,13 @@
+{
+    "regular_explosion": {
+        "FramePlay": {
+            "frames_per_second": 24,
+            "frame_count": 24
+        }
+    },
+    "regular_phaseout": {
+        "Phaseout": {
+            "duration": 1.0
+        }
+    }
+}

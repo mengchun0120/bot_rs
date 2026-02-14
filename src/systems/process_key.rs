@@ -3,7 +3,10 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn process_key(
-    mut player_query: Query<(Entity, &mut MoveComponent, &mut WeaponComponent), With<PlayerComponent>>,
+    mut player_query: Query<
+        (Entity, &mut MoveComponent, &mut WeaponComponent),
+        With<PlayerComponent>,
+    >,
     key_input: Res<ButtonInput<KeyCode>>,
     world_info: Res<WorldInfo>,
     mut game_obj_lib: ResMut<GameObjLib>,
