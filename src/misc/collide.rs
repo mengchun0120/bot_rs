@@ -79,7 +79,7 @@ fn check_collide_objs(
         };
         let named_config = &game_lib.get_game_obj_config(obj2.config_index);
 
-        let collide_span = match &named_config.config {
+        let collide_span2 = match &named_config.config {
             GameObjConfig::Bot(config) => config.collide_span,
             GameObjConfig::Tile(config) => config.collide_span,
             _ => {
@@ -87,7 +87,7 @@ fn check_collide_objs(
             }
         };
 
-        if check_collide_obj(&pos, collide_span, &obj2.pos, collide_span) {
+        if check_collide_obj(&pos, collide_span, &obj2.pos, collide_span2) {
             return true;
         }
     }
