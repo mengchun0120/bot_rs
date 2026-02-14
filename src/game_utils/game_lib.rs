@@ -8,7 +8,8 @@ use std::path::{Path, PathBuf};
 #[derive(Resource)]
 pub struct GameLib {
     pub game_config: GameConfig,
-    game_obj_configs: HashMap<String, GameObjConfig>,
+    game_obj_configs: Vec<NamedGameObjConfig>,
+    game_obj_config_index_map: HashMap<String, usize>,
     images: HashMap<String, Handle<Image>>,
     gun_configs: HashMap<String, GunConfig>,
     texture_atlas_layouts: HashMap<String, Handle<TextureAtlasLayout>>,
@@ -25,7 +26,8 @@ impl GameLib {
         let mut game_lib = GameLib {
             game_config,
             images: HashMap::new(),
-            game_obj_configs: HashMap::new(),
+            game_obj_configs: Vec::new(),
+            game_obj_config_index_map: HashMap::new(),
             gun_configs: HashMap::new(),
             texture_atlas_layouts: HashMap::new(),
             ai_configs: HashMap::new(),
@@ -42,11 +44,16 @@ impl GameLib {
     }
 
     #[inline]
-    pub fn get_game_obj_config(&self, name: &String) -> Result<&GameObjConfig, MyError> {
-        match self.game_obj_configs.get(name) {
-            Some(config) => Ok(config),
+    pub fn get_game_obj_config(&self, index: usize) -> &NamedGameObjConfig {
+        &self.game_obj_configs[index]
+    }
+
+    #[inline]
+    pub fn get_game_obj_config_index(&self, name: &String) -> Result<usize, MyError> {
+        match self.game_obj_config_index_map.get(name) {
+            Some(index) => Ok(*index),
             None => {
-                let msg = format!("Cannot find GameObjConfig: {}", name);
+                let msg = format!("Cannot find GameObj {}", name);
                 error!(msg);
                 Err(MyError::NotFound(msg))
             }
@@ -58,8 +65,9 @@ impl GameLib {
         match self.images.get(name) {
             Some(img) => Ok(img.clone()),
             None => {
-                error!("Cannot find image {}", name);
-                Err(MyError::NotFound(name.clone()))
+                let msg = format!("Cannot find image {}", name);
+                error!(msg);
+                Err(MyError::NotFound(msg))
             }
         }
     }
@@ -69,8 +77,9 @@ impl GameLib {
         match self.gun_configs.get(name) {
             Some(gun_config) => Ok(gun_config),
             None => {
-                error!("Cannot find GunConfig {}", name);
-                Err(MyError::NotFound(name.clone()))
+                let msg = format!("Cannot find GunConfig {}", name);
+                error!(msg);
+                Err(MyError::NotFound(msg))
             }
         }
     }
@@ -83,8 +92,9 @@ impl GameLib {
         match self.texture_atlas_layouts.get(name) {
             Some(layout) => Ok(layout.clone()),
             None => {
-                error!("Cannot find TextureAtlasLayout: {}", name);
-                Err(MyError::NotFound(name.clone()))
+                let msg = format!("Cannot find TextureAtlasLayout: {}", name);
+                error!(msg);
+                Err(MyError::NotFound(msg))
             }
         }
     }
@@ -94,8 +104,9 @@ impl GameLib {
         match self.ai_configs.get(name) {
             Some(ai_config) => Ok(ai_config),
             None => {
-                error!("Cannot find AIConfig {}", name);
-                Err(MyError::NotFound(name.clone()))
+                let msg = format!("Cannot find AIConfig {}", name);
+                error!(msg);
+                Err(MyError::NotFound(msg))
             }
         }
     }
@@ -133,15 +144,19 @@ impl GameLib {
     ) -> Result<(), MyError> {
         self.game_obj_configs = read_json(self.game_config.game_obj_config_file())?;
 
-        for (name, config) in self.game_obj_configs.iter() {
-            if let GameObjConfig::Explosion(explosion_cfg) = config {
+        for (index, named_config) in self.game_obj_configs.iter().enumerate() {
+            self.game_obj_config_index_map
+                .insert(named_config.name.clone(), index);
+
+            if let GameObjConfig::Explosion(explosion_cfg) = &named_config.config {
                 let layout = Self::create_tex_atlas_layout(
                     &explosion_cfg.size,
                     explosion_cfg.frame_count,
                     layouts,
                 );
 
-                self.texture_atlas_layouts.insert(name.clone(), layout);
+                self.texture_atlas_layouts
+                    .insert(named_config.name.clone(), layout);
             }
         }
 

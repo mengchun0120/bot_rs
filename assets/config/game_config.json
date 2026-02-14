@@ -9,5 +9,6 @@
     "gun_config_file": "gun_configs.json",
     "explosion_config_file": "explosion_configs.json",
     "window_ext_size": 100.0,
-    "ai_config_file": "ai_configs.json"
+    "ai_config_file": "ai_configs.json",
+    "max_collide_span": 25.0
 }

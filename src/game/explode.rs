@@ -7,7 +7,6 @@ use std::collections::HashSet;
 pub fn explode_all(
     missiles: &mut HashSet<Entity>,
     hp_query: &mut Query<&mut HPComponent>,
-    world_info: &mut WorldInfo,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -19,19 +18,17 @@ pub fn explode_all(
             error!("Cannot find GameObj");
             continue;
         };
-        let Some(explosion) = game_lib
+        let Ok(config) = game_lib
             .get_game_obj_config(obj.config_index)
-            .explosion
-            .as_ref()
+            .missile_config()
         else {
-            continue;
+            return;
         };
 
         let _ = explode(
-            explosion,
+            &config.explosion,
             obj.pos,
             hp_query,
-            world_info,
             game_map,
             game_obj_lib,
             game_lib,
@@ -49,7 +46,6 @@ pub fn explode(
     explosion: &String,
     pos: Vec2,
     hp_query: &mut Query<&mut HPComponent>,
-    world_info: &mut WorldInfo,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -57,23 +53,22 @@ pub fn explode(
     despawn_pool: &mut DespawnPool,
 ) -> Result<(), MyError> {
     let config_index = game_lib.get_game_obj_config_index(explosion)?;
-    let explosion_config = game_lib.get_game_obj_config(config_index);
+    let explosion_config = game_lib
+        .get_game_obj_config(config_index)
+        .explosion_config()?;
     let direction = Vec2::new(1.0, 0.0);
 
-    if let Some(damage) = explosion_config.damage {
-        do_damage(
-            pos,
-            explosion_config.side,
-            damage,
-            explosion_config.collide_span,
-            hp_query,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            despawn_pool,
-        );
-    }
+    do_damage(
+        pos,
+        explosion_config.side,
+        explosion_config.damage,
+        explosion_config.collide_span,
+        hp_query,
+        game_map,
+        game_obj_lib,
+        game_lib,
+        despawn_pool,
+    );
 
     new_obj_queue.push(NewObj {
         config_index,
@@ -91,13 +86,12 @@ fn do_damage(
     damage: f32,
     span: f32,
     hp_query: &mut Query<&mut HPComponent>,
-    world_info: &WorldInfo,
     game_map: &GameMap,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
     despawn_pool: &mut DespawnPool,
 ) {
-    let total_span = span + world_info.max_collide_span();
+    let total_span = span + game_lib.game_config.max_collide_span;
     let region = game_map.get_region(
         pos.x - total_span,
         pos.y - total_span,
@@ -114,11 +108,12 @@ fn do_damage(
             error!("Cannot find GameObj {} in GameObjLib", entity);
             continue;
         };
-        let obj_config = game_lib.get_game_obj_config(obj.config_index);
+        let Ok(config) = game_lib.get_game_obj_config(obj.config_index).bot_config() else {
+            continue;
+        };
 
-        if obj_config.obj_type == GameObjType::Bot
-            && obj_config.side != side
-            && check_collide_obj(&pos, span, &obj.pos, obj_config.collide_span)
+        if config.side != side
+            && check_collide_obj(&pos, span, &obj.pos, config.collide_span)
             && let Ok(mut hp_comp) = hp_query.get_mut(entity)
         {
             hp_comp.update(-damage);

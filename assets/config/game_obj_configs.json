@@ -1,97 +1,132 @@
-{
-    "player_bot": {
-        "Bot": {
-            "image": "player_bot",
-            "size": [60.0, 60.0],
-            "z": 0.0,
-            "side": "Player",
-            "speed": 100.0,
-            "collide_span": 21.2132,
-            "hp": 100.0,
-            "weapon_config": {
-                "missile": "green_standard_missile",
-                "gun_components": [
-                    {
-                        "config_name": "green_standard_gun",
-                        "pos": [30.0, 0.0],
-                        "direction": [1.0, 0.0]
-                    },
-                    {
-                        "config_name": "green_standard_gun",
-                        "pos": [21.213203435596427, 21.213203435596427],
-                        "direction": [0.7071067811865476, 0.7071067811865476]
-                    },
-                    {
-                        "config_name": "green_standard_gun",
-                        "pos": [21.213203435596427, -21.213203435596427],
-                        "direction": [0.7071067811865476, -0.7071067811865476]
-                    }
-                ],
-                "fire_duration": 0.2
+[
+    {
+        "name": "player_bot",
+        "config": {
+            "Bot": {
+                "image": "player_bot",
+                "size": [60.0, 60.0],
+                "z": 0.0,
+                "side": "Player",
+                "speed": 100.0,
+                "collide_span": 21.2132,
+                "hp": 100.0,
+                "weapon_config": {
+                    "missile_name": "green_standard_missile",
+                    "gun_components": [
+                        {
+                            "config_name": "green_standard_gun",
+                            "pos": [30.0, 0.0],
+                            "direction": [1.0, 0.0]
+                        },
+                        {
+                            "config_name": "green_standard_gun",
+                            "pos": [21.213203435596427, 21.213203435596427],
+                            "direction": [0.7071067811865476, 0.7071067811865476]
+                        },
+                        {
+                            "config_name": "green_standard_gun",
+                            "pos": [21.213203435596427, -21.213203435596427],
+                            "direction": [0.7071067811865476, -0.7071067811865476]
+                        }
+                    ],
+                    "fire_duration": 0.2
+                }
             }
         }
     },
-    "ai_bot": {
-        "image": "ai_bot",
-        "size": [60.0, 60.0],
-        "z": 0.0,
-        "side": "AI",
-        "speed": 80.0,
-        "collide_span": 21.2132,
-        "hp": 40.0,
-        "weapon_config": {
-            "missile": "orange_standard_missile",
-            "gun_components": [
-                {
-                    "config_name": "orange_standard_gun",
-                    "pos": [30.0, 0.0],
-                    "direction": [1.0, 0.0]
-                }
-            ],
-            "fire_duration": 1.0
-        },
-        "ai": "regular_chase_shoot"
+    {
+        "name": "ai_bot",
+        "config": {
+            "Bot": {
+                "image": "ai_bot",
+                "size": [60.0, 60.0],
+                "z": 0.0,
+                "side": "AI",
+                "speed": 80.0,
+                "collide_span": 21.2132,
+                "hp": 40.0,
+                "weapon_config": {
+                    "missile_name": "orange_standard_missile",
+                    "gun_components": [
+                        {
+                            "config_name": "orange_standard_gun",
+                            "pos": [30.0, 0.0],
+                            "direction": [1.0, 0.0]
+                        }
+                    ],
+                    "fire_duration": 1.0
+                },
+                "ai": "regular_chase_shoot"
+            }
+        }
     },
-    "steel_tile": {
-        "image": "steel_tile",
-        "size": [40.0, 40.0],
-        "z": -1.0,
-        "collide_span": 20.0
+    {
+        "name": "steel_tile",
+        "config": {
+            "Tile": {
+                "image": "steel_tile",
+                "size": [40.0, 40.0],
+                "z": -1.0,
+                "collide_span": 20.0
+            }
+        }
     },
-    "green_standard_missile": {
-        "image": "green_standard_missile",
-        "size": [10.0, 10.0],
-        "z": 1.0,
-        "side": "Player",
-        "speed": 120.0,
-        "collide_span": 5.0,
-        "explosion": "green_explosion"
+    {
+        "name": "green_standard_missile",
+        "config": {
+            "Missile": {
+                "image": "green_standard_missile",
+                "size": [10.0, 10.0],
+                "z": 1.0,
+                "side": "Player",
+                "speed": 120.0,
+                "collide_span": 5.0,
+                "explosion": "green_explosion"
+            }
+        }
     },
-    "orange_standard_missile": {
-        "image": "orange_standard_missile",
-        "size": [10.0, 10.0],
-        "z": 1.0,
-        "side": "AI",
-        "speed": 80.0,
-        "collide_span": 5.0,
-        "explosion": "orange_explosion"
+    {
+        "name": "orange_standard_missile",
+        "config": {
+            "Missile": {
+                "image": "orange_standard_missile",
+                "size": [10.0, 10.0],
+                "z": 1.0,
+                "side": "AI",
+                "speed": 80.0,
+                "collide_span": 5.0,
+                "explosion": "orange_explosion"
+            }
+        }
     },
-    "green_explosion": {
-        "image": "green_explosion",
-        "size": [70.0, 70.0],
-        "z": 1.0,
-        "side": "Player",
-        "damage": 50.0,
-        "frame_count": 24,
-        "frames_per_second": 24
+    {
+        "name": "green_explosion",
+        "config": {
+            "Explosion": {
+                "image": "green_explosion",
+                "size": [70.0, 70.0],
+                "z": 1.0,
+                "side": "Player",
+                "collide_span": 40.0,
+                "damage": 50.0,
+                "frame_count": 24,
+                "frames_per_second": 24
+            }
+        }
     },
-    "orange_explosion": {
-        "image": "orange_explosion",
-        "size": [70.0, 70.0],
-        "z": 1.0,
-        "side": "AI",
-        "damage": 10.0,
-        "frame_count": 24,
-        "frames_per_second": 24
+    {
+        "name": "orange_explosion",
+        "config": {
+            "Explosion": {
+                "image": "orange_explosion",
+                "size": [70.0, 70.0],
+                "z": 1.0,
+                "side": "AI",
+                "collide_span": 40.0,
+                "damage": 10.0,
+                "frame_count": 24,
+                "frames_per_second": 24                
+            }
+        }
     }
-}
+]

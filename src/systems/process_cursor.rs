@@ -4,7 +4,7 @@ use crate::misc::*;
 use bevy::prelude::*;
 
 pub fn process_cursor(
-    mut player_query: Single<(Entity, &mut MoveComponent, &mut Transform), With<Player>>,
+    mut player_query: Single<(Entity, &mut MoveComponent, &mut Transform), With<PlayerComponent>>,
     mut cursor_reader: MessageReader<CursorMoved>,
     camera_query: Single<(&Camera, &GlobalTransform)>,
     world_info: Res<WorldInfo>,

@@ -3,7 +3,7 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn update_ai(
-    player_query: Single<Entity, With<Player>>,
+    player_query: Single<Entity, With<PlayerComponent>>,
     mut aibot_query: Query<
         (
             Entity,
@@ -12,7 +12,7 @@ pub fn update_ai(
             &mut AIComponent,
             &mut Transform,
         ),
-        With<AIBot>,
+        (With<AIBotComponent>, With<InView>),
     >,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,

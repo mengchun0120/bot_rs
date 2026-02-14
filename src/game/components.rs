@@ -43,7 +43,7 @@ pub struct WeaponComponent {
     pub fire_timer: Timer,
     pub fire_points: Vec<Vec2>,
     pub fire_directions: Vec<Vec2>,
-    pub missile_name: String,
+    pub missile_config_index: usize,
 }
 
 #[derive(Component)]
@@ -59,6 +59,8 @@ impl MoveComponent {
 
 impl WeaponComponent {
     pub fn new(weapon_config: &WeaponConfig, game_lib: &GameLib) -> Result<Self, MyError> {
+        let missile_config_index =
+            game_lib.get_game_obj_config_index(&weapon_config.missile_name)?;
         let fire_timer = Timer::from_seconds(weapon_config.fire_duration, TimerMode::Repeating);
         let fire_points = Self::get_fire_points(weapon_config, game_lib)?;
         let fire_directions = Self::get_fire_directions(weapon_config);
@@ -67,7 +69,7 @@ impl WeaponComponent {
             fire_timer,
             fire_points,
             fire_directions,
-            missile_name: weapon_config.missile_name.clone(),
+            missile_config_index,
         })
     }
 

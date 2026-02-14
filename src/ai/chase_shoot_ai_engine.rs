@@ -82,8 +82,10 @@ impl ChaseShootAIEngine {
 
         match self.action {
             AIAction::Chase => {
-                let obj_config = game_lib.get_game_obj_config(obj.config_index);
-                move_comp.speed = obj_config.speed;
+                let Ok(config) = game_lib.get_game_obj_config(obj.config_index).bot_config() else {
+                    return;
+                };
+                move_comp.speed = config.speed;
             }
             AIAction::Shoot => {
                 move_comp.speed = 0.0;
@@ -147,7 +149,11 @@ impl ChaseShootAIEngine {
     ) {
         self.weigh_sort_directions(&obj.pos, player_pos);
         Self::set_direction(obj, transform, self.choose_rand_direction());
-        move_comp.speed = game_lib.get_game_obj_config(obj.config_index).speed;
+
+        let Ok(config) = game_lib.get_game_obj_config(obj.config_index).bot_config() else {
+            return;
+        };
+        move_comp.speed = config.speed;
         self.direction_keep_timer.reset();
     }
 

@@ -3,7 +3,7 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn add_new_objs(
-    mut world_info: ResMut<WorldInfo>,
+    world_info: Res<WorldInfo>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
@@ -16,7 +16,7 @@ pub fn add_new_objs(
             new_obj.pos,
             new_obj.direction,
             new_obj.speed,
-            world_info.as_mut(),
+            world_info.as_ref(),
             game_map.as_mut(),
             game_obj_lib.as_mut(),
             game_lib.as_ref(),

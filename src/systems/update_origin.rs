@@ -3,7 +3,7 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn update_origin(
-    player_query: Single<Entity, With<Player>>,
+    player_query: Single<Entity, With<PlayerComponent>>,
     mut transform_query: Query<&mut Transform>,
     mut visibility_query: Query<&mut Visibility>,
     game_map: Res<GameMap>,
@@ -42,7 +42,7 @@ pub fn update_origin(
             error!("Cannot find GameObj {}", entity);
             continue;
         };
-        let obj_config = game_lib.get_game_obj_config(obj.config_index);
+        let config = game_lib.get_game_obj_config(obj.config_index);
         let Ok(mut transform) = transform_query.get_mut(entity) else {
             error!("Cannot find Transform {}", entity);
             continue;
@@ -57,20 +57,18 @@ pub fn update_origin(
             transform.translation.x = screen_pos.x;
             transform.translation.y = screen_pos.y;
             *visibility = Visibility::Visible;
-            if obj_config.obj_type == GameObjType::Bot && obj_config.side == GameObjSide::AI {
+            if config.is_ai_bot() {
                 commands.entity(entity).insert(InView);
             }
         } else {
-            if obj_config.obj_type == GameObjType::Missile
-                || obj_config.obj_type == GameObjType::Explosion
-            {
+            if config.is_transient() {
                 despawn_pool.insert(entity);
             } else {
                 let screen_pos = world_info.get_screen_pos(&obj.pos);
                 transform.translation.x = screen_pos.x;
                 transform.translation.y = screen_pos.y;
                 *visibility = Visibility::Hidden;
-                if obj_config.obj_type == GameObjType::Bot {
+                if config.is_ai_bot() {
                     commands.entity(entity).remove::<InView>();
                 }
             }

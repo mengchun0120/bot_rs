@@ -6,7 +6,7 @@ use bevy::prelude::*;
 
 pub fn create_obj_by_config(
     map_obj_config: &GameMapObjConfig,
-    world_info: &mut WorldInfo,
+    world_info: &WorldInfo,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -14,9 +14,10 @@ pub fn create_obj_by_config(
 ) -> Result<(), MyError> {
     let pos = arr_to_vec2(&map_obj_config.pos);
     let direction = arr_to_vec2(&map_obj_config.direction).normalize();
+    let config_index = game_lib.get_game_obj_config_index(&map_obj_config.config_name)?;
 
-    create_obj_by_name(
-        &map_obj_config.config_name,
+    create_obj_by_index(
+        config_index,
         pos,
         direction,
         None,
@@ -28,12 +29,12 @@ pub fn create_obj_by_config(
     )
 }
 
-pub fn create_obj_by_name(
-    config_name: &String,
+pub fn create_obj_by_index(
+    config_index: usize,
     pos: Vec2,
     direction: Vec2,
     speed: Option<f32>,
-    world_info: &mut WorldInfo,
+    world_info: &WorldInfo,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -45,47 +46,30 @@ pub fn create_obj_by_name(
         return Err(MyError::Other(msg));
     }
 
-    let config = game_lib.get_game_obj_config(config_name)?;
+    let named_config = game_lib.get_game_obj_config(config_index);
 
-    let entity = match config {
+    let entity = match &named_config.config {
         GameObjConfig::Bot(config) => create_bot_entity(
-                &pos,
-                &direction,
-                speed,
-                config,
-                world_info,
-                game_lib,
-                commands,
-            )?,
-        GameObjConfig::Tile(config) => create_tile_entity(
-                &pos,
-                &direction,
-                config,
-                world_info,
-                game_lib,
-                commands,
-            )?,
+            &pos, &direction, speed, config, world_info, game_lib, commands,
+        )?,
+        GameObjConfig::Tile(config) => {
+            create_tile_entity(&pos, &direction, config, world_info, game_lib, commands)?
+        }
         GameObjConfig::Missile(config) => create_missile_entity(
-                &pos,
-                &direction,
-                speed,
-                config,
-                world_info,
-                game_lib,
-                commands,
-            )?,
+            &pos, &direction, speed, config, world_info, game_lib, commands,
+        )?,
         GameObjConfig::Explosion(config) => create_explosion_entity(
-                config_name,
-                &pos,
-                &direction,
-                config,
-                world_info,
-                game_lib,
-                commands,
-            )?,
+            &named_config.name,
+            &pos,
+            &direction,
+            config,
+            world_info,
+            game_lib,
+            commands,
+        )?,
     };
 
-    add_obj(entity, pos, direction, config, game_map, game_obj_lib);
+    add_obj(entity, config_index, pos, direction, game_map, game_obj_lib);
 
     Ok(())
 }
@@ -119,6 +103,10 @@ fn create_bot_entity(
             if let Some(ai_config_name) = config.ai.as_ref() {
                 let ai_comp = create_ai_comp(ai_config_name, game_lib)?;
                 cmd.insert(ai_comp);
+
+                if visible {
+                    cmd.insert(InView);
+                }
             }
         }
     }
@@ -226,12 +214,7 @@ fn create_main_body(
     Ok(entity)
 }
 
-fn create_transform(
-    pos: &Vec2,
-    direction: &Vec2,
-    z: f32,
-    world_info: &WorldInfo,
-) -> Transform {
+fn create_transform(pos: &Vec2, direction: &Vec2, z: f32, world_info: &WorldInfo) -> Transform {
     let screen_pos = world_info.get_screen_pos(pos);
     Transform {
         translation: Vec3::new(screen_pos.x, screen_pos.y, z),
@@ -292,17 +275,17 @@ fn add_guns(
 
 fn add_obj(
     entity: Entity,
+    config_index: usize,
     pos: Vec2,
     direction: Vec2,
-    config: &GameObjConfig,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
 ) {
     let obj = GameObj {
+        config_index,
         pos,
         direction,
         map_pos: game_map.get_map_pos(&pos),
-        config: config.clone(),
     };
     game_map.add(&obj.map_pos, entity);
     game_obj_lib.insert(entity, obj);
