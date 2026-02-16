@@ -171,12 +171,13 @@ fn create_play_frame_entity(
     let image = game_lib.get_image(&config.image)?;
     let layout = game_lib.get_tex_atlas_layout(config_name)?;
     let transform = create_transform(pos, direction, config.z, world_info);
+    let play_frame = PlayFrame::new(config.frames_per_second, config.frame_count);
     let entity = commands
         .spawn((
             Sprite::from_atlas_image(image, TextureAtlas { layout, index: 0 }),
             transform,
             Visibility::Visible,
-            PlayComponent::new(config.frames_per_second, config.frame_count),
+            PlayoutComponent::new(play_frame),
             ExplosionComponent,
         ))
         .id();
@@ -286,7 +287,7 @@ fn add_obj(
         pos,
         direction,
         map_pos: game_map.get_map_pos(&pos),
-        is_phasing: false,
+        is_phaseout: false,
     };
     game_map.add(&obj.map_pos, entity);
     game_obj_lib.insert(entity, obj);

@@ -25,7 +25,6 @@ pub mod config {
 pub mod game {
     pub mod components;
     pub mod create_obj;
-    pub mod explode;
     pub mod game_actions;
     pub mod game_obj;
     pub mod game_obj_side;
@@ -37,7 +36,6 @@ pub mod game {
 
     pub use components::*;
     pub use create_obj::*;
-    pub use explode::*;
     pub use game_actions::*;
     pub use game_obj::*;
     pub use game_obj_side::*;
@@ -89,10 +87,10 @@ pub mod systems {
     pub mod setup;
     pub mod update_ai;
     pub mod update_ai_bots;
-    pub mod update_explosions;
     pub mod update_missiles;
     pub mod update_origin;
     pub mod update_player;
+    pub mod update_playout;
 
     pub use add_new_objs::*;
     pub use cleanup::*;
@@ -102,8 +100,8 @@ pub mod systems {
     pub use setup::*;
     pub use update_ai::*;
     pub use update_ai_bots::*;
-    pub use update_explosions::*;
     pub use update_missiles::*;
     pub use update_origin::*;
     pub use update_player::*;
+    pub use update_playout::*;
 }

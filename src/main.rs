@@ -23,7 +23,7 @@ fn main() {
                 update_player,
                 update_ai_bots,
                 update_missiles,
-                update_explosions,
+                update_playout,
             ),
         )
         .add_systems(PostUpdate, (update_origin, cleanup, add_new_objs).chain())

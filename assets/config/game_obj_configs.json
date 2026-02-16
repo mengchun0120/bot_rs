@@ -30,7 +30,8 @@
                         }
                     ],
                     "fire_duration": 0.2
-                }
+                },
+                "on_death_actions": [{"Phaseout": 1.0}]
             }
         }
     },
@@ -56,7 +57,8 @@
                     ],
                     "fire_duration": 1.0
                 },
-                "ai": "regular_chase_shoot"
+                "ai": "regular_chase_shoot",
+                "on_death_actions": [{"Phaseout": 1.0}]
             }
         }
     },
@@ -81,7 +83,12 @@
                 "side": "Player",
                 "speed": 120.0,
                 "collide_span": 5.0,
-                "explosion": "green_explosion"
+                "damage": 50.0,
+                "damage_range": 40.0,
+                "on_death_actions": [
+                    "DoDamage",
+                    {"PlayFrame": "green_explosion"}
+                ]
             }
         }
     },
@@ -95,20 +102,22 @@
                 "side": "AI",
                 "speed": 80.0,
                 "collide_span": 5.0,
-                "explosion": "orange_explosion"
+                "damage": 10.0,
+                "damage_range": 40.0,
+                "on_death_actions": [
+                    "DoDamage",
+                    {"PlayFrame": "orange_explosion"}
+                ]
             }
         }
     },
     {
         "name": "green_explosion",
         "config": {
-            "Explosion": {
+            "PlayFrame": {
                 "image": "green_explosion",
                 "size": [70.0, 70.0],
                 "z": 1.0,
-                "side": "Player",
-                "collide_span": 40.0,
-                "damage": 50.0,
                 "frame_count": 24,
                 "frames_per_second": 24
             }
@@ -117,13 +126,10 @@
     {
         "name": "orange_explosion",
         "config": {
-            "Explosion": {
+            "PlayFrame": {
                 "image": "orange_explosion",
                 "size": [70.0, 70.0],
                 "z": 1.0,
-                "side": "AI",
-                "collide_span": 40.0,
-                "damage": 10.0,
                 "frame_count": 24,
                 "frames_per_second": 24                
             }

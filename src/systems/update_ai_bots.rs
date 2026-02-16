@@ -32,6 +32,14 @@ pub fn update_ai_bots(
             continue;
         }
 
+        let Some(obj) = game_obj_lib.get(&entity).cloned() else {
+            error!("Cannot find GameObj {}", entity);
+            continue;
+        };
+        if obj.is_phaseout {
+            continue;
+        }
+
         match ai_comp.engine.cur_action() {
             AIAction::Chase => {
                 match move_bot(

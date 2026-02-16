@@ -76,7 +76,8 @@ pub fn move_bot(
         game_lib,
         new_obj_queue,
         despawn_pool,
-    );
+        commands,
+    )?;
 
     Ok(if collided {
         MoveResult::Collided
@@ -96,6 +97,7 @@ pub fn move_missile(
     game_lib: &GameLib,
     new_obj_queue: &mut NewObjQueue,
     despawn_pool: &mut DespawnPool,
+    commands: &mut Commands,
     time: &Time,
 ) -> Result<MoveResult, MyError> {
     if speed == 0.0 {
@@ -129,17 +131,16 @@ pub fn move_missile(
         despawn_pool,
     );
     if collided {
-        explode(
-            &config.explosion,
-            new_pos,
+        on_death(
+            entity,
             hp_query,
             game_map,
             game_obj_lib,
             game_lib,
             new_obj_queue,
             despawn_pool,
+            commands,
         )?;
-
         despawn_pool.insert(entity);
         Ok(MoveResult::Collided)
     } else {
@@ -205,13 +206,14 @@ fn capture_missiles(
     collide_span: f32,
     side: GameObjSide,
     hp_query: &mut Query<&mut HPComponent>,
-    game_map: &mut GameMap,
+    game_map: &GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     new_obj_queue: &mut NewObjQueue,
     despawn_pool: &mut DespawnPool,
-) {
-    let mut collided_missiles = get_collided_missiles(
+    commands: &mut Commands,
+) -> Result<(), MyError> {
+    let collided_missiles = get_collided_missiles(
         pos,
         collide_span,
         side,
@@ -222,16 +224,22 @@ fn capture_missiles(
     );
 
     if !collided_missiles.is_empty() {
-        explode_all(
-            &mut collided_missiles,
-            hp_query,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            new_obj_queue,
-            despawn_pool,
-        );
+        for entity in collided_missiles {
+            on_death(
+                entity,
+                hp_query,
+                game_map,
+                game_obj_lib,
+                game_lib,
+                new_obj_queue,
+                despawn_pool,
+                commands,
+            )?;
+            despawn_pool.insert(entity);
+        }
     }
+
+    Ok(())
 }
 
 fn get_collided_missiles(
@@ -261,6 +269,10 @@ fn get_collided_missiles(
             error!("Cannot find GameObj");
             continue;
         };
+        if obj.is_phaseout {
+            continue;
+        }
+
         let Ok(config) = game_lib
             .get_game_obj_config(obj.config_index)
             .missile_config()

@@ -1,5 +1,6 @@
 use crate::ai::*;
 use crate::config::*;
+use crate::game::Playout;
 use crate::game_utils::*;
 use crate::misc::*;
 use bevy::prelude::*;
@@ -27,11 +28,8 @@ pub struct MoveComponent {
     pub speed: f32,
 }
 
-#[derive(Component)]
-pub struct PlayComponent {
-    pub timer: Timer,
-    pub last_index: usize,
-}
+#[derive(Component, Deref, DerefMut)]
+pub struct PlayoutComponent(Box<dyn Playout>);
 
 #[derive(Component)]
 pub struct AIComponent {
@@ -103,16 +101,6 @@ impl WeaponComponent {
     }
 }
 
-impl PlayComponent {
-    pub fn new(frames_per_second: usize, frame_count: usize) -> Self {
-        let frame_duration = 1.0 / frames_per_second as f32;
-        Self {
-            timer: Timer::from_seconds(frame_duration, TimerMode::Repeating),
-            last_index: frame_count - 1,
-        }
-    }
-}
-
 impl AIComponent {
     pub fn new(ai_config: &AIConfig) -> Self {
         let engine = match ai_config {
@@ -135,5 +123,11 @@ impl HPComponent {
 
     pub fn update(&mut self, hp_delta: f32) {
         self.hp = (self.hp + hp_delta).max(0.0);
+    }
+}
+
+impl PlayoutComponent {
+    pub fn new<T: Playout + 'static>(playout: T) -> Self {
+        Self(Box::new(playout))
     }
 }

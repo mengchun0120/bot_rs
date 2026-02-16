@@ -77,6 +77,10 @@ fn check_collide_objs(
             error!("Cannot find GameObj {} in GameObjLib", e);
             continue;
         };
+        if obj2.is_phaseout {
+            continue;
+        }
+
         let named_config = &game_lib.get_game_obj_config(obj2.config_index);
 
         let collide_span2 = match &named_config.config {

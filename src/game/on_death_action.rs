@@ -7,10 +7,10 @@ use bevy::prelude::*;
 pub fn on_death(
     entity: Entity,
     hp_query: &mut Query<&mut HPComponent>,
-    world_info: &mut WorldInfo,
-    game_map: &mut GameMap,
+    game_map: &GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
@@ -26,7 +26,7 @@ pub fn on_death(
         match action {
             OnDeathAction::DoDamage => {
                 let missile_config = obj_config.missile_config()?;
-                do_damage(
+                on_do_damage(
                     &obj.pos,
                     missile_config.side,
                     missile_config.damage_range,
@@ -35,37 +35,35 @@ pub fn on_death(
                     game_map,
                     game_obj_lib,
                     game_lib,
+                    new_obj_queue,
                     despawn_pool,
-                )?;
-            }
-            OnDeathAction::PlayFrame(config_name) => {
-                play_frame(
-                    config_name,
-                    &obj.pos,
-                    world_info,
-                    game_map,
-                    game_obj_lib,
-                    game_lib,
                     commands,
                 )?;
             }
-            OnDeathAction::Phaseout(_) => {}
+            OnDeathAction::PlayFrame(config_name) => {
+                on_play_frame(config_name, &obj.pos, game_lib, new_obj_queue)?;
+            }
+            OnDeathAction::Phaseout(duration) => {
+                on_phaseout(entity, *duration, game_obj_lib, game_lib, commands)?;
+            }
         }
     }
 
     Ok(())
 }
 
-fn do_damage(
+fn on_do_damage(
     pos: &Vec2,
     side: GameObjSide,
     damage_range: f32,
     damage: f32,
     hp_query: &mut Query<&mut HPComponent>,
     game_map: &GameMap,
-    game_obj_lib: &GameObjLib,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
     despawn_pool: &mut DespawnPool,
+    commands: &mut Commands,
 ) -> Result<(), MyError> {
     let total_span = damage_range + game_lib.game_config.max_collide_span;
     let region = game_map.get_region(
@@ -94,7 +92,16 @@ fn do_damage(
         {
             hp_comp.update(-damage);
             if hp_comp.hp() == 0.0 {
-                despawn_pool.insert(entity);
+                on_death(
+                    entity,
+                    hp_query,
+                    game_map,
+                    game_obj_lib,
+                    game_lib,
+                    new_obj_queue,
+                    despawn_pool,
+                    commands,
+                )?;
             }
         }
     }
@@ -102,27 +109,43 @@ fn do_damage(
     Ok(())
 }
 
-fn play_frame(
+fn on_play_frame(
     config_name: &String,
     pos: &Vec2,
-    world_info: &WorldInfo,
-    game_map: &mut GameMap,
+    game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
+) -> Result<(), MyError> {
+    let new_obj = NewObj {
+        config_index: game_lib.get_game_obj_config_index(config_name)?,
+        pos: pos.clone(),
+        direction: Vec2::new(1.0, 0.0),
+        speed: None,
+    };
+    new_obj_queue.push(new_obj);
+    Ok(())
+}
+
+fn on_phaseout(
+    entity: Entity,
+    duration: f32,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
-    let config_index = game_lib.get_game_obj_config_index(config_name)?;
-    let direction = Vec2::new(1.0, 0.0);
+    let Some(obj) = game_obj_lib.get_mut(&entity) else {
+        let msg = format!("Cannot find GameObj {}", entity);
+        error!(msg);
+        return Err(MyError::NotFound(msg));
+    };
+    let obj_config = game_lib.get_game_obj_config(obj.config_index);
+    let phaseout = Phaseout::new(duration);
+    let mut cmd = commands.entity(entity);
 
-    create_obj_by_index(
-        config_index,
-        *pos,
-        direction,
-        None,
-        world_info,
-        game_map,
-        game_obj_lib,
-        game_lib,
-        commands,
-    )
+    obj.is_phaseout = true;
+    if obj_config.is_ai_bot() {
+        cmd.remove::<AIBotComponent>();
+    }
+    cmd.insert(PlayoutComponent::new(phaseout));
+
+    Ok(())
 }
