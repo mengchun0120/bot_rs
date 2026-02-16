@@ -13,14 +13,12 @@ pub mod config {
     pub mod game_config;
     pub mod game_map_config;
     pub mod game_obj_config;
-    pub mod playout_config;
     pub mod weapon_config;
 
     pub use ai_config::*;
     pub use game_config::*;
     pub use game_map_config::*;
     pub use game_obj_config::*;
-    pub use playout_config::*;
     pub use weapon_config::*;
 }
 
@@ -33,6 +31,7 @@ pub mod game {
     pub mod game_obj_side;
     pub mod game_obj_type;
     pub mod move_obj;
+    pub mod on_death_action;
     pub mod playout;
     pub mod shoot;
 
@@ -44,6 +43,7 @@ pub mod game {
     pub use game_obj_side::*;
     pub use game_obj_type::*;
     pub use move_obj::*;
+    pub use on_death_action::*;
     pub use playout::*;
     pub use shoot::*;
 }

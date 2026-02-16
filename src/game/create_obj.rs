@@ -58,7 +58,7 @@ pub fn create_obj_by_index(
         GameObjConfig::Missile(config) => create_missile_entity(
             &pos, &direction, speed, config, world_info, game_lib, commands,
         )?,
-        GameObjConfig::Explosion(config) => create_explosion_entity(
+        GameObjConfig::PlayFrame(config) => create_play_frame_entity(
             &named_config.name,
             &pos,
             &direction,
@@ -137,7 +137,7 @@ fn create_tile_entity(
     Ok(entity)
 }
 
-fn create_missile_entity(
+pub fn create_missile_entity(
     pos: &Vec2,
     direction: &Vec2,
     speed: Option<f32>,
@@ -159,11 +159,11 @@ fn create_missile_entity(
     Ok(entity)
 }
 
-fn create_explosion_entity(
+fn create_play_frame_entity(
     config_name: &String,
     pos: &Vec2,
     direction: &Vec2,
-    config: &ExplosionConfig,
+    config: &PlayFrameConfig,
     world_info: &WorldInfo,
     game_lib: &GameLib,
     commands: &mut Commands,
@@ -181,7 +181,7 @@ fn create_explosion_entity(
         ))
         .id();
 
-    debug!("created explosion {}", entity);
+    debug!("created frame-play {}", entity);
 
     Ok(entity)
 }

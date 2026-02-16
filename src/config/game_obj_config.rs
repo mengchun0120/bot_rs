@@ -23,6 +23,7 @@ pub struct BotConfig {
     pub collide_span: f32,
     pub weapon_config: WeaponConfig,
     pub ai: Option<String>,
+    pub on_death_actions: Vec<OnDeathAction>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -33,19 +34,25 @@ pub struct MissileConfig {
     pub side: GameObjSide,
     pub speed: f32,
     pub collide_span: f32,
-    pub explosion: String,
+    pub damage: f32,
+    pub damage_range: f32,
+    pub on_death_actions: Vec<OnDeathAction>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct ExplosionConfig {
+pub struct PlayFrameConfig {
     pub image: String,
     pub size: [f32; 2],
     pub z: f32,
-    pub side: GameObjSide,
-    pub collide_span: f32,
-    pub damage: f32,
     pub frame_count: usize,
     pub frames_per_second: usize,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub enum OnDeathAction {
+    DoDamage,
+    PlayFrame(String),
+    Phaseout(f32),
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -53,7 +60,7 @@ pub enum GameObjConfig {
     Tile(TileConfig),
     Bot(BotConfig),
     Missile(MissileConfig),
-    Explosion(ExplosionConfig),
+    PlayFrame(PlayFrameConfig),
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -104,9 +111,9 @@ impl NamedGameObjConfig {
     }
 
     #[inline]
-    pub fn is_explosion(&self) -> bool {
+    pub fn is_play_frame(&self) -> bool {
         match &self.config {
-            GameObjConfig::Explosion(_) => true,
+            GameObjConfig::PlayFrame(_) => true,
             _ => false,
         }
     }
@@ -114,12 +121,12 @@ impl NamedGameObjConfig {
     #[inline]
     pub fn is_transient(&self) -> bool {
         match &self.config {
-            GameObjConfig::Missile(_) => true,
-            GameObjConfig::Explosion(_) => true,
+            GameObjConfig::Missile(_) | GameObjConfig::PlayFrame(_) => true,
             _ => false,
         }
     }
 
+    #[inline]
     pub fn tile_config(&self) -> Result<&TileConfig, MyError> {
         match &self.config {
             GameObjConfig::Tile(cfg) => Ok(cfg),
@@ -131,6 +138,7 @@ impl NamedGameObjConfig {
         }
     }
 
+    #[inline]
     pub fn bot_config(&self) -> Result<&BotConfig, MyError> {
         match &self.config {
             GameObjConfig::Bot(cfg) => Ok(cfg),
@@ -142,6 +150,7 @@ impl NamedGameObjConfig {
         }
     }
 
+    #[inline]
     pub fn missile_config(&self) -> Result<&MissileConfig, MyError> {
         match &self.config {
             GameObjConfig::Missile(cfg) => Ok(cfg),
@@ -153,12 +162,25 @@ impl NamedGameObjConfig {
         }
     }
 
-    pub fn explosion_config(&self) -> Result<&ExplosionConfig, MyError> {
+    #[inline]
+    pub fn play_frame_config(&self) -> Result<&PlayFrameConfig, MyError> {
         match &self.config {
-            GameObjConfig::Explosion(cfg) => Ok(cfg),
+            GameObjConfig::PlayFrame(cfg) => Ok(cfg),
             _ => {
                 let msg = "Not a Explosion".to_string();
                 debug!(msg);
+                Err(MyError::Other(msg))
+            }
+        }
+    }
+
+    pub fn get_on_death_actions(&self) -> Result<&Vec<OnDeathAction>, MyError> {
+        match &self.config {
+            GameObjConfig::Bot(cfg) => Ok(&cfg.on_death_actions),
+            GameObjConfig::Missile(cfg) => Ok(&cfg.on_death_actions),
+            _ => {
+                let msg = "There is no on-death actions".to_string();
+                error!(msg);
                 Err(MyError::Other(msg))
             }
         }
