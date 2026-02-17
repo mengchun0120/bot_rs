@@ -30,11 +30,7 @@ pub fn move_bot(
         return Ok(MoveResult::NotMoved);
     }
 
-    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-        let msg = "Cannot find GameObj".to_string();
-        error!(msg);
-        return Err(MyError::NotFound(msg));
-    };
+    let obj = game_obj_lib.get(&entity).cloned()?;
     let config = game_lib
         .get_game_obj_config(obj.config_index)
         .bot_config()?;
@@ -104,11 +100,7 @@ pub fn move_missile(
         return Ok(MoveResult::NotMoved);
     }
 
-    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-        let msg = "Cannot find GameObj".to_string();
-        error!(msg);
-        return Err(MyError::NotFound(msg));
-    };
+    let obj = game_obj_lib.get(&entity).cloned()?;
     let config = game_lib
         .get_game_obj_config(obj.config_index)
         .missile_config()?;
@@ -164,11 +156,7 @@ fn update_obj_pos(
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
 ) -> Result<(), MyError> {
-    let Some(obj) = game_obj_lib.get_mut(&entity) else {
-        let msg = "Cannot find GameObj".to_string();
-        error!(msg);
-        return Err(MyError::NotFound(msg));
-    };
+    let obj = game_obj_lib.get_mut(&entity)?;
 
     obj.pos = new_pos;
 
@@ -265,8 +253,7 @@ fn get_collided_missiles(
             continue;
         }
 
-        let Some(obj) = game_obj_lib.get(&entity) else {
-            error!("Cannot find GameObj");
+        let Ok(obj) = game_obj_lib.get(&entity) else {
             continue;
         };
         if obj.is_phaseout {

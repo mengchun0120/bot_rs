@@ -1,4 +1,5 @@
-use crate::misc::my_error::*;
+use crate::game_utils::*;
+use crate::misc::*;
 use bevy::prelude::*;
 use clap::Parser;
 use serde::de::DeserializeOwned;
@@ -68,4 +69,21 @@ pub fn arr_to_vec2(v: &[f32; 2]) -> Vec2 {
 pub fn get_rotation(d: &Vec2) -> Quat {
     let from = Vec2::new(1.0, 0.0);
     Quat::from_rotation_arc_2d(from, d.clone())
+}
+
+pub fn translate_cursor_pos(
+    cursor_pos: Vec2,
+    camera: &Camera,
+    transform: &GlobalTransform,
+    world_info: &WorldInfo,
+) -> Option<Vec2> {
+    let pos = match camera.viewport_to_world_2d(transform, cursor_pos) {
+        Ok(p) => p,
+        Err(err) => {
+            error!("Failed to transform cursor position: {}", err);
+            return None;
+        }
+    };
+
+    Some(world_info.viewport_to_world(&pos))
 }

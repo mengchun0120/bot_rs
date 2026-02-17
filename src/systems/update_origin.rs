@@ -13,8 +13,7 @@ pub fn update_origin(
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
 ) {
-    let Some(player) = game_obj_lib.get(&player_query.entity()) else {
-        error!("Cannot find player {}", player_query.entity());
+    let Ok(player) = game_obj_lib.get(&player_query.entity()) else {
         return;
     };
     let old_origin = world_info.origin();
@@ -38,8 +37,7 @@ pub fn update_origin(
             continue;
         }
 
-        let Some(obj) = game_obj_lib.get(&entity) else {
-            error!("Cannot find GameObj {}", entity);
+        let Ok(obj) = game_obj_lib.get(&entity) else {
             continue;
         };
         let config = game_lib.get_game_obj_config(obj.config_index);

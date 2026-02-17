@@ -32,8 +32,7 @@ pub fn update_ai_bots(
             continue;
         }
 
-        let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-            error!("Cannot find GameObj {}", entity);
+        let Ok(obj) = game_obj_lib.get(&entity).cloned() else {
             continue;
         };
         if obj.is_phaseout {

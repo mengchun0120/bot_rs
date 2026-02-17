@@ -19,8 +19,7 @@ pub fn update_ai(
     despawn_pool: Res<DespawnPool>,
     time: Res<Time>,
 ) {
-    let Some(player_pos) = game_obj_lib.get(&player_query.entity()).map(|obj| obj.pos) else {
-        error!("Cannot find Player");
+    let Ok(player_pos) = game_obj_lib.get(&player_query.entity()).map(|obj| obj.pos) else {
         return;
     };
 
@@ -31,8 +30,7 @@ pub fn update_ai(
             continue;
         }
 
-        let Some(obj) = game_obj_lib.get_mut(&entity) else {
-            error!("Cannot find AIBot");
+        let Ok(obj) = game_obj_lib.get_mut(&entity) else {
             continue;
         };
 

@@ -73,8 +73,7 @@ fn check_collide_objs(
             continue;
         }
 
-        let Some(obj2) = game_obj_lib.get(&e) else {
-            error!("Cannot find GameObj {} in GameObjLib", e);
+        let Ok(obj2) = game_obj_lib.get(&e) else {
             continue;
         };
         if obj2.is_phaseout {

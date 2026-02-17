@@ -1,6 +1,6 @@
 use crate::game::*;
 use crate::game_utils::*;
-use crate::misc::utils::*;
+use crate::misc::*;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
@@ -14,8 +14,7 @@ pub fn process_mouse_button(
     game_lib: Res<GameLib>,
 ) {
     if mouse_button_input.just_pressed(MouseButton::Right) {
-        let Some(obj) = game_obj_lib.get_mut(&player_query.0) else {
-            error!("Cannot find Player");
+        let Ok(obj) = game_obj_lib.get_mut(&player_query.0) else {
             return;
         };
         let Some(cursor_pos) = window_query.cursor_position() else {

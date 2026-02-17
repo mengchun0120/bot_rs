@@ -14,11 +14,7 @@ pub fn on_death(
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
-    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-        let msg = format!("Cannot find GameObj {}", entity);
-        error!(msg);
-        return Err(MyError::NotFound(msg));
-    };
+    let obj = game_obj_lib.get(&entity).cloned()?;
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
     let on_death_actions = obj_config.get_on_death_actions()?;
 
@@ -78,8 +74,7 @@ fn on_do_damage(
             continue;
         }
 
-        let Some(obj) = game_obj_lib.get(&entity) else {
-            error!("Cannot find GameObj {} in GameObjLib", entity);
+        let Ok(obj) = game_obj_lib.get(&entity) else {
             continue;
         };
         let Ok(obj_config) = game_lib.get_game_obj_config(obj.config_index).bot_config() else {
@@ -132,11 +127,7 @@ fn on_phaseout(
     game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
-    let Some(obj) = game_obj_lib.get_mut(&entity) else {
-        let msg = format!("Cannot find GameObj {}", entity);
-        error!(msg);
-        return Err(MyError::NotFound(msg));
-    };
+    let obj = game_obj_lib.get_mut(&entity)?;
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
     let phaseout = Phaseout::new(duration);
     let mut cmd = commands.entity(entity);

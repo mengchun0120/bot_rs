@@ -8,8 +8,7 @@ pub fn cleanup(
     mut despawn_pool: ResMut<DespawnPool>,
 ) {
     for entity in despawn_pool.iter() {
-        let Some(map_pos) = game_obj_lib.get(entity).map(|obj| obj.map_pos) else {
-            error!("Cannot find GameObj {}", entity);
+        let Ok(map_pos) = game_obj_lib.get(entity).map(|obj| obj.map_pos) else {
             continue;
         };
 
