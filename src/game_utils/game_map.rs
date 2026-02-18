@@ -1,4 +1,4 @@
-use crate::game_utils::*;
+use crate::game::*;
 use bevy::prelude::*;
 use std::collections::{HashSet, hash_set::Iter};
 
@@ -6,6 +6,23 @@ use std::collections::{HashSet, hash_set::Iter};
 pub struct GameMap {
     cell_size: f32,
     pub map: Vec<Vec<HashSet<Entity>>>,
+}
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
+pub struct MapRegion {
+    pub start_row: usize,
+    pub end_row: usize,
+    pub start_col: usize,
+    pub end_col: usize,
+}
+
+
+#[derive(Debug, Clone, Copy, Default)]
+pub struct RectRegion {
+    pub left: f32,
+    pub bottom: f32,
+    pub right: f32,
+    pub top: f32,
 }
 
 pub struct MapIterator<'a> {
@@ -143,5 +160,21 @@ impl<'a> Iterator for MapIterator<'a> {
             }
             None
         }
+    }
+}
+
+impl RectRegion {
+    pub fn new(left: f32, bottom: f32, right: f32, top: f32) -> Self {
+        Self {
+            left,
+            bottom,
+            right,
+            top,
+        }
+    }
+
+    #[inline]
+    pub fn covers(&self, pos: &Vec2) -> bool {
+        pos.x >= self.left && pos.x < self.right && pos.y >= self.bottom && pos.y < self.top
     }
 }

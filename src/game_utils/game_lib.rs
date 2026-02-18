@@ -2,7 +2,6 @@ use crate::config::*;
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 use std::collections::HashMap;
-use std::io::{Error, ErrorKind};
 use std::path::{Path, PathBuf};
 
 #[derive(Resource)]
@@ -128,7 +127,7 @@ impl GameLib {
             if !image_abs_path.exists() {
                 let err_msg = format!("File {:?} doesn't exist", image_abs_path);
                 error!(err_msg);
-                return Err(Error::new(ErrorKind::NotFound, err_msg).into());
+                return Err(MyError::NotFound(err_msg));
             }
 
             let image = asset_server.load(image_relative_path);

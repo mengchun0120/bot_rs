@@ -1,8 +1,13 @@
 use crate::config::*;
-use crate::game::*;
 use crate::misc::*;
 use bevy::prelude::*;
 use serde::Deserialize;
+
+#[derive(Debug, Deserialize, PartialEq, Eq, Copy, Clone)]
+pub enum GameObjSide {
+    Player,
+    AI,
+}
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct TileConfig {

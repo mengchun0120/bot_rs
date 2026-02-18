@@ -26,8 +26,6 @@ pub mod game {
     pub mod components;
     pub mod create_obj;
     pub mod game_obj;
-    pub mod game_obj_side;
-    pub mod game_obj_type;
     pub mod move_obj;
     pub mod on_death_action;
     pub mod playout;
@@ -36,8 +34,6 @@ pub mod game {
     pub use components::*;
     pub use create_obj::*;
     pub use game_obj::*;
-    pub use game_obj_side::*;
-    pub use game_obj_type::*;
     pub use move_obj::*;
     pub use on_death_action::*;
     pub use playout::*;
@@ -49,20 +45,14 @@ pub mod game_utils {
     pub mod game_lib;
     pub mod game_map;
     pub mod game_obj_lib;
-    pub mod map_pos;
-    pub mod map_region;
     pub mod new_obj_queue;
-    pub mod rect_region;
     pub mod world_info;
 
     pub use despawn_pool::*;
     pub use game_lib::*;
     pub use game_map::*;
     pub use game_obj_lib::*;
-    pub use map_pos::*;
-    pub use map_region::*;
     pub use new_obj_queue::*;
-    pub use rect_region::*;
     pub use world_info::*;
 }
 

@@ -50,8 +50,7 @@ impl Playout for PlayFrame {
             return Err(MyError::Other(msg));
         };
 
-        self.timer.tick(time.delta());
-        if self.timer.is_finished() {
+        if self.timer.tick(time.delta()).is_finished() {
             if atlas.index < self.last_index {
                 atlas.index += 1;
                 Ok(true)
@@ -94,10 +93,9 @@ impl Playout for Phaseout {
 
             if let Ok(children) = children_query.get(entity) {
                 for child in children.iter() {
-                    let Ok(mut sprite) = sprite_query.get_mut(child) else {
-                        continue;
+                    if let Ok(mut sprite) = sprite_query.get_mut(child) {
+                        sprite.color.set_alpha(alpha);
                     };
-                    sprite.color.set_alpha(alpha);
                 }
             }
 
