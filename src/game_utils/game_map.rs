@@ -16,7 +16,6 @@ pub struct MapRegion {
     pub end_col: usize,
 }
 
-
 #[derive(Debug, Clone, Copy, Default)]
 pub struct RectRegion {
     pub left: f32,

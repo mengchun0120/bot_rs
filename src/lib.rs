@@ -59,20 +59,25 @@ pub mod game_utils {
 pub mod misc {
     pub mod collide;
     pub mod my_error;
+    pub mod states;
     pub mod utils;
 
     pub use collide::*;
     pub use my_error::*;
+    pub use states::*;
     pub use utils::*;
 }
 
 pub mod systems {
     pub mod add_new_objs;
     pub mod cleanup;
+    pub mod menu;
     pub mod process_cursor;
     pub mod process_key;
     pub mod process_mouse_button;
     pub mod setup;
+    pub mod setup_app;
+    pub mod splash;
     pub mod update_ai;
     pub mod update_ai_bots;
     pub mod update_missiles;
@@ -82,10 +87,13 @@ pub mod systems {
 
     pub use add_new_objs::*;
     pub use cleanup::*;
+    pub use menu::*;
     pub use process_cursor::*;
     pub use process_key::*;
     pub use process_mouse_button::*;
     pub use setup::*;
+    pub use setup_app::*;
+    pub use splash::*;
     pub use update_ai::*;
     pub use update_ai_bots::*;
     pub use update_missiles::*;

@@ -1,6 +1,6 @@
 use bevy::{log::LogPlugin, prelude::*};
-use bot_rs::misc::utils::*;
-use bot_rs::systems::*;
+use bot_rs::misc::{AppState, Args, setup_log};
+use bot_rs::systems::{menu_plugin, setup_app, splash_plugin};
 use clap::Parser;
 
 fn main() {
@@ -12,20 +12,8 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.build().disable::<LogPlugin>())
         .insert_resource(args)
-        .add_systems(Startup, setup_game)
-        .add_systems(PreUpdate, update_ai)
-        .add_systems(
-            Update,
-            (
-                process_cursor,
-                process_mouse_button,
-                process_key,
-                update_player,
-                update_ai_bots,
-                update_missiles,
-                update_playout,
-            ),
-        )
-        .add_systems(PostUpdate, (update_origin, cleanup, add_new_objs).chain())
+        .init_state::<AppState>()
+        .add_systems(Startup, setup_app)
+        .add_plugins((splash_plugin, menu_plugin))
         .run();
 }
