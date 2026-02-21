@@ -1,6 +1,6 @@
 use crate::config::GameConfig;
 use crate::game_utils::GameLib;
-use crate::misc::{AppState, Args};
+use crate::misc::{states::AppState, utils::Args};
 use bevy::prelude::*;
 use std::path::PathBuf;
 

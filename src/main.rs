@@ -1,6 +1,13 @@
+mod ai;
+mod config;
+mod game;
+mod game_utils;
+mod misc;
+mod systems;
+
+use crate::misc::*;
+use crate::systems::*;
 use bevy::{log::LogPlugin, prelude::*};
-use bot_rs::misc::{AppState, Args, setup_log};
-use bot_rs::systems::{menu_plugin, setup_app, splash_plugin};
 use clap::Parser;
 
 fn main() {
@@ -14,6 +21,6 @@ fn main() {
         .insert_resource(args)
         .init_state::<AppState>()
         .add_systems(Startup, setup_app)
-        .add_plugins((splash_plugin, menu_plugin))
+        .add_plugins((splash_plugin, menu_plugin, game_plugin))
         .run();
 }

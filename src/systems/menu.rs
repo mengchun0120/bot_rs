@@ -1,4 +1,4 @@
-use crate::misc::AppState;
+use crate::misc::states::AppState;
 use bevy::prelude::*;
 
 const TEXT_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
@@ -15,6 +15,7 @@ struct HoveredButton(Option<Entity>);
 
 pub fn menu_plugin(app: &mut App) {
     app.add_systems(OnEnter(AppState::Menu), setup_menu)
+        .add_systems(OnExit(AppState::Menu), cleanup)
         .add_systems(Update, menu_action.run_if(in_state(AppState::Menu)));
 }
 
@@ -114,4 +115,8 @@ fn menu_action(
             _ => {}
         }
     }
+}
+
+fn cleanup(mut commands: Commands) {
+    commands.remove_resource::<HoveredButton>();
 }

@@ -3,31 +3,19 @@ use crate::game::*;
 use crate::game_utils::*;
 use crate::misc::*;
 use bevy::prelude::*;
-use std::path::PathBuf;
 
 pub fn setup_game(
     args: Res<Args>,
-    mut window: Single<&mut Window>,
-    asset_server: Res<AssetServer>,
-    mut layouts: ResMut<Assets<TextureAtlasLayout>>,
+    game_lib: Res<GameLib>,
     mut commands: Commands,
     mut exit_app: MessageWriter<AppExit>,
 ) {
-    let Some(game_lib) = load_game_lib(
-        &args.config_path,
-        asset_server.as_ref(),
-        layouts.as_mut(),
-        &mut exit_app,
-    ) else {
-        return;
-    };
-
     let game_config = &game_lib.game_config;
     let Some(map_config) = read_map_config(args.as_ref(), game_config, &mut exit_app) else {
         return;
     };
 
-    let mut world_info = create_world_info(&game_config, &map_config);
+    let mut world_info = create_world_info(game_config, &map_config);
     let mut game_obj_lib = GameObjLib::new();
 
     let Some(game_map) = load_game_map(
@@ -42,32 +30,13 @@ pub fn setup_game(
         return;
     };
 
-    init_window(game_config, window.as_mut());
-    commands.spawn(Camera2d);
     commands.insert_resource(game_map);
     commands.insert_resource(world_info);
     commands.insert_resource(game_obj_lib);
-    commands.insert_resource(game_lib);
     commands.insert_resource(NewObjQueue::new());
     commands.insert_resource(DespawnPool::new());
 
-    info!("Finished setup")
-}
-
-fn load_game_lib(
-    config_path: &PathBuf,
-    asset_server: &AssetServer,
-    layouts: &mut Assets<TextureAtlasLayout>,
-    exit_app: &mut MessageWriter<AppExit>,
-) -> Option<GameLib> {
-    match GameLib::load(config_path, asset_server, layouts) {
-        Ok(lib) => Some(lib),
-        Err(err) => {
-            error!("Failed to load GameLib: {}", err);
-            exit_app.write(AppExit::error());
-            None
-        }
-    }
+    info!("Finished setup game")
 }
 
 fn read_map_config(
@@ -139,10 +108,4 @@ fn load_game_map(
     }
 
     Some(game_map)
-}
-
-fn init_window(game_config: &GameConfig, window: &mut Window) {
-    window
-        .resolution
-        .set(game_config.window_width(), game_config.window_height());
 }
