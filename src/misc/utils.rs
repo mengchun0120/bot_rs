@@ -56,11 +56,6 @@ pub fn setup_log<P: AsRef<Path>>(log_path: P) -> WorkerGuard {
 }
 
 #[inline]
-pub fn join_path(components: &Vec<String>) -> PathBuf {
-    components.iter().collect()
-}
-
-#[inline]
 pub fn arr_to_vec2(v: &[f32; 2]) -> Vec2 {
     Vec2 { x: v[0], y: v[1] }
 }

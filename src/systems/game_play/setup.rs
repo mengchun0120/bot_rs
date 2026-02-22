@@ -9,6 +9,7 @@ pub fn setup_game(
     game_lib: Res<GameLib>,
     mut commands: Commands,
     mut exit_app: MessageWriter<AppExit>,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     let game_config = &game_lib.game_config;
     let Some(map_config) = read_map_config(args.as_ref(), game_config, &mut exit_app) else {
@@ -35,6 +36,8 @@ pub fn setup_game(
     commands.insert_resource(game_obj_lib);
     commands.insert_resource(NewObjQueue::new());
     commands.insert_resource(DespawnPool::new());
+
+    game_state.set(GameState::Play);
 
     info!("Finished setup game")
 }

@@ -86,9 +86,8 @@ impl Playout for Phaseout {
             return Err(MyError::NotFound(msg));
         };
 
-        self.timer.tick(time.delta());
-        if !self.timer.is_finished() {
-            let alpha = 1.0 - self.timer.elapsed_secs() / self.duration;
+        if !self.timer.tick(time.delta()).is_finished() {
+            let alpha = (1.0 - self.timer.elapsed_secs() / self.duration).max(0.0);
             sprite.color.set_alpha(alpha);
 
             if let Ok(children) = children_query.get(entity) {

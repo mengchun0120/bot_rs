@@ -101,16 +101,6 @@ impl GameMap {
         }
     }
 
-    #[inline]
-    pub fn get_region_from_rect(&self, rect_region: &RectRegion) -> MapRegion {
-        self.get_region(
-            rect_region.left,
-            rect_region.bottom,
-            rect_region.right,
-            rect_region.top,
-        )
-    }
-
     pub fn map_iter<'a>(&'a self, region: &MapRegion) -> MapIterator<'a> {
         MapIterator::new(&self, region)
     }

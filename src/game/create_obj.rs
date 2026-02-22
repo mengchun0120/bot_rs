@@ -174,6 +174,7 @@ fn create_play_frame_entity(
     let play_frame = PlayFrame::new(config.frames_per_second, config.frame_count);
     let entity = commands
         .spawn((
+            DespawnOnExit(AppState::Game),
             Sprite::from_atlas_image(image, TextureAtlas { layout, index: 0 }),
             transform,
             Visibility::Visible,
@@ -203,6 +204,7 @@ fn create_main_body(
 
     let entity = commands
         .spawn((
+            DespawnOnExit(AppState::Game),
             Sprite {
                 image,
                 custom_size: Some(size),
@@ -250,6 +252,7 @@ fn add_guns(
         let gun_direction = arr_to_vec2(&gun_comp_config.direction).normalize();
         let gun = commands
             .spawn((
+                DespawnOnExit(AppState::Game),
                 Sprite {
                     image: gun_img,
                     custom_size: Some(gun_size),
