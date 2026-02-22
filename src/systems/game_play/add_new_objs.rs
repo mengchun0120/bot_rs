@@ -1,5 +1,6 @@
 use crate::game::*;
 use crate::game_utils::*;
+use crate::misc::*;
 use bevy::prelude::*;
 
 pub fn add_new_objs(
@@ -9,6 +10,7 @@ pub fn add_new_objs(
     game_lib: Res<GameLib>,
     mut new_obj_queue: ResMut<NewObjQueue>,
     mut commands: Commands,
+    mut game_info: ResMut<GameInfo>,
 ) {
     for new_obj in new_obj_queue.iter() {
         if create_obj_by_index(
@@ -21,6 +23,7 @@ pub fn add_new_objs(
             game_obj_lib.as_mut(),
             game_lib.as_ref(),
             &mut commands,
+            game_info.as_mut(),
         )
         .is_err()
         {

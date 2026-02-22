@@ -11,6 +11,7 @@ pub use splash::*;
 mod game_play {
     pub mod add_new_objs;
     pub mod cleanup;
+    pub mod gameover;
     pub mod process_cursor;
     pub mod process_key;
     pub mod process_mouse_button;
@@ -24,6 +25,7 @@ mod game_play {
 
     pub use add_new_objs::*;
     pub use cleanup::*;
+    pub use gameover::*;
     pub use process_cursor::*;
     pub use process_key::*;
     pub use process_mouse_button::*;

@@ -26,6 +26,8 @@ pub fn game_plugin(app: &mut App) {
                 .chain()
                 .run_if(in_state(GameState::Play)),
         )
+        .add_systems(OnEnter(GameState::GameOver), gameover)
+        .add_systems(Update, wait_gameover.run_if(in_state(GameState::GameOver)))
         .add_systems(OnExit(AppState::Game), cleanup_res);
 }
 
@@ -35,4 +37,5 @@ fn cleanup_res(mut commands: Commands) {
     commands.remove_resource::<DespawnPool>();
     commands.remove_resource::<GameObjLib>();
     commands.remove_resource::<NewObjQueue>();
+    commands.remove_resource::<GameInfo>();
 }

@@ -11,6 +11,7 @@ pub fn create_obj_by_config(
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
+    game_info: &mut GameInfo,
 ) -> Result<(), MyError> {
     let pos = arr_to_vec2(&map_obj_config.pos);
     let direction = arr_to_vec2(&map_obj_config.direction).normalize();
@@ -26,6 +27,7 @@ pub fn create_obj_by_config(
         game_obj_lib,
         game_lib,
         commands,
+        game_info,
     )
 }
 
@@ -39,6 +41,7 @@ pub fn create_obj_by_index(
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
+    game_info: &mut GameInfo,
 ) -> Result<(), MyError> {
     if !world_info.contains(&pos) {
         let msg = format!("Failed to create GameObj: Position {} is out of map", pos);
@@ -69,7 +72,16 @@ pub fn create_obj_by_index(
         )?,
     };
 
-    add_obj(entity, config_index, pos, direction, game_map, game_obj_lib);
+    add_obj(
+        entity,
+        config_index,
+        pos,
+        direction,
+        game_map,
+        game_obj_lib,
+        game_lib,
+        game_info,
+    );
 
     Ok(())
 }
@@ -284,6 +296,8 @@ fn add_obj(
     direction: Vec2,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
+    game_lib: &GameLib,
+    game_info: &mut GameInfo,
 ) {
     let obj = GameObj {
         config_index,
@@ -292,6 +306,10 @@ fn add_obj(
         map_pos: game_map.get_map_pos(&pos),
         is_phaseout: false,
     };
+    if game_lib.get_game_obj_config(config_index).is_ai_bot() {
+        game_info.incr_ai_bot_count();
+    }
+
     game_map.add(&obj.map_pos, entity);
     game_obj_lib.insert(entity, obj);
 }

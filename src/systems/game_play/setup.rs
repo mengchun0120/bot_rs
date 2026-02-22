@@ -18,6 +18,7 @@ pub fn setup_game(
 
     let mut world_info = create_world_info(game_config, &map_config);
     let mut game_obj_lib = GameObjLib::new();
+    let mut game_info = GameInfo::new();
 
     let Some(game_map) = load_game_map(
         &map_config,
@@ -27,6 +28,7 @@ pub fn setup_game(
         &game_lib,
         &mut commands,
         &mut exit_app,
+        &mut game_info,
     ) else {
         return;
     };
@@ -36,6 +38,7 @@ pub fn setup_game(
     commands.insert_resource(game_obj_lib);
     commands.insert_resource(NewObjQueue::new());
     commands.insert_resource(DespawnPool::new());
+    commands.insert_resource(game_info);
 
     game_state.set(GameState::Play);
 
@@ -81,6 +84,7 @@ fn load_game_map(
     game_lib: &GameLib,
     commands: &mut Commands,
     exit_app: &mut MessageWriter<AppExit>,
+    game_info: &mut GameInfo,
 ) -> Option<GameMap> {
     let mut game_map = GameMap::new(map_config.row_count, map_config.col_count, cell_size);
     let mut add_func = |map_obj_config: &GameMapObjConfig| -> bool {
@@ -91,6 +95,7 @@ fn load_game_map(
             game_obj_lib,
             game_lib,
             commands,
+            game_info,
         ) {
             Ok(()) => true,
             Err(err) => {
