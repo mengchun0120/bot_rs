@@ -41,6 +41,7 @@ pub struct MissileConfig {
     pub collide_span: f32,
     pub damage: f32,
     pub damage_range: f32,
+    pub features: Vec<MissileFeature>,
     pub on_death_actions: Vec<OnDeathAction>,
 }
 
@@ -58,6 +59,17 @@ pub enum OnDeathAction {
     DoDamage,
     PlayFrame(String),
     Phaseout(f32),
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub enum MissileFeature {
+    Guided(EnemySearchConfig),
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct EnemySearchConfig {
+    pub search_span: f32,
+    pub search_wait_duration: f32,
 }
 
 #[derive(Debug, Clone, Deserialize)]

@@ -166,6 +166,14 @@ pub fn create_missile_entity(
     cmd.insert(MoveComponent::new(speed.unwrap_or(config.speed)));
     cmd.insert(MissileComponent);
 
+    for feature in config.features.iter() {
+        match feature {
+            MissileFeature::Guided(guided_config) => {
+                cmd.insert(EnemySearchComponent::new(guided_config.search_wait_duration));
+            }
+        }
+    }
+
     debug!("created missile {}", entity);
 
     Ok(entity)

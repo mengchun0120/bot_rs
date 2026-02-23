@@ -3,7 +3,7 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn update_missiles(
-    mut q_missile: Query<(Entity, &mut Transform, &MoveComponent), With<MissileComponent>>,
+    mut missile_query: Query<(Entity, &mut Transform, &MoveComponent), With<MissileComponent>>,
     mut hp_query: Query<&mut HPComponent>,
     mut world_info: ResMut<WorldInfo>,
     mut game_map: ResMut<GameMap>,
@@ -14,7 +14,7 @@ pub fn update_missiles(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, mut transform, move_comp) in q_missile.iter_mut() {
+    for (entity, mut transform, move_comp) in missile_query.iter_mut() {
         if despawn_pool.contains(&entity) {
             continue;
         }
@@ -38,4 +38,16 @@ pub fn update_missiles(
             error!("Cannot move missile");
         }
     }
+}
+
+fn search_enemy(
+    entity: &Entity,
+    search_span: f32,
+    game_map: &GameMap,
+    mut game_obj_lib: &mut GameObjLib,
+    game_lib: &GameLib,
+) {
+    let Ok(obj) = game_obj_lib.get_mut(entity) else {
+        return;
+    };
 }

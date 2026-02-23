@@ -49,6 +49,14 @@ pub struct HPComponent {
     hp: f32,
 }
 
+#[derive(Component)]
+pub struct EnemySearchComponent {
+    search_timer: Timer,
+    search_span: f32,
+    potential_targets: Vec<Entity>,
+    cur_target: Option<Entity>,
+}
+
 impl MoveComponent {
     pub fn new(speed: f32) -> Self {
         Self { speed: speed }
@@ -129,5 +137,46 @@ impl HPComponent {
 impl PlayoutComponent {
     pub fn new<T: Playout + 'static>(playout: T) -> Self {
         Self(Box::new(playout))
+    }
+}
+
+impl EnemySearchComponent {
+    pub fn new(config: &EnemySearchConfig) -> Self {
+        Self {
+            search_timer: Timer::from_seconds(config.search_wait_duration, TimerMode::Repeating),
+            search_span: config.search_span,
+            potential_targets: Vec::new(),
+            cur_target: None,
+        }
+    }
+
+    pub fn update(
+        &mut self,
+        entity: &Entity,
+        transform_query: &mut Query<&mut Transform>,
+        game_map: &GameMap,
+        game_obj_lib: &mut GameObjLib,
+        despawn_pool: &DespawnPool,
+        time: &Time,
+    ) -> Result<bool, MyError> {
+        let obj = game_obj_lib.get_mut(entity)?;
+
+        if !self.search_timer.tick(time.delta()).is_finished() {
+            return Ok(false)
+        }
+
+        let region = game_map.get_region(
+            obj.pos.x - self.search_span,
+            obj.pos.y - self.search_span,
+            obj.pos.x + self.search_span,
+            obj.pos.y + self.search_span,
+        );
+
+        self.potential_targets.clear();
+
+        for entity in game_map.map_iter(&region) {
+        }
+
+        Ok(true)
     }
 }
