@@ -158,13 +158,51 @@ impl EnemySearchComponent {
         game_obj_lib: &mut GameObjLib,
         despawn_pool: &DespawnPool,
         time: &Time,
-    ) -> Result<bool, MyError> {
+    ) -> Result<(), MyError> {
         let obj = game_obj_lib.get_mut(entity)?;
 
-        if !self.search_timer.tick(time.delta()).is_finished() {
-            return Ok(false)
+        if let Some(target) = self.cur_target && !despawn_pool.contains(&target) {
+
+        } else {
+
         }
 
+
+
+        Ok(())
+    }
+
+    fn update_with_target(
+        &mut self,
+        entity: &Entity, 
+        target: &Entity,
+        transform_query: &mut Query<&mut Transform>,
+        game_obj_lib: &mut GameObjLib,
+    ) -> Result<(), MyError> {
+        let target_pos = game_obj_lib.get(target).map(|o| o.pos)?;
+        let obj = game_obj_lib.get_mut(entity)?;
+        let Ok(mut transform) = transform_query.get_mut(*entity) else {
+            let msg = format!("Cannot find Transform for {}", entity);
+            error!(msg);
+            return Err(MyError::Other(msg));
+        };
+
+        obj.direction = (target_pos - obj.pos).normalize();
+        transform.rotation = get_rotation(&obj.direction);
+
+        Ok(())
+    }
+
+    fn search_for_target(
+        &mut self,
+        entity: &Entity,
+        transform_query: &mut Query<&mut Transform>,
+        game_map: &GameMap,
+        game_obj_lib: &mut GameObjLib,
+        game_lib: &GameLib,
+        despawn_pool: &DespawnPool,
+    ) -> Result<(), MyError> {
+        let obj = game_obj_lib.get(entity)?;
         let region = game_map.get_region(
             obj.pos.x - self.search_span,
             obj.pos.y - self.search_span,
@@ -174,9 +212,27 @@ impl EnemySearchComponent {
 
         self.potential_targets.clear();
 
-        for entity in game_map.map_iter(&region) {
+        for e in game_map.map_iter(&region) {
+            if despawn_pool.contains(&e) {
+                continue;
+            }
+
+            let Ok(obj2) = game_obj_lib.get(&e) else {
+                continue;
+            };
+
+            if obj2.is_phaseout {
+                continue;
+            }
+
+            let Ok(config) = game_lib.get_game_obj_config(obj2.config_index).bot_config() else {
+                continue;
+            };
+
+            
+
         }
 
-        Ok(true)
+        Ok(())
     }
 }
