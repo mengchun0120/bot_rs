@@ -2,6 +2,7 @@
     "player_bot": "player_bot.png",
     "ai_bot": "ai_bot.png",
     "steel_tile": "steel_tile.png",
+    "green_guided_missile": "green_guided_missile.png",
     "green_standard_missile": "green_standard_missile.png",
     "orange_standard_missile": "orange_standard_missile.png",
     "green_standard_gun": "green_standard_gun.png",

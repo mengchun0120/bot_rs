@@ -1,3 +1,4 @@
+use crate::config::*;
 use bevy::prelude::*;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]

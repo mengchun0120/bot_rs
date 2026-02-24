@@ -168,8 +168,8 @@ pub fn create_missile_entity(
 
     for feature in config.features.iter() {
         match feature {
-            MissileFeature::Guided(guided_config) => {
-                cmd.insert(EnemySearchComponent::new(guided_config.search_wait_duration));
+            MissileFeature::Guided(cfg) => {
+                cmd.insert(EnemySearchComponent::new(cfg));
             }
         }
     }

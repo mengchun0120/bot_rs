@@ -27,9 +27,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="1.5465208"
-     inkscape:cx="314.57708"
-     inkscape:cy="629.80078"
+     inkscape:zoom="2.1871107"
+     inkscape:cx="487.17242"
+     inkscape:cy="110.19104"
      inkscape:window-width="1920"
      inkscape:window-height="1112"
      inkscape:window-x="-8"
@@ -146,5 +146,26 @@
        inkscape:export-filename="green_standard_gun.png"
        inkscape:export-xdpi="83.143616"
        inkscape:export-ydpi="83.143616" />
+    <g
+       id="g8"
+       transform="matrix(0.7175275,0,0,0.76532391,35.271991,2.339072)"
+       inkscape:export-filename="green_guided_missile.png"
+       inkscape:export-xdpi="83.143616"
+       inkscape:export-ydpi="83.143616">
+      <rect
+         style="fill:#009600;stroke:#006200;stroke-width:0.820729"
+         id="rect2"
+         width="24.056784"
+         height="19.111099"
+         x="125.39715"
+         y="10.463799" />
+      <ellipse
+         style="fill:#74c700;fill-opacity:1;stroke:#006200;stroke-width:0.85"
+         id="path4"
+         cx="149.52376"
+         cy="20.021181"
+         rx="9.9198599"
+         ry="9.4964514" />
+    </g>
   </g>
 </svg>

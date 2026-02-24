@@ -11,7 +11,7 @@
                 "collide_span": 21.2132,
                 "hp": 100.0,
                 "weapon_config": {
-                    "missile_name": "green_standard_missile",
+                    "missile_name": "green_guided_missile",
                     "gun_components": [
                         {
                             "config_name": "green_standard_gun",
@@ -85,6 +85,7 @@
                 "collide_span": 5.0,
                 "damage": 50.0,
                 "damage_range": 40.0,
+                "features": [],
                 "on_death_actions": [
                     "DoDamage",
                     {"PlayFrame": "green_explosion"}
@@ -104,9 +105,37 @@
                 "collide_span": 5.0,
                 "damage": 10.0,
                 "damage_range": 40.0,
+                "features": [],
                 "on_death_actions": [
                     "DoDamage",
                     {"PlayFrame": "orange_explosion"}
+                ]
+            }
+        }
+    },
+    {
+        "name": "green_guided_missile",
+        "config": {
+            "Missile": {
+                "image": "green_guided_missile",
+                "size": [16.0, 10.0],
+                "z": 1.0,
+                "side": "Player",
+                "speed": 80.0,
+                "collide_span": 5.0,
+                "damage": 50.0,
+                "damage_range": 40.0,
+                "features": [
+                    {
+                        "Guided": {
+                            "search_span": 100.0,
+                            "search_wait_duration": 1.0
+                        }
+                    }
+                ],
+                "on_death_actions": [
+                    "DoDamage",
+                    {"PlayFrame": "green_explosion"}
                 ]
             }
         }
@@ -131,7 +160,7 @@
                 "size": [70.0, 70.0],
                 "z": 1.0,
                 "frame_count": 24,
-                "frames_per_second": 24                
+                "frames_per_second": 24
             }
         }
     }

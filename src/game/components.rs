@@ -4,6 +4,7 @@ use crate::game::*;
 use crate::game_utils::*;
 use crate::misc::*;
 use bevy::prelude::*;
+use rand::seq::IndexedRandom;
 
 #[derive(Component)]
 pub struct PlayerComponent;
@@ -55,6 +56,7 @@ pub struct EnemySearchComponent {
     search_span: f32,
     potential_targets: Vec<Entity>,
     cur_target: Option<Entity>,
+    initial_search: bool,
 }
 
 impl MoveComponent {
@@ -147,45 +149,47 @@ impl EnemySearchComponent {
             search_span: config.search_span,
             potential_targets: Vec::new(),
             cur_target: None,
+            initial_search: true,
         }
     }
 
     pub fn update(
         &mut self,
         entity: &Entity,
-        transform_query: &mut Query<&mut Transform>,
+        transform: &mut Transform,
         game_map: &GameMap,
         game_obj_lib: &mut GameObjLib,
+        game_lib: &GameLib,
         despawn_pool: &DespawnPool,
         time: &Time,
     ) -> Result<(), MyError> {
-        let obj = game_obj_lib.get_mut(entity)?;
-
-        if let Some(target) = self.cur_target && !despawn_pool.contains(&target) {
-
+        if let Some(target) = self.check_target_available(game_obj_lib, despawn_pool)? {
+            self.update_with_target(entity, &target, transform, game_obj_lib)?;
         } else {
-
+            if self.initial_search || self.search_timer.tick(time.delta()).is_finished() {
+                self.find_target(
+                    entity,
+                    transform,
+                    game_map,
+                    game_obj_lib,
+                    game_lib,
+                    despawn_pool,
+                )?;
+            }
         }
-
-
 
         Ok(())
     }
 
     fn update_with_target(
         &mut self,
-        entity: &Entity, 
+        entity: &Entity,
         target: &Entity,
-        transform_query: &mut Query<&mut Transform>,
+        transform: &mut Transform,
         game_obj_lib: &mut GameObjLib,
     ) -> Result<(), MyError> {
         let target_pos = game_obj_lib.get(target).map(|o| o.pos)?;
         let obj = game_obj_lib.get_mut(entity)?;
-        let Ok(mut transform) = transform_query.get_mut(*entity) else {
-            let msg = format!("Cannot find Transform for {}", entity);
-            error!(msg);
-            return Err(MyError::Other(msg));
-        };
 
         obj.direction = (target_pos - obj.pos).normalize();
         transform.rotation = get_rotation(&obj.direction);
@@ -193,26 +197,35 @@ impl EnemySearchComponent {
         Ok(())
     }
 
-    fn search_for_target(
+    fn find_target(
         &mut self,
         entity: &Entity,
-        transform_query: &mut Query<&mut Transform>,
+        transform: &mut Transform,
         game_map: &GameMap,
         game_obj_lib: &mut GameObjLib,
         game_lib: &GameLib,
         despawn_pool: &DespawnPool,
     ) -> Result<(), MyError> {
-        let obj = game_obj_lib.get(entity)?;
-        let region = game_map.get_region(
+        let obj = game_obj_lib.get(entity).cloned()?;
+        let side = match &game_lib.get_game_obj_config(obj.config_index).config {
+            GameObjConfig::Bot(cfg) => cfg.side,
+            GameObjConfig::Missile(cfg) => cfg.side,
+            _ => {
+                let msg = format!("Object {} doesn't have side", entity);
+                error!(msg);
+                return Err(MyError::Other(msg));
+            }
+        };
+        let search_region = RectRegion::new(
             obj.pos.x - self.search_span,
             obj.pos.y - self.search_span,
             obj.pos.x + self.search_span,
             obj.pos.y + self.search_span,
         );
-
+        let map_region = game_map.get_region_from_rect(&search_region);
         self.potential_targets.clear();
 
-        for e in game_map.map_iter(&region) {
+        for e in game_map.map_iter(&map_region) {
             if despawn_pool.contains(&e) {
                 continue;
             }
@@ -225,14 +238,49 @@ impl EnemySearchComponent {
                 continue;
             }
 
-            let Ok(config) = game_lib.get_game_obj_config(obj2.config_index).bot_config() else {
+            let Ok(obj_config2) = game_lib.get_game_obj_config(obj2.config_index).bot_config()
+            else {
                 continue;
             };
 
-            
-
+            if obj_config2.side != side && search_region.covers(&obj2.pos) {
+                self.potential_targets.push(e);
+            }
         }
 
+        let mut r = rand::rng();
+        if let Some(target) = self.potential_targets.choose(&mut r).cloned() {
+            self.cur_target = Some(target);
+            self.search_timer.reset();
+            self.update_with_target(entity, &target, transform, game_obj_lib)?;
+        }
+
+        self.initial_search = false;
+
         Ok(())
+    }
+
+    fn check_target_available(
+        &mut self,
+        game_obj_lib: &GameObjLib,
+        despawn_pool: &DespawnPool,
+    ) -> Result<Option<Entity>, MyError> {
+        let Some(target) = self.cur_target else {
+            return Ok(None);
+        };
+
+        if despawn_pool.contains(&target) {
+            self.cur_target = None;
+            return Ok(None);
+        }
+
+        let obj = game_obj_lib.get(&target)?;
+
+        if obj.is_phaseout {
+            self.cur_target = None;
+            return Ok(None);
+        }
+
+        Ok(Some(target))
     }
 }

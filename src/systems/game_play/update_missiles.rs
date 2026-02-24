@@ -5,6 +5,7 @@ use bevy::prelude::*;
 pub fn update_missiles(
     mut missile_query: Query<(Entity, &mut Transform, &MoveComponent), With<MissileComponent>>,
     mut hp_query: Query<&mut HPComponent>,
+    mut enemy_search_query: Query<&mut EnemySearchComponent>,
     mut world_info: ResMut<WorldInfo>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -17,6 +18,20 @@ pub fn update_missiles(
     for (entity, mut transform, move_comp) in missile_query.iter_mut() {
         if despawn_pool.contains(&entity) {
             continue;
+        }
+
+        if let Ok(mut enemy_search_comp) = enemy_search_query.get_mut(entity) {
+            if enemy_search_comp.update(
+                &entity,
+                transform.as_mut(),
+                game_map.as_ref(),
+                game_obj_lib.as_mut(),
+                game_lib.as_ref(),
+                despawn_pool.as_ref(),
+                time.as_ref(),
+            ).is_err() {
+                error!("Failed to update EnemySearchComponent");
+            }
         }
 
         if move_missile(
@@ -38,16 +53,4 @@ pub fn update_missiles(
             error!("Cannot move missile");
         }
     }
-}
-
-fn search_enemy(
-    entity: &Entity,
-    search_span: f32,
-    game_map: &GameMap,
-    mut game_obj_lib: &mut GameObjLib,
-    game_lib: &GameLib,
-) {
-    let Ok(obj) = game_obj_lib.get_mut(entity) else {
-        return;
-    };
 }
