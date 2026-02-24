@@ -52,56 +52,82 @@ pub fn create_obj_by_index(
     let named_config = game_lib.get_game_obj_config(config_index);
 
     let entity = match &named_config.config {
-        GameObjConfig::Bot(config) => create_bot_entity(
-            &pos, &direction, speed, config, world_info, game_lib, commands,
-        )?,
-        GameObjConfig::Tile(config) => {
-            create_tile_entity(&pos, &direction, config, world_info, game_lib, commands)?
-        }
-        GameObjConfig::Missile(config) => create_missile_entity(
-            &pos, &direction, speed, config, world_info, game_lib, commands,
-        )?,
-        GameObjConfig::PlayFrame(config) => create_play_frame_entity(
-            &named_config.name,
-            &pos,
-            &direction,
+        GameObjConfig::Bot(config) => create_bot(
+            config_index,
+            pos,
+            direction,
+            speed,
             config,
             world_info,
+            game_map,
+            game_obj_lib,
             game_lib,
             commands,
+            game_info,
+        )?,
+        GameObjConfig::Tile(config) => create_tile(
+            config_index,
+            pos,
+            direction,
+            config,
+            world_info,
+            game_map,
+            game_obj_lib,
+            game_lib,
+            commands,
+            game_info,
+        )?,
+        GameObjConfig::Missile(config) => create_missile(
+            config_index,
+            pos,
+            direction,
+            speed,
+            config,
+            world_info,
+            game_map,
+            game_obj_lib,
+            game_lib,
+            commands,
+            game_info,
+        )?,
+        GameObjConfig::PlayFrame(config) => create_play_frame(
+            config_index,
+            &named_config.name,
+            pos,
+            direction,
+            config,
+            world_info,
+            game_map,
+            game_obj_lib,
+            game_lib,
+            commands,
+            game_info,
         )?,
     };
-
-    add_obj(
-        entity,
-        config_index,
-        pos,
-        direction,
-        game_map,
-        game_obj_lib,
-        game_lib,
-        game_info,
-    );
 
     Ok(())
 }
 
-fn create_bot_entity(
-    pos: &Vec2,
-    direction: &Vec2,
+fn create_bot(
+    config_index: usize,
+    pos: Vec2,
+    direction: Vec2,
     speed: Option<f32>,
     config: &BotConfig,
     world_info: &WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
+    game_info: &mut GameInfo,
 ) -> Result<Entity, MyError> {
-    let visible = world_info.check_pos_visible(pos);
+    let visible = world_info.check_pos_visible(&pos);
     let size = arr_to_vec2(&config.size);
     let entity = create_main_body(&config.image, size, visible, game_lib, commands)?;
     let weapon_comp = create_weapon(entity, &config.weapon_config, game_lib, commands)?;
     let mut cmd = commands.entity(entity);
 
-    cmd.insert(create_transform(pos, direction, config.z, world_info));
+    cmd.insert(create_transform(&pos, &direction, config.z, world_info));
     cmd.insert(MoveComponent::new(speed.unwrap_or(0.0)));
     cmd.insert(weapon_comp);
     cmd.insert(HPComponent::new(config.hp));
@@ -121,48 +147,86 @@ fn create_bot_entity(
                 }
             }
         }
+        _ => {}
     }
 
-    debug!("created player {}", entity);
+    add_obj(
+        entity,
+        config_index,
+        pos,
+        direction,
+        config.side,
+        game_map,
+        game_obj_lib,
+        game_lib,
+        game_info,
+    );
+
+    debug!("Created Bot {}", entity);
 
     Ok(entity)
 }
 
-fn create_tile_entity(
-    pos: &Vec2,
-    direction: &Vec2,
+fn create_tile(
+    config_index: usize,
+    pos: Vec2,
+    direction: Vec2,
     tile_config: &TileConfig,
     world_info: &WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
+    game_info: &mut GameInfo,
 ) -> Result<Entity, MyError> {
-    let visible = world_info.check_pos_visible(pos);
+    let visible = world_info.check_pos_visible(&pos);
     let size = arr_to_vec2(&tile_config.size);
     let entity = create_main_body(&tile_config.image, size, visible, game_lib, commands)?;
     let mut cmd = commands.entity(entity);
 
-    cmd.insert(create_transform(pos, direction, tile_config.z, world_info));
+    cmd.insert(create_transform(
+        &pos,
+        &direction,
+        tile_config.z,
+        world_info,
+    ));
     cmd.insert(TileComponent);
 
-    debug!("created tile {}", entity);
+    add_obj(
+        entity,
+        config_index,
+        pos,
+        direction,
+        GameObjSide::Neutral,
+        game_map,
+        game_obj_lib,
+        game_lib,
+        game_info,
+    );
+
+    debug!("Created Tile {}", entity);
 
     Ok(entity)
 }
 
-pub fn create_missile_entity(
-    pos: &Vec2,
-    direction: &Vec2,
+pub fn create_missile(
+    config_index: usize,
+    pos: Vec2,
+    direction: Vec2,
     speed: Option<f32>,
     config: &MissileConfig,
     world_info: &WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
+    game_info: &mut GameInfo,
 ) -> Result<Entity, MyError> {
     let size = arr_to_vec2(&config.size);
     let entity = create_main_body(&config.image, size, true, game_lib, commands)?;
     let mut cmd = commands.entity(entity);
 
-    cmd.insert(create_transform(pos, direction, config.z, world_info));
+    cmd.insert(create_transform(&pos, &direction, config.z, world_info));
     cmd.insert(MoveComponent::new(speed.unwrap_or(config.speed)));
     cmd.insert(MissileComponent);
 
@@ -174,23 +238,39 @@ pub fn create_missile_entity(
         }
     }
 
-    debug!("created missile {}", entity);
+    debug!("Created Missile {}", entity);
+
+    add_obj(
+        entity,
+        config_index,
+        pos,
+        direction,
+        config.side,
+        game_map,
+        game_obj_lib,
+        game_lib,
+        game_info,
+    );
 
     Ok(entity)
 }
 
-fn create_play_frame_entity(
+fn create_play_frame(
+    config_index: usize,
     config_name: &String,
-    pos: &Vec2,
-    direction: &Vec2,
+    pos: Vec2,
+    direction: Vec2,
     config: &PlayFrameConfig,
     world_info: &WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     commands: &mut Commands,
+    game_info: &mut GameInfo,
 ) -> Result<Entity, MyError> {
     let image = game_lib.get_image(&config.image)?;
     let layout = game_lib.get_tex_atlas_layout(config_name)?;
-    let transform = create_transform(pos, direction, config.z, world_info);
+    let transform = create_transform(&pos, &direction, config.z, world_info);
     let play_frame = PlayFrame::new(config.frames_per_second, config.frame_count);
     let entity = commands
         .spawn((
@@ -203,7 +283,19 @@ fn create_play_frame_entity(
         ))
         .id();
 
-    debug!("created frame-play {}", entity);
+    add_obj(
+        entity,
+        config_index,
+        pos,
+        direction,
+        GameObjSide::Neutral,
+        game_map,
+        game_obj_lib,
+        game_lib,
+        game_info,
+    );
+
+    debug!("Created PlayFrame {}", entity);
 
     Ok(entity)
 }
@@ -302,6 +394,7 @@ fn add_obj(
     config_index: usize,
     pos: Vec2,
     direction: Vec2,
+    side: GameObjSide,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -311,6 +404,7 @@ fn add_obj(
         config_index,
         pos,
         direction,
+        side,
         map_pos: game_map.get_map_pos(&pos),
         is_phaseout: false,
     };

@@ -207,15 +207,6 @@ impl EnemySearchComponent {
         despawn_pool: &DespawnPool,
     ) -> Result<(), MyError> {
         let obj = game_obj_lib.get(entity).cloned()?;
-        let side = match &game_lib.get_game_obj_config(obj.config_index).config {
-            GameObjConfig::Bot(cfg) => cfg.side,
-            GameObjConfig::Missile(cfg) => cfg.side,
-            _ => {
-                let msg = format!("Object {} doesn't have side", entity);
-                error!(msg);
-                return Err(MyError::Other(msg));
-            }
-        };
         let search_region = RectRegion::new(
             obj.pos.x - self.search_span,
             obj.pos.y - self.search_span,
@@ -238,12 +229,11 @@ impl EnemySearchComponent {
                 continue;
             }
 
-            let Ok(obj_config2) = game_lib.get_game_obj_config(obj2.config_index).bot_config()
-            else {
+            if !game_lib.get_game_obj_config(obj2.config_index).is_bot() {
                 continue;
             };
 
-            if obj_config2.side != side && search_region.covers(&obj2.pos) {
+            if obj2.side != obj.side && search_region.covers(&obj2.pos) {
                 self.potential_targets.push(e);
             }
         }

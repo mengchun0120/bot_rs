@@ -21,15 +21,18 @@ pub fn update_missiles(
         }
 
         if let Ok(mut enemy_search_comp) = enemy_search_query.get_mut(entity) {
-            if enemy_search_comp.update(
-                &entity,
-                transform.as_mut(),
-                game_map.as_ref(),
-                game_obj_lib.as_mut(),
-                game_lib.as_ref(),
-                despawn_pool.as_ref(),
-                time.as_ref(),
-            ).is_err() {
+            if enemy_search_comp
+                .update(
+                    &entity,
+                    transform.as_mut(),
+                    game_map.as_ref(),
+                    game_obj_lib.as_mut(),
+                    game_lib.as_ref(),
+                    despawn_pool.as_ref(),
+                    time.as_ref(),
+                )
+                .is_err()
+            {
                 error!("Failed to update EnemySearchComponent");
             }
         }

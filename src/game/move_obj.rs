@@ -58,7 +58,7 @@ pub fn move_bot(
             game_obj_lib,
         )?;
 
-        if config.side == GameObjSide::AI {
+        if obj.side == GameObjSide::AI {
             update_bot_visibility(entity, &new_pos, visibility, world_info, commands);
         }
     }
@@ -66,7 +66,7 @@ pub fn move_bot(
     capture_missiles(
         &new_pos,
         config.collide_span,
-        config.side,
+        obj.side,
         hp_query,
         game_map,
         game_obj_lib,
@@ -268,7 +268,7 @@ fn get_collided_missiles(
             continue;
         };
 
-        if config.side != side
+        if obj.side != side
             && check_collide_obj(pos, collide_span, &obj.pos, config.collide_span)
         {
             collided_missiles.insert(entity);

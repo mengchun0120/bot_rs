@@ -24,7 +24,7 @@ pub fn on_death(
                 let missile_config = obj_config.missile_config()?;
                 on_do_damage(
                     &obj.pos,
-                    missile_config.side,
+                    obj.side,
                     missile_config.damage_range,
                     missile_config.damage,
                     hp_query,
@@ -81,7 +81,7 @@ fn on_do_damage(
             continue;
         };
 
-        if obj_config.side != side
+        if obj.side != side
             && check_collide_obj(pos, damage_range, &obj.pos, obj_config.collide_span)
             && let Ok(mut hp_comp) = hp_query.get_mut(entity)
         {
