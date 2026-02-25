@@ -77,12 +77,9 @@ fn on_do_damage(
         let Ok(obj) = game_obj_lib.get(&entity) else {
             continue;
         };
-        let Ok(obj_config) = game_lib.get_game_obj_config(obj.config_index).bot_config() else {
-            continue;
-        };
 
         if obj.side != side
-            && check_collide_obj(pos, damage_range, &obj.pos, obj_config.collide_span)
+            && check_collide_obj(pos, damage_range, &obj.pos, obj.collide_span)
             && let Ok(mut hp_comp) = hp_query.get_mut(entity)
         {
             hp_comp.update(-damage);

@@ -32,19 +32,15 @@ pub fn move_bot(
     }
 
     let obj = game_obj_lib.get(&entity).cloned()?;
-    let config = game_lib
-        .get_game_obj_config(obj.config_index)
-        .bot_config()?;
     let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
     let collided = check_collide(
         &entity,
         &new_pos,
-        config.collide_span,
+        obj.collide_span,
         game_lib.game_config.max_collide_span,
         world_info,
         game_map,
         game_obj_lib,
-        game_lib,
         despawn_pool,
     );
 
@@ -65,7 +61,7 @@ pub fn move_bot(
 
     capture_missiles(
         &new_pos,
-        config.collide_span,
+        obj.collide_span,
         obj.side,
         hp_query,
         game_map,
@@ -102,9 +98,6 @@ pub fn move_missile(
     }
 
     let obj = game_obj_lib.get(&entity).cloned()?;
-    let config = game_lib
-        .get_game_obj_config(obj.config_index)
-        .missile_config()?;
     let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
 
     if !world_info.check_pos_visible(&new_pos) {
@@ -115,12 +108,11 @@ pub fn move_missile(
     let collided = check_collide(
         &entity,
         &new_pos,
-        config.collide_span,
+        obj.collide_span,
         game_lib.game_config.max_collide_span,
         world_info,
         game_map,
         game_obj_lib,
-        game_lib,
         despawn_pool,
     );
     if collided {
@@ -257,20 +249,12 @@ fn get_collided_missiles(
         let Ok(obj) = game_obj_lib.get(&entity) else {
             continue;
         };
-        if obj.is_phaseout {
+
+        if !obj.is_collidable() {
             continue;
         }
 
-        let Ok(config) = game_lib
-            .get_game_obj_config(obj.config_index)
-            .missile_config()
-        else {
-            continue;
-        };
-
-        if obj.side != side
-            && check_collide_obj(pos, collide_span, &obj.pos, config.collide_span)
-        {
+        if obj.side != side && check_collide_obj(pos, collide_span, &obj.pos, obj.collide_span) {
             collided_missiles.insert(entity);
         }
     }

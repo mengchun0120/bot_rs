@@ -1,4 +1,5 @@
 use crate::config::*;
+use crate::game::*;
 use crate::misc::*;
 use bevy::prelude::*;
 use serde::Deserialize;
@@ -87,15 +88,18 @@ pub struct NamedGameObjConfig {
     pub config: GameObjConfig,
 }
 
-impl NamedGameObjConfig {
-    #[inline]
-    pub fn is_tile(&self) -> bool {
-        match &self.config {
-            GameObjConfig::Tile(_) => true,
-            _ => false,
+impl GameObjConfig {
+    pub fn basic_info(&self) -> (GameObjSide, f32, GameObjType) {
+        match self {
+            Self::Bot(cfg) => (cfg.side, cfg.collide_span, GameObjType::Bot),
+            Self::Missile(cfg) => (cfg.side, cfg.collide_span, GameObjType::Missile),
+            Self::PlayFrame(_) => (GameObjSide::Neutral, 0.0, GameObjType::PlayFrame),
+            Self::Tile(cfg) => (GameObjSide::Neutral, cfg.collide_span, GameObjType::Tile),
         }
     }
+}
 
+impl NamedGameObjConfig {
     #[inline]
     pub fn is_bot(&self) -> bool {
         match &self.config {

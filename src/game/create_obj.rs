@@ -51,7 +51,7 @@ pub fn create_obj_by_index(
 
     let named_config = game_lib.get_game_obj_config(config_index);
 
-    let entity = match &named_config.config {
+    match &named_config.config {
         GameObjConfig::Bot(config) => create_bot(
             config_index,
             pos,
@@ -155,7 +155,6 @@ fn create_bot(
         config_index,
         pos,
         direction,
-        config.side,
         game_map,
         game_obj_lib,
         game_lib,
@@ -163,48 +162,6 @@ fn create_bot(
     );
 
     debug!("Created Bot {}", entity);
-
-    Ok(entity)
-}
-
-fn create_tile(
-    config_index: usize,
-    pos: Vec2,
-    direction: Vec2,
-    tile_config: &TileConfig,
-    world_info: &WorldInfo,
-    game_map: &mut GameMap,
-    game_obj_lib: &mut GameObjLib,
-    game_lib: &GameLib,
-    commands: &mut Commands,
-    game_info: &mut GameInfo,
-) -> Result<Entity, MyError> {
-    let visible = world_info.check_pos_visible(&pos);
-    let size = arr_to_vec2(&tile_config.size);
-    let entity = create_main_body(&tile_config.image, size, visible, game_lib, commands)?;
-    let mut cmd = commands.entity(entity);
-
-    cmd.insert(create_transform(
-        &pos,
-        &direction,
-        tile_config.z,
-        world_info,
-    ));
-    cmd.insert(TileComponent);
-
-    add_obj(
-        entity,
-        config_index,
-        pos,
-        direction,
-        GameObjSide::Neutral,
-        game_map,
-        game_obj_lib,
-        game_lib,
-        game_info,
-    );
-
-    debug!("Created Tile {}", entity);
 
     Ok(entity)
 }
@@ -245,7 +202,6 @@ pub fn create_missile(
         config_index,
         pos,
         direction,
-        config.side,
         game_map,
         game_obj_lib,
         game_lib,
@@ -288,7 +244,6 @@ fn create_play_frame(
         config_index,
         pos,
         direction,
-        GameObjSide::Neutral,
         game_map,
         game_obj_lib,
         game_lib,
@@ -296,6 +251,47 @@ fn create_play_frame(
     );
 
     debug!("Created PlayFrame {}", entity);
+
+    Ok(entity)
+}
+
+fn create_tile(
+    config_index: usize,
+    pos: Vec2,
+    direction: Vec2,
+    tile_config: &TileConfig,
+    world_info: &WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
+    game_lib: &GameLib,
+    commands: &mut Commands,
+    game_info: &mut GameInfo,
+) -> Result<Entity, MyError> {
+    let visible = world_info.check_pos_visible(&pos);
+    let size = arr_to_vec2(&tile_config.size);
+    let entity = create_main_body(&tile_config.image, size, visible, game_lib, commands)?;
+    let mut cmd = commands.entity(entity);
+
+    cmd.insert(create_transform(
+        &pos,
+        &direction,
+        tile_config.z,
+        world_info,
+    ));
+    cmd.insert(TileComponent);
+
+    add_obj(
+        entity,
+        config_index,
+        pos,
+        direction,
+        game_map,
+        game_obj_lib,
+        game_lib,
+        game_info,
+    );
+
+    debug!("Created Tile {}", entity);
 
     Ok(entity)
 }
@@ -394,21 +390,27 @@ fn add_obj(
     config_index: usize,
     pos: Vec2,
     direction: Vec2,
-    side: GameObjSide,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     game_info: &mut GameInfo,
 ) {
+    let (side, collide_span, obj_type) = game_lib
+        .get_game_obj_config(config_index)
+        .config
+        .basic_info();
     let obj = GameObj {
         config_index,
         pos,
         direction,
-        side,
         map_pos: game_map.get_map_pos(&pos),
+        side,
+        collide_span,
+        obj_type,
         is_phaseout: false,
     };
-    if game_lib.get_game_obj_config(config_index).is_ai_bot() {
+
+    if obj.side == GameObjSide::AI && obj.obj_type == GameObjType::Bot {
         game_info.incr_ai_bot_count();
     }
 

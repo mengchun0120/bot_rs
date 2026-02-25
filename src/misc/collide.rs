@@ -1,4 +1,3 @@
-use crate::config::*;
 use crate::game_utils::*;
 use bevy::prelude::*;
 
@@ -10,7 +9,6 @@ pub fn check_collide(
     world_info: &WorldInfo,
     game_map: &GameMap,
     game_obj_lib: &GameObjLib,
-    game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
     check_collide_bounds(
@@ -25,7 +23,6 @@ pub fn check_collide(
         max_collide_span,
         game_map,
         game_obj_lib,
-        game_lib,
         despawn_pool,
     )
 }
@@ -63,7 +60,6 @@ fn check_collide_objs(
     max_collide_span: f32,
     game_map: &GameMap,
     game_obj_lib: &GameObjLib,
-    game_lib: &GameLib,
     despawn_pool: &DespawnPool,
 ) -> bool {
     let collide_region = get_collide_region(pos, collide_span, max_collide_span, game_map);
@@ -76,21 +72,11 @@ fn check_collide_objs(
         let Ok(obj2) = game_obj_lib.get(&e) else {
             continue;
         };
-        if obj2.is_phaseout {
+        if !obj2.is_collidable() {
             continue;
         }
 
-        let named_config = &game_lib.get_game_obj_config(obj2.config_index);
-
-        let collide_span2 = match &named_config.config {
-            GameObjConfig::Bot(config) => config.collide_span,
-            GameObjConfig::Tile(config) => config.collide_span,
-            _ => {
-                continue;
-            }
-        };
-
-        if check_collide_obj(&pos, collide_span, &obj2.pos, collide_span2) {
+        if check_collide_obj(&pos, collide_span, &obj2.pos, obj2.collide_span) {
             return true;
         }
     }
