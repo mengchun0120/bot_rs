@@ -1,5 +1,4 @@
 use crate::config::*;
-use crate::game_utils::*;
 use bevy::prelude::*;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
@@ -32,5 +31,20 @@ impl GameObj {
     #[inline]
     pub fn is_collidable(&self) -> bool {
         !self.is_phaseout && self.collide_span > 0.0
+    }
+
+    #[inline]
+    pub fn is_ai_bot(&self) -> bool {
+        self.side == GameObjSide::AI && self.obj_type == GameObjType::Bot
+    }
+
+    #[inline]
+    pub fn is_player(&self) -> bool {
+        self.side == GameObjSide::Player && self.obj_type == GameObjType::Bot
+    }
+
+    #[inline]
+    pub fn is_transient(&self) -> bool {
+        self.obj_type == GameObjType::Missile || self.obj_type == GameObjType::PlayFrame
     }
 }

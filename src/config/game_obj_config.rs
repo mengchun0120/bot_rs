@@ -109,58 +109,6 @@ impl NamedGameObjConfig {
     }
 
     #[inline]
-    pub fn is_ai_bot(&self) -> bool {
-        match &self.config {
-            GameObjConfig::Bot(config) => config.side == GameObjSide::AI,
-            _ => false,
-        }
-    }
-
-    #[inline]
-    pub fn is_player(&self) -> bool {
-        match &self.config {
-            GameObjConfig::Bot(config) => config.side == GameObjSide::Player,
-            _ => false,
-        }
-    }
-
-    #[inline]
-    pub fn is_missile(&self) -> bool {
-        match &self.config {
-            GameObjConfig::Missile(_) => true,
-            _ => false,
-        }
-    }
-
-    #[inline]
-    pub fn is_play_frame(&self) -> bool {
-        match &self.config {
-            GameObjConfig::PlayFrame(_) => true,
-            _ => false,
-        }
-    }
-
-    #[inline]
-    pub fn is_transient(&self) -> bool {
-        match &self.config {
-            GameObjConfig::Missile(_) | GameObjConfig::PlayFrame(_) => true,
-            _ => false,
-        }
-    }
-
-    #[inline]
-    pub fn tile_config(&self) -> Result<&TileConfig, MyError> {
-        match &self.config {
-            GameObjConfig::Tile(cfg) => Ok(cfg),
-            _ => {
-                let msg = "Not a Tile".to_string();
-                debug!(msg);
-                Err(MyError::Other(msg))
-            }
-        }
-    }
-
-    #[inline]
     pub fn bot_config(&self) -> Result<&BotConfig, MyError> {
         match &self.config {
             GameObjConfig::Bot(cfg) => Ok(cfg),
@@ -178,18 +126,6 @@ impl NamedGameObjConfig {
             GameObjConfig::Missile(cfg) => Ok(cfg),
             _ => {
                 let msg = "Not a Missile".to_string();
-                debug!(msg);
-                Err(MyError::Other(msg))
-            }
-        }
-    }
-
-    #[inline]
-    pub fn play_frame_config(&self) -> Result<&PlayFrameConfig, MyError> {
-        match &self.config {
-            GameObjConfig::PlayFrame(cfg) => Ok(cfg),
-            _ => {
-                let msg = "Not a Explosion".to_string();
                 debug!(msg);
                 Err(MyError::Other(msg))
             }

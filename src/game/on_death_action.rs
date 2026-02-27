@@ -40,7 +40,7 @@ pub fn on_death(
                 on_play_frame(config_name, &obj.pos, game_lib, new_obj_queue)?;
             }
             OnDeathAction::Phaseout(duration) => {
-                on_phaseout(entity, *duration, game_obj_lib, game_lib, commands)?;
+                on_phaseout(entity, *duration, game_obj_lib, commands)?;
             }
         }
     }
@@ -121,16 +121,14 @@ fn on_phaseout(
     entity: Entity,
     duration: f32,
     game_obj_lib: &mut GameObjLib,
-    game_lib: &GameLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
     let obj = game_obj_lib.get_mut(&entity)?;
-    let obj_config = game_lib.get_game_obj_config(obj.config_index);
     let phaseout = Phaseout::new(duration);
     let mut cmd = commands.entity(entity);
 
     obj.is_phaseout = true;
-    if obj_config.is_ai_bot() {
+    if obj.is_ai_bot() {
         cmd.remove::<AIBotComponent>();
     }
     cmd.insert(PlayoutComponent::new(phaseout));
