@@ -41,8 +41,6 @@ pub struct MissileConfig {
     pub side: GameObjSide,
     pub speed: f32,
     pub collide_span: f32,
-    pub damage: f32,
-    pub damage_range: f32,
     pub features: Vec<MissileFeature>,
     pub on_death_actions: Vec<OnDeathAction>,
 }
@@ -58,9 +56,15 @@ pub struct PlayFrameConfig {
 
 #[derive(Debug, Clone, Deserialize)]
 pub enum OnDeathAction {
-    DoDamage,
+    DoDamage(DamageConfig),
     PlayFrame(String),
     Phaseout(f32),
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct DamageConfig {
+    pub damage_range: f32,
+    pub damage: f32,
 }
 
 #[derive(Debug, Clone, Deserialize)]

@@ -407,7 +407,7 @@ fn add_obj(
         side,
         collide_span,
         obj_type,
-        is_phaseout: false,
+        state: GameObjState::Alive,
     };
 
     if obj.side == GameObjSide::AI && obj.obj_type == GameObjType::Bot {

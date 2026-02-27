@@ -8,7 +8,7 @@ pub fn update_origin(
     mut visibility_query: Query<&mut Visibility>,
     game_map: Res<GameMap>,
     mut world_info: ResMut<WorldInfo>,
-    game_obj_lib: Res<GameObjLib>,
+    mut game_obj_lib: ResMut<GameObjLib>,
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
 ) {
@@ -32,13 +32,14 @@ pub fn update_origin(
     );
 
     for entity in game_map.map_iter(&region) {
-        if despawn_pool.contains(&entity) {
-            continue;
-        }
-
         let Ok(obj) = game_obj_lib.get(&entity) else {
             continue;
         };
+
+        if obj.state == GameObjState::Dead {
+            continue;
+        }
+
         let Ok(mut transform) = transform_query.get_mut(entity) else {
             error!("Cannot find Transform {}", entity);
             continue;
@@ -58,7 +59,7 @@ pub fn update_origin(
             }
         } else {
             if obj.is_transient() {
-                despawn_pool.insert(entity);
+                let _ = despawn_pool.add(entity, game_obj_lib.as_mut());
             } else {
                 let screen_pos = world_info.get_screen_pos(&obj.pos);
                 transform.translation.x = screen_pos.x;

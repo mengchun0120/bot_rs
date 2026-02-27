@@ -27,8 +27,8 @@ pub fn cleanup(
             game_info.set_game_result(GameResult::Fail);
             info!("Game over: player fails");
         } else if obj.is_ai_bot() {
-            if let Ok(ai_bot_count) = game_info.dec_ai_bot_count()
-                && ai_bot_count == 0
+            if let Ok(()) = game_info.dec_ai_bot_count()
+                && game_info.ai_bot_count() == 0
             {
                 game_state.set(GameState::GameOver);
                 game_info.set_game_result(GameResult::Win);

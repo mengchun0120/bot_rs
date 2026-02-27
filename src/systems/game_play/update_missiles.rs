@@ -16,28 +16,25 @@ pub fn update_missiles(
     time: Res<Time>,
 ) {
     for (entity, mut transform, move_comp) in missile_query.iter_mut() {
-        if despawn_pool.contains(&entity) {
+        let Ok(obj) = game_obj_lib.get(&entity).cloned() else {
+            continue;
+        };
+
+        if obj.state != GameObjState::Alive {
             continue;
         }
 
         if let Ok(mut enemy_search_comp) = enemy_search_query.get_mut(entity) {
-            if enemy_search_comp
-                .update(
-                    &entity,
-                    transform.as_mut(),
-                    game_map.as_ref(),
-                    game_obj_lib.as_mut(),
-                    game_lib.as_ref(),
-                    despawn_pool.as_ref(),
-                    time.as_ref(),
-                )
-                .is_err()
-            {
-                error!("Failed to update EnemySearchComponent");
-            }
+            let _ = enemy_search_comp.update(
+                &entity,
+                transform.as_mut(),
+                game_map.as_ref(),
+                game_obj_lib.as_mut(),
+                time.as_ref(),
+            );
         }
 
-        if move_missile(
+        let _ = move_missile(
             entity,
             move_comp.speed,
             transform.as_mut(),
@@ -50,10 +47,6 @@ pub fn update_missiles(
             despawn_pool.as_mut(),
             &mut commands,
             time.as_ref(),
-        )
-        .is_err()
-        {
-            error!("Cannot move missile");
-        }
+        );
     }
 }

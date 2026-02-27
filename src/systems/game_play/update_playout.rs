@@ -5,6 +5,7 @@ pub fn update_playout(
     mut playout_query: Query<(Entity, &mut PlayoutComponent)>,
     mut sprite_query: Query<&mut Sprite>,
     children_query: Query<&Children>,
+    mut game_obj_lib: ResMut<GameObjLib>,
     mut despawn_pool: ResMut<DespawnPool>,
     time: Res<Time>,
 ) {
@@ -16,7 +17,7 @@ pub fn update_playout(
         };
 
         if !still_exists {
-            despawn_pool.insert(entity);
+            let _ = despawn_pool.add(entity, game_obj_lib.as_mut());
         }
     }
 }

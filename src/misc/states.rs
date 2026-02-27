@@ -55,10 +55,10 @@ impl GameInfo {
         self.ai_bot_count += 1;
     }
 
-    pub fn dec_ai_bot_count(&mut self) -> Result<usize, MyError> {
+    pub fn dec_ai_bot_count(&mut self) -> Result<(), MyError> {
         if self.ai_bot_count >= 1 {
             self.ai_bot_count -= 1;
-            Ok(self.ai_bot_count)
+            Ok(())
         } else {
             let msg = "Try to decrease ai_bot_count while ai_bot_count is zero".to_string();
             error!(msg);

@@ -20,7 +20,7 @@ pub fn update_player(
     let Ok((entity, mut transform, mut visibility, move_comp)) = player_query.single_mut() else {
         return;
     };
-    if move_bot(
+    let _ = move_bot(
         entity,
         move_comp.speed,
         transform.as_mut(),
@@ -34,10 +34,5 @@ pub fn update_player(
         despawn_pool.as_mut(),
         &mut commands,
         time.as_ref(),
-    )
-    .is_err()
-    {
-        error!("Failed to move player");
-        return;
-    };
+    );
 }

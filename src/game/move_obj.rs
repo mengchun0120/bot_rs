@@ -101,7 +101,7 @@ pub fn move_missile(
     let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
 
     if !world_info.check_pos_visible(&new_pos) {
-        despawn_pool.insert(entity);
+        despawn_pool.add(entity, game_obj_lib)?;
         return Ok(MoveResult::NotMoved);
     }
 
@@ -126,7 +126,6 @@ pub fn move_missile(
             despawn_pool,
             commands,
         )?;
-        despawn_pool.insert(entity);
         Ok(MoveResult::Collided)
     } else {
         update_obj_pos(
@@ -194,15 +193,8 @@ fn capture_missiles(
     despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
-    let collided_missiles = get_collided_missiles(
-        pos,
-        collide_span,
-        side,
-        game_map,
-        game_obj_lib,
-        game_lib,
-        despawn_pool,
-    );
+    let collided_missiles =
+        get_collided_missiles(pos, collide_span, side, game_map, game_obj_lib, game_lib);
 
     if !collided_missiles.is_empty() {
         for entity in collided_missiles {
@@ -216,7 +208,6 @@ fn capture_missiles(
                 despawn_pool,
                 commands,
             )?;
-            despawn_pool.insert(entity);
         }
     }
 
@@ -230,7 +221,6 @@ fn get_collided_missiles(
     game_map: &GameMap,
     game_obj_lib: &GameObjLib,
     game_lib: &GameLib,
-    despawn_pool: &DespawnPool,
 ) -> HashSet<Entity> {
     let mut collided_missiles: HashSet<Entity> = HashSet::new();
     let total_span = collide_span + game_lib.game_config.max_collide_span;
@@ -242,19 +232,12 @@ fn get_collided_missiles(
     );
 
     for entity in game_map.map_iter(&region) {
-        if despawn_pool.contains(&entity) {
-            continue;
-        }
-
-        let Ok(obj) = game_obj_lib.get(&entity) else {
-            continue;
-        };
-
-        if !obj.is_collidable() {
-            continue;
-        }
-
-        if obj.side != side && check_collide_obj(pos, collide_span, &obj.pos, obj.collide_span) {
+        if let Ok(obj) = game_obj_lib.get(&entity)
+            && obj.obj_type == GameObjType::Missile
+            && obj.state == GameObjState::Alive
+            && obj.side != side
+            && check_collide_obj(pos, collide_span, &obj.pos, obj.collide_span)
+        {
             collided_missiles.insert(entity);
         }
     }

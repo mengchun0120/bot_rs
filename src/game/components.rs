@@ -159,22 +159,13 @@ impl EnemySearchComponent {
         transform: &mut Transform,
         game_map: &GameMap,
         game_obj_lib: &mut GameObjLib,
-        game_lib: &GameLib,
-        despawn_pool: &DespawnPool,
         time: &Time,
     ) -> Result<(), MyError> {
-        if let Some(target) = self.check_target_available(game_obj_lib, despawn_pool)? {
+        if let Some(target) = self.check_target_available(game_obj_lib)? {
             self.update_with_target(entity, &target, transform, game_obj_lib)?;
         } else {
             if self.initial_search || self.search_timer.tick(time.delta()).is_finished() {
-                self.find_target(
-                    entity,
-                    transform,
-                    game_map,
-                    game_obj_lib,
-                    game_lib,
-                    despawn_pool,
-                )?;
+                self.find_target(entity, transform, game_map, game_obj_lib)?;
             }
         }
 
@@ -203,8 +194,6 @@ impl EnemySearchComponent {
         transform: &mut Transform,
         game_map: &GameMap,
         game_obj_lib: &mut GameObjLib,
-        game_lib: &GameLib,
-        despawn_pool: &DespawnPool,
     ) -> Result<(), MyError> {
         let obj = game_obj_lib.get(entity).cloned()?;
         let search_region = RectRegion::new(
@@ -217,25 +206,19 @@ impl EnemySearchComponent {
         self.potential_targets.clear();
 
         for e in game_map.map_iter(&map_region) {
-            if despawn_pool.contains(&e) {
-                continue;
-            }
-
             let Ok(obj2) = game_obj_lib.get(&e) else {
                 continue;
             };
 
-            if obj2.is_phaseout {
-                continue;
-            }
-
-            if !game_lib.get_game_obj_config(obj2.config_index).is_bot() {
-                continue;
+            if obj2.state == GameObjState::Alive
+                && obj2.side != obj.side
+                && obj2.obj_type != GameObjType::Bot
+                && search_region.covers(&obj2.pos)
+            {
+                self.potential_targets.push(e);
             };
 
-            if obj2.side != obj.side && search_region.covers(&obj2.pos) {
-                self.potential_targets.push(e);
-            }
+            if obj2.side != obj.side && search_region.covers(&obj2.pos) {}
         }
 
         let mut r = rand::rng();
@@ -253,20 +236,14 @@ impl EnemySearchComponent {
     fn check_target_available(
         &mut self,
         game_obj_lib: &GameObjLib,
-        despawn_pool: &DespawnPool,
     ) -> Result<Option<Entity>, MyError> {
         let Some(target) = self.cur_target else {
             return Ok(None);
         };
 
-        if despawn_pool.contains(&target) {
-            self.cur_target = None;
-            return Ok(None);
-        }
-
         let obj = game_obj_lib.get(&target)?;
 
-        if obj.is_phaseout {
+        if obj.state != GameObjState::Alive {
             self.cur_target = None;
             return Ok(None);
         }

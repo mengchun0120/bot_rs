@@ -28,16 +28,16 @@ pub fn update_ai_bots(
     for (entity, mut transform, mut visibility, mut move_comp, mut weapon_comp, ai_comp) in
         ai_bot_query.iter_mut()
     {
-        if despawn_pool.contains(&entity) {
-            continue;
-        }
-
-        let Ok(obj) = game_obj_lib.get(&entity).cloned() else {
-            continue;
+        match game_obj_lib.get(&entity) {
+            Ok(obj) => {
+                if obj.state != GameObjState::Alive {
+                    continue;
+                }
+            }
+            _ => {
+                continue;
+            }
         };
-        if obj.is_phaseout {
-            continue;
-        }
 
         match ai_comp.engine.cur_action() {
             AIAction::Chase => {
@@ -57,13 +57,17 @@ pub fn update_ai_bots(
                     time.as_ref(),
                 ) {
                     Ok(MoveResult::Collided) => {
-                        move_comp.speed = 0.0;
+                        if let Ok(obj) = game_obj_lib.get(&entity)
+                            && obj.state == GameObjState::Alive
+                        {
+                            move_comp.speed = 0.0;
+                        }
                     }
                     _ => {}
                 }
             }
             AIAction::Shoot => {
-                if try_shoot(
+                let _ = try_shoot(
                     entity,
                     move_comp.speed,
                     weapon_comp.as_mut(),
@@ -72,11 +76,7 @@ pub fn update_ai_bots(
                     game_lib.as_ref(),
                     new_obj_queue.as_mut(),
                     time.as_ref(),
-                )
-                .is_err()
-                {
-                    error!("Failed to shoot");
-                }
+                );
             }
             _ => {}
         }

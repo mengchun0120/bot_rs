@@ -20,13 +20,12 @@ pub fn on_death(
 
     for action in on_death_actions.iter() {
         match action {
-            OnDeathAction::DoDamage => {
-                let missile_config = obj_config.missile_config()?;
+            OnDeathAction::DoDamage(damage_config) => {
                 on_do_damage(
                     &obj.pos,
                     obj.side,
-                    missile_config.damage_range,
-                    missile_config.damage,
+                    damage_config.damage_range,
+                    damage_config.damage,
                     hp_query,
                     game_map,
                     game_obj_lib,
@@ -44,6 +43,8 @@ pub fn on_death(
             }
         }
     }
+
+    despawn_pool.add(entity, game_obj_lib);
 
     Ok(())
 }
@@ -70,15 +71,13 @@ fn on_do_damage(
     );
 
     for entity in game_map.map_iter(&region) {
-        if despawn_pool.contains(&entity) {
-            continue;
-        }
-
         let Ok(obj) = game_obj_lib.get(&entity) else {
             continue;
         };
 
-        if obj.side != side
+        if obj.state == GameObjState::Alive
+            && obj.side != side
+            && obj.obj_type == GameObjType::Bot
             && check_collide_obj(pos, damage_range, &obj.pos, obj.collide_span)
             && let Ok(mut hp_comp) = hp_query.get_mut(entity)
         {
@@ -124,10 +123,17 @@ fn on_phaseout(
     commands: &mut Commands,
 ) -> Result<(), MyError> {
     let obj = game_obj_lib.get_mut(&entity)?;
+
+    if obj.state != GameObjState::Alive {
+        let msg = format!("Failed to phaseout: GameObj {} is not alive", entity);
+        error!(msg);
+        return Err(MyError::Other(msg));
+    }
+
     let phaseout = Phaseout::new(duration);
     let mut cmd = commands.entity(entity);
 
-    obj.is_phaseout = true;
+    obj.state = GameObjState::Phaseout;
     if obj.is_ai_bot() {
         cmd.remove::<AIBotComponent>();
     }

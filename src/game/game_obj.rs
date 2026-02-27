@@ -14,7 +14,7 @@ pub struct GameObj {
     pub map_pos: MapPos,
     pub direction: Vec2,
     pub side: GameObjSide,
-    pub is_phaseout: bool,
+    pub state: GameObjState,
     pub collide_span: f32,
     pub obj_type: GameObjType,
 }
@@ -27,10 +27,19 @@ pub enum GameObjType {
     PlayFrame,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum GameObjState {
+    Alive,
+    Phaseout,
+    Dead,
+}
+
 impl GameObj {
     #[inline]
     pub fn is_collidable(&self) -> bool {
-        self.collide_span > 0.0 && !self.is_transient()
+        self.collide_span > 0.0
+            && self.state == GameObjState::Alive
+            && (self.obj_type == GameObjType::Bot || self.obj_type == GameObjType::Tile)
     }
 
     #[inline]
@@ -45,6 +54,8 @@ impl GameObj {
 
     #[inline]
     pub fn is_transient(&self) -> bool {
-        self.is_phaseout || self.obj_type == GameObjType::Missile || self.obj_type == GameObjType::PlayFrame
+        self.state == GameObjState::Phaseout
+            || self.obj_type == GameObjType::Missile
+            || self.obj_type == GameObjType::PlayFrame
     }
 }

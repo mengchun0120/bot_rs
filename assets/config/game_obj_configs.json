@@ -83,11 +83,14 @@
                 "side": "Player",
                 "speed": 120.0,
                 "collide_span": 5.0,
-                "damage": 50.0,
-                "damage_range": 40.0,
                 "features": [],
                 "on_death_actions": [
-                    "DoDamage",
+                    {
+                        "DoDamage": {
+                            "damage_range": 40.0,
+                            "damage": 50.0
+                        }
+                    },
                     {"PlayFrame": "green_explosion"}
                 ]
             }
@@ -103,11 +106,14 @@
                 "side": "AI",
                 "speed": 80.0,
                 "collide_span": 5.0,
-                "damage": 10.0,
-                "damage_range": 40.0,
                 "features": [],
                 "on_death_actions": [
-                    "DoDamage",
+                    {
+                        "DoDamage": {
+                            "damage_range": 40.0,
+                            "damage": 10.0
+                        }
+                    },
                     {"PlayFrame": "orange_explosion"}
                 ]
             }
@@ -123,8 +129,6 @@
                 "side": "Player",
                 "speed": 80.0,
                 "collide_span": 5.0,
-                "damage": 50.0,
-                "damage_range": 40.0,
                 "features": [
                     {
                         "Guided": {
@@ -134,7 +138,12 @@
                     }
                 ],
                 "on_death_actions": [
-                    "DoDamage",
+                    {
+                        "DoDamage": {
+                            "damage_range": 40.0,
+                            "damage": 50.0
+                        }
+                    },
                     {"PlayFrame": "green_explosion"}
                 ]
             }
