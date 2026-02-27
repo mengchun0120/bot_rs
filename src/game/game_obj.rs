@@ -30,7 +30,7 @@ pub enum GameObjType {
 impl GameObj {
     #[inline]
     pub fn is_collidable(&self) -> bool {
-        !self.is_phaseout && self.collide_span > 0.0
+        self.collide_span > 0.0 && !self.is_transient()
     }
 
     #[inline]
@@ -45,6 +45,6 @@ impl GameObj {
 
     #[inline]
     pub fn is_transient(&self) -> bool {
-        self.obj_type == GameObjType::Missile || self.obj_type == GameObjType::PlayFrame
+        self.is_phaseout || self.obj_type == GameObjType::Missile || self.obj_type == GameObjType::PlayFrame
     }
 }
