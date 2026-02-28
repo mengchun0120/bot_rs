@@ -21,7 +21,7 @@ pub fn create_obj_by_config(
         config_index,
         pos,
         direction,
-        None,
+        map_obj_config.speed,
         world_info,
         game_map,
         game_obj_lib,
@@ -64,7 +64,7 @@ pub fn create_obj_by_index(
             game_lib,
             commands,
             game_info,
-        )?,
+        ),
         GameObjConfig::Tile(config) => create_tile(
             config_index,
             pos,
@@ -76,7 +76,7 @@ pub fn create_obj_by_index(
             game_lib,
             commands,
             game_info,
-        )?,
+        ),
         GameObjConfig::Missile(config) => create_missile(
             config_index,
             pos,
@@ -89,7 +89,7 @@ pub fn create_obj_by_index(
             game_lib,
             commands,
             game_info,
-        )?,
+        ),
         GameObjConfig::PlayFrame(config) => create_play_frame(
             config_index,
             &named_config.name,
@@ -102,10 +102,8 @@ pub fn create_obj_by_index(
             game_lib,
             commands,
             game_info,
-        )?,
-    };
-
-    Ok(())
+        ),
+    }
 }
 
 fn create_bot(
@@ -120,7 +118,7 @@ fn create_bot(
     game_lib: &GameLib,
     commands: &mut Commands,
     game_info: &mut GameInfo,
-) -> Result<Entity, MyError> {
+) -> Result<(), MyError> {
     let visible = world_info.check_pos_visible(&pos);
     let size = arr_to_vec2(&config.size);
     let entity = create_main_body(&config.image, size, visible, game_lib, commands)?;
@@ -163,7 +161,7 @@ fn create_bot(
 
     debug!("Created Bot {}", entity);
 
-    Ok(entity)
+    Ok(())
 }
 
 pub fn create_missile(
@@ -178,7 +176,11 @@ pub fn create_missile(
     game_lib: &GameLib,
     commands: &mut Commands,
     game_info: &mut GameInfo,
-) -> Result<Entity, MyError> {
+) -> Result<(), MyError> {
+    if !world_info.check_pos_visible(&pos) {
+        return Ok(());
+    }
+
     let size = arr_to_vec2(&config.size);
     let entity = create_main_body(&config.image, size, true, game_lib, commands)?;
     let mut cmd = commands.entity(entity);
@@ -195,8 +197,6 @@ pub fn create_missile(
         }
     }
 
-    debug!("Created Missile {}", entity);
-
     add_obj(
         entity,
         config_index,
@@ -208,7 +208,9 @@ pub fn create_missile(
         game_info,
     );
 
-    Ok(entity)
+    debug!("Created Missile {}", entity);
+
+    Ok(())
 }
 
 fn create_play_frame(
@@ -223,7 +225,11 @@ fn create_play_frame(
     game_lib: &GameLib,
     commands: &mut Commands,
     game_info: &mut GameInfo,
-) -> Result<Entity, MyError> {
+) -> Result<(), MyError> {
+    if !world_info.check_pos_visible(&pos) {
+        return Ok(());
+    }
+
     let image = game_lib.get_image(&config.image)?;
     let layout = game_lib.get_tex_atlas_layout(config_name)?;
     let transform = create_transform(&pos, &direction, config.z, world_info);
@@ -235,7 +241,6 @@ fn create_play_frame(
             transform,
             Visibility::Visible,
             PlayoutComponent::new(play_frame),
-            ExplosionComponent,
         ))
         .id();
 
@@ -252,7 +257,7 @@ fn create_play_frame(
 
     debug!("Created PlayFrame {}", entity);
 
-    Ok(entity)
+    Ok(())
 }
 
 fn create_tile(
@@ -266,7 +271,7 @@ fn create_tile(
     game_lib: &GameLib,
     commands: &mut Commands,
     game_info: &mut GameInfo,
-) -> Result<Entity, MyError> {
+) -> Result<(), MyError> {
     let visible = world_info.check_pos_visible(&pos);
     let size = arr_to_vec2(&tile_config.size);
     let entity = create_main_body(&tile_config.image, size, visible, game_lib, commands)?;
@@ -293,7 +298,7 @@ fn create_tile(
 
     debug!("Created Tile {}", entity);
 
-    Ok(entity)
+    Ok(())
 }
 
 fn create_main_body(
@@ -410,7 +415,7 @@ fn add_obj(
         state: GameObjState::Alive,
     };
 
-    if obj.side == GameObjSide::AI && obj.obj_type == GameObjType::Bot {
+    if obj.is_ai_bot() {
         game_info.incr_ai_bot_count();
     }
 

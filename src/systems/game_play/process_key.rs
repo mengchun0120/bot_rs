@@ -18,6 +18,14 @@ pub fn process_key(
         return;
     };
 
+    if let Ok(obj) = game_obj_lib.get(&entity) {
+        if obj.state != GameObjState::Alive {
+            return;
+        }
+    } else {
+        return;
+    }
+
     if key_input.just_pressed(KeyCode::KeyF) || key_input.pressed(KeyCode::KeyF) {
         if try_shoot(
             entity,

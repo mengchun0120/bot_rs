@@ -105,14 +105,6 @@ impl GameObjConfig {
 
 impl NamedGameObjConfig {
     #[inline]
-    pub fn is_bot(&self) -> bool {
-        match &self.config {
-            GameObjConfig::Bot(_) => true,
-            _ => false,
-        }
-    }
-
-    #[inline]
     pub fn bot_config(&self) -> Result<&BotConfig, MyError> {
         match &self.config {
             GameObjConfig::Bot(cfg) => Ok(cfg),

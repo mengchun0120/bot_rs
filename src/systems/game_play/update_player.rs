@@ -20,6 +20,15 @@ pub fn update_player(
     let Ok((entity, mut transform, mut visibility, move_comp)) = player_query.single_mut() else {
         return;
     };
+
+    if let Ok(obj) = game_obj_lib.get(&entity) {
+        if obj.state != GameObjState::Alive {
+            return;
+        }
+    } else {
+        return;
+    }
+ 
     let _ = move_bot(
         entity,
         move_comp.speed,

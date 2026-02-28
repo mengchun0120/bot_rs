@@ -10,14 +10,12 @@ pub fn update_playout(
     time: Res<Time>,
 ) {
     for (entity, mut playout_comp) in playout_query.iter_mut() {
-        let Ok(still_exists) =
+        if let Ok(still_exists) =
             playout_comp.update(entity, &mut sprite_query, &children_query, time.as_ref())
-        else {
-            continue;
-        };
-
-        if !still_exists {
-            let _ = despawn_pool.add(entity, game_obj_lib.as_mut());
+        {
+            if !still_exists {
+                let _ = despawn_pool.add(entity, game_obj_lib.as_mut());
+            }
         }
     }
 }

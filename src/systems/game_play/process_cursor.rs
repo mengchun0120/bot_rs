@@ -14,6 +14,10 @@ pub fn process_cursor(
         return;
     };
 
+    if obj.state != GameObjState::Alive {
+        return;
+    }
+
     for cursor_moved in cursor_reader.read() {
         let Some(cursor_pos) = translate_cursor_pos(
             cursor_moved.position,

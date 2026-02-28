@@ -17,6 +17,11 @@ pub fn process_mouse_button(
         let Ok(obj) = game_obj_lib.get_mut(&player_query.0) else {
             return;
         };
+        
+        if obj.state != GameObjState::Alive {
+            return;
+        }
+
         let Some(cursor_pos) = window_query.cursor_position() else {
             warn!("Failed to get cursor position");
             return;

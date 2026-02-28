@@ -28,16 +28,13 @@ pub fn update_ai_bots(
     for (entity, mut transform, mut visibility, mut move_comp, mut weapon_comp, ai_comp) in
         ai_bot_query.iter_mut()
     {
-        match game_obj_lib.get(&entity) {
-            Ok(obj) => {
-                if obj.state != GameObjState::Alive {
-                    continue;
-                }
-            }
-            _ => {
+        if let Ok(obj) = game_obj_lib.get(&entity) {
+            if obj.state != GameObjState::Alive {
                 continue;
             }
-        };
+        } else {
+            continue;
+        }
 
         match ai_comp.engine.cur_action() {
             AIAction::Chase => {

@@ -16,9 +16,6 @@ pub struct AIBotComponent;
 pub struct MissileComponent;
 
 #[derive(Component)]
-pub struct ExplosionComponent;
-
-#[derive(Component)]
 pub struct TileComponent;
 
 #[derive(Component)]

@@ -44,9 +44,7 @@ pub fn on_death(
         }
     }
 
-    despawn_pool.add(entity, game_obj_lib);
-
-    Ok(())
+    despawn_pool.add(entity, game_obj_lib)
 }
 
 fn on_do_damage(
@@ -71,11 +69,8 @@ fn on_do_damage(
     );
 
     for entity in game_map.map_iter(&region) {
-        let Ok(obj) = game_obj_lib.get(&entity) else {
-            continue;
-        };
-
-        if obj.state == GameObjState::Alive
+        if let Ok(obj) = game_obj_lib.get(&entity)
+            && obj.state == GameObjState::Alive
             && obj.side != side
             && obj.obj_type == GameObjType::Bot
             && check_collide_obj(pos, damage_range, &obj.pos, obj.collide_span)
