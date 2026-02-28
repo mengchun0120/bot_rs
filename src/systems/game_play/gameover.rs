@@ -70,6 +70,7 @@ pub fn gameover(mut commands: Commands, game_info: Res<GameInfo>) {
                     )]
                 ),
                 (
+                    Button,
                     Node {
                         width: px(80),
                         height: px(20),

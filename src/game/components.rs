@@ -209,7 +209,7 @@ impl EnemySearchComponent {
 
             if obj2.state == GameObjState::Alive
                 && obj2.side != obj.side
-                && obj2.obj_type != GameObjType::Bot
+                && obj2.obj_type == GameObjType::Bot
                 && search_region.covers(&obj2.pos)
             {
                 self.potential_targets.push(e);
