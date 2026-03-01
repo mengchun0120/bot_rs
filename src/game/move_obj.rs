@@ -34,14 +34,13 @@ pub fn move_bot(
     let obj = game_obj_lib.get(&entity).cloned()?;
     let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
     let collided = check_collide(
-        &entity,
+        Some(entity),
         &new_pos,
         obj.collide_span,
         game_lib.game_config.max_collide_span,
         world_info,
         game_map,
         game_obj_lib,
-        despawn_pool,
     );
 
     if !collided {
@@ -106,14 +105,13 @@ pub fn move_missile(
     }
 
     let collided = check_collide(
-        &entity,
+        Some(entity),
         &new_pos,
         obj.collide_span,
         game_lib.game_config.max_collide_span,
         world_info,
         game_map,
         game_obj_lib,
-        despawn_pool,
     );
     if collided {
         on_death(

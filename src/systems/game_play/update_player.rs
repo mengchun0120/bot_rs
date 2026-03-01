@@ -28,7 +28,7 @@ pub fn update_player(
     } else {
         return;
     }
- 
+
     let _ = move_bot(
         entity,
         move_comp.speed,

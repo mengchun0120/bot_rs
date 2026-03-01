@@ -2,14 +2,13 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn check_collide(
-    entity: &Entity,
+    entity: Option<Entity>,
     pos: &Vec2,
     collide_span: f32,
     max_collide_span: f32,
     world_info: &WorldInfo,
     game_map: &GameMap,
     game_obj_lib: &GameObjLib,
-    despawn_pool: &DespawnPool,
 ) -> bool {
     check_collide_bounds(
         pos,
@@ -23,7 +22,6 @@ pub fn check_collide(
         max_collide_span,
         game_map,
         game_obj_lib,
-        despawn_pool,
     )
 }
 
@@ -54,18 +52,19 @@ fn check_collide_bounds(new_pos: &Vec2, collide_span: f32, width: f32, height: f
 }
 
 fn check_collide_objs(
-    entity: &Entity,
+    entity: Option<Entity>,
     pos: &Vec2,
     collide_span: f32,
     max_collide_span: f32,
     game_map: &GameMap,
     game_obj_lib: &GameObjLib,
-    despawn_pool: &DespawnPool,
 ) -> bool {
     let collide_region = get_collide_region(pos, collide_span, max_collide_span, game_map);
 
     for e in game_map.map_iter(&collide_region) {
-        if *entity == e || despawn_pool.contains(&e) {
+        if let Some(e1) = entity.as_ref()
+            && *e1 == e
+        {
             continue;
         }
 

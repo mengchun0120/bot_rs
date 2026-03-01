@@ -17,7 +17,7 @@ pub fn process_mouse_button(
         let Ok(obj) = game_obj_lib.get_mut(&player_query.0) else {
             return;
         };
-        
+
         if obj.state != GameObjState::Alive {
             return;
         }

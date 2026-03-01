@@ -65,18 +65,6 @@ pub fn create_obj_by_index(
             commands,
             game_info,
         ),
-        GameObjConfig::Tile(config) => create_tile(
-            config_index,
-            pos,
-            direction,
-            config,
-            world_info,
-            game_map,
-            game_obj_lib,
-            game_lib,
-            commands,
-            game_info,
-        ),
         GameObjConfig::Missile(config) => create_missile(
             config_index,
             pos,
@@ -103,6 +91,18 @@ pub fn create_obj_by_index(
             commands,
             game_info,
         ),
+        GameObjConfig::Tile(config) => create_tile(
+            config_index,
+            pos,
+            direction,
+            config,
+            world_info,
+            game_map,
+            game_obj_lib,
+            game_lib,
+            commands,
+            game_info,
+        ),
     }
 }
 
@@ -119,6 +119,20 @@ fn create_bot(
     commands: &mut Commands,
     game_info: &mut GameInfo,
 ) -> Result<(), MyError> {
+    if check_collide(
+        None,
+        &pos,
+        config.collide_span,
+        game_lib.game_config.max_collide_span,
+        world_info,
+        game_map,
+        game_obj_lib,
+    ) {
+        let msg = "create_bot failed because of collision".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    }
+
     let visible = world_info.check_pos_visible(&pos);
     let size = arr_to_vec2(&config.size);
     let entity = create_main_body(&config.image, size, visible, game_lib, commands)?;
@@ -177,8 +191,20 @@ pub fn create_missile(
     commands: &mut Commands,
     game_info: &mut GameInfo,
 ) -> Result<(), MyError> {
-    if !world_info.check_pos_visible(&pos) {
-        return Ok(());
+    if !world_info.check_pos_visible(&pos)
+        || check_collide(
+            None,
+            &pos,
+            config.collide_span,
+            game_lib.game_config.max_collide_span,
+            world_info,
+            game_map,
+            game_obj_lib,
+        )
+    {
+        let msg = "create_missile failed because of collision".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
     }
 
     let size = arr_to_vec2(&config.size);
@@ -272,6 +298,20 @@ fn create_tile(
     commands: &mut Commands,
     game_info: &mut GameInfo,
 ) -> Result<(), MyError> {
+    if check_collide(
+        None,
+        &pos,
+        tile_config.collide_span,
+        game_lib.game_config.max_collide_span,
+        world_info,
+        game_map,
+        game_obj_lib,
+    ) {
+        let msg = "create_tile failed because of collision".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    }
+
     let visible = world_info.check_pos_visible(&pos);
     let size = arr_to_vec2(&tile_config.size);
     let entity = create_main_body(&tile_config.image, size, visible, game_lib, commands)?;
