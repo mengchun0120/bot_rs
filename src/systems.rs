@@ -10,6 +10,7 @@ pub use splash::*;
 
 mod game_play {
     pub mod add_new_objs;
+    pub mod check_game;
     pub mod cleanup;
     pub mod gameover;
     pub mod process_cursor;
@@ -24,6 +25,7 @@ mod game_play {
     pub mod update_playout;
 
     pub use add_new_objs::*;
+    pub use check_game::*;
     pub use cleanup::*;
     pub use gameover::*;
     pub use process_cursor::*;

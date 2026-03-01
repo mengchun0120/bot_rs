@@ -11,7 +11,6 @@ pub fn on_death(
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     new_obj_queue: &mut NewObjQueue,
-    despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
     let obj = game_obj_lib.get(&entity).cloned()?;
@@ -31,7 +30,6 @@ pub fn on_death(
                     game_obj_lib,
                     game_lib,
                     new_obj_queue,
-                    despawn_pool,
                     commands,
                 )?;
             }
@@ -44,7 +42,7 @@ pub fn on_death(
         }
     }
 
-    despawn_pool.add(entity, game_obj_lib)
+    Ok(())
 }
 
 fn on_do_damage(
@@ -57,7 +55,6 @@ fn on_do_damage(
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
     new_obj_queue: &mut NewObjQueue,
-    despawn_pool: &mut DespawnPool,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
     let total_span = damage_range + game_lib.game_config.max_collide_span;
@@ -85,7 +82,6 @@ fn on_do_damage(
                     game_obj_lib,
                     game_lib,
                     new_obj_queue,
-                    despawn_pool,
                     commands,
                 )?;
             }

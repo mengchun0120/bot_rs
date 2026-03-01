@@ -22,7 +22,7 @@ pub fn game_plugin(app: &mut App) {
         )
         .add_systems(
             PostUpdate,
-            (update_origin, cleanup, add_new_objs)
+            (update_origin, cleanup, add_new_objs, check_game)
                 .chain()
                 .run_if(in_state(GameState::Play)),
         )

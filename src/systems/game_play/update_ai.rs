@@ -3,7 +3,6 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn update_ai(
-    player_query: Single<Entity, With<PlayerComponent>>,
     mut aibot_query: Query<
         (
             Entity,
@@ -16,9 +15,13 @@ pub fn update_ai(
     >,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,
+    game_info: Res<GameInfo>,
     time: Res<Time>,
 ) {
-    let Ok(player) = game_obj_lib.get(&player_query.entity()).cloned() else {
+    let Some(player_entity) = game_info.get_player() else {
+        return;
+    };
+    let Ok(player) = game_obj_lib.get(&player_entity).cloned() else {
         return;
     };
 

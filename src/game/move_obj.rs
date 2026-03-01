@@ -121,9 +121,9 @@ pub fn move_missile(
             game_obj_lib,
             game_lib,
             new_obj_queue,
-            despawn_pool,
             commands,
         )?;
+        despawn_pool.add(entity, game_obj_lib)?;
         Ok(MoveResult::Collided)
     } else {
         update_obj_pos(
@@ -203,9 +203,9 @@ fn capture_missiles(
                 game_obj_lib,
                 game_lib,
                 new_obj_queue,
-                despawn_pool,
                 commands,
             )?;
+            despawn_pool.add(entity, game_obj_lib)?;
         }
     }
 

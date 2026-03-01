@@ -457,6 +457,8 @@ fn add_obj(
 
     if obj.is_ai_bot() {
         game_info.incr_ai_bot_count();
+    } else if obj.is_player() {
+        game_info.set_player(entity);
     }
 
     game_map.add(&obj.map_pos, entity);

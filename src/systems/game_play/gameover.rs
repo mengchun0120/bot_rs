@@ -1,4 +1,5 @@
 use crate::misc::*;
+use crate::game_utils::*;
 use bevy::prelude::*;
 
 const DIALOG_BACKGROUND_COLOR: Color = Color::srgba(0.3, 0.3, 0.3, 0.9);
@@ -6,13 +7,13 @@ const TITLE_BACKGROUND_COLOR: Color = Color::srgba(0.1, 0.1, 0.1, 1.0);
 const BUTTON_BACKGROUND_COLOR: Color = Color::srgba(0.5, 0.5, 0.5, 1.0);
 
 pub fn gameover(mut commands: Commands, game_info: Res<GameInfo>) {
-    let msg = match game_info.game_result() {
-        GameResult::Win => "You won".to_string(),
-        GameResult::Fail => "You failed".to_string(),
-        _ => {
-            warn!("Game over with wrong result");
-            return;
-        }
+    let msg = if game_info.ai_bot_count() == 0 {
+        "You won".to_string()
+    } else if game_info.get_player().is_none() {
+        "You failed".to_string()
+    } else {
+        error!("Game is not over yet");
+        return;
     };
     commands
         .spawn((
