@@ -1,12 +1,21 @@
 {
     "green_standard_gun": {
         "image": "green_standard_gun",
+        "missile": "green_standard_missile",
+        "size": [40.0, 20.0],
+        "fire_point": [25.0, 0.0],
+        "z": -0.5
+    },
+    "green_missile_launcher": {
+        "image": "green_standard_gun",
+        "missile": "green_guided_missile",
         "size": [40.0, 20.0],
         "fire_point": [25.0, 0.0],
         "z": -0.5
     },
     "orange_standard_gun": {
         "image": "orange_standard_gun",
+        "missile": "orange_standard_missile",
         "size": [40.0, 20.0],
         "fire_point": [25.0, 0.0],
         "z": -0.5

@@ -18,6 +18,11 @@
             "direction": [0.0, 1.0]
         },
         {
+            "config_name": "ai_bot",
+            "pos": [200.0, 400.0],
+            "direction": [0.0, 1.0]
+        },
+        {
             "config_name": "steel_tile",
             "pos": [600.0, 600.0],
             "direction": [1.0, 0.0]

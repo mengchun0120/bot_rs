@@ -39,7 +39,7 @@ pub struct WeaponComponent {
     pub fire_timer: Timer,
     pub fire_points: Vec<Vec2>,
     pub fire_directions: Vec<Vec2>,
-    pub missile_config_index: usize,
+    pub missile_indices: Vec<usize>,
 }
 
 #[derive(Component)]
@@ -64,17 +64,16 @@ impl MoveComponent {
 
 impl WeaponComponent {
     pub fn new(weapon_config: &WeaponConfig, game_lib: &GameLib) -> Result<Self, MyError> {
-        let missile_config_index =
-            game_lib.get_game_obj_config_index(&weapon_config.missile_name)?;
         let fire_timer = Timer::from_seconds(weapon_config.fire_duration, TimerMode::Repeating);
         let fire_points = Self::get_fire_points(weapon_config, game_lib)?;
         let fire_directions = Self::get_fire_directions(weapon_config);
+        let missile_indices = Self::get_missile_indices(weapon_config, game_lib)?;
 
         Ok(Self {
             fire_timer,
             fire_points,
             fire_directions,
-            missile_config_index,
+            missile_indices,
         })
     }
 
@@ -105,6 +104,21 @@ impl WeaponComponent {
         }
 
         fire_directions
+    }
+
+    fn get_missile_indices(
+        weapon_config: &WeaponConfig,
+        game_lib: &GameLib,
+    ) -> Result<Vec<usize>, MyError> {
+        let mut missile_indices = Vec::new();
+
+        for gun_comp_config in weapon_config.gun_components.iter() {
+            let gun_config = game_lib.get_gun_config(&gun_comp_config.config_name)?;
+            let missile_index = game_lib.get_game_obj_config_index(&gun_config.missile)?;
+            missile_indices.push(missile_index);
+        }
+
+        Ok(missile_indices)
     }
 }
 

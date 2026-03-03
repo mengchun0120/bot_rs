@@ -19,7 +19,7 @@
                             "direction": [1.0, 0.0]
                         },
                         {
-                            "config_name": "green_standard_gun",
+                            "config_name": "green_missile_launcher",
                             "pos": [21.213203435596427, 21.213203435596427],
                             "direction": [0.7071067811865476, 0.7071067811865476]
                         },

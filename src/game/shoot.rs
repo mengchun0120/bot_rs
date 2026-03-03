@@ -22,8 +22,9 @@ pub fn try_shoot(
     let base_velocity = base_speed * obj.direction;
 
     for i in 0..weapon_comp.fire_points.len() {
+        let missile_index = weapon_comp.missile_indices[i];
         let missile_config = game_lib
-            .get_game_obj_config(weapon_comp.missile_config_index)
+            .get_game_obj_config(missile_index)
             .missile_config()?;
         let pos = obj.pos + obj.direction.rotate(weapon_comp.fire_points[i]);
         let relative_direction = obj.direction.rotate(weapon_comp.fire_directions[i]);
@@ -36,7 +37,7 @@ pub fn try_shoot(
         }
 
         new_obj_queue.push(NewObj {
-            config_index: weapon_comp.missile_config_index,
+            config_index: missile_index,
             pos,
             direction,
             speed,

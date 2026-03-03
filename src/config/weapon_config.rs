@@ -4,6 +4,7 @@ use serde::Deserialize;
 #[derive(Debug, Clone, Deserialize)]
 pub struct GunConfig {
     pub image: String,
+    pub missile: String,
     pub size: [f32; 2],
     pub fire_point: [f32; 2],
     pub z: f32,
@@ -18,7 +19,6 @@ pub struct GunComponentConfig {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct WeaponConfig {
-    pub missile_name: String,
     pub gun_components: Vec<GunComponentConfig>,
     pub fire_duration: f32,
 }

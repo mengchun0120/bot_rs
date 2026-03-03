@@ -1,5 +1,5 @@
-use crate::misc::*;
 use crate::game_utils::*;
+use crate::misc::*;
 use bevy::prelude::*;
 
 const DIALOG_BACKGROUND_COLOR: Color = Color::srgba(0.3, 0.3, 0.3, 0.9);
