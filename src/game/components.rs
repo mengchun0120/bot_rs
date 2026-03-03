@@ -47,13 +47,19 @@ pub struct HPComponent {
     hp: f32,
 }
 
-#[derive(Component)]
 pub struct EnemySearchComponent {
     search_timer: Timer,
     search_span: f32,
     potential_targets: Vec<Entity>,
     cur_target: Option<Entity>,
     initial_search: bool,
+}
+
+#[derive(Component)]
+pub struct PierceComponent {
+    pierced_objs: Vec<Entity>,
+    max_pierce_count: usize,
+    damage: f32,
 }
 
 impl MoveComponent {
@@ -261,4 +267,8 @@ impl EnemySearchComponent {
 
         Ok(Some(target))
     }
+}
+
+impl PierceComponent {
+
 }

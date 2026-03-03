@@ -70,12 +70,19 @@ pub struct DamageConfig {
 #[derive(Debug, Clone, Deserialize)]
 pub enum MissileFeature {
     Guided(EnemySearchConfig),
+    Pierce(PierceConfig),
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct EnemySearchConfig {
     pub search_span: f32,
     pub search_wait_duration: f32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct PierceConfig {
+    pub max_pierce_count: usize,
+    pub pierce_damage: f32,
 }
 
 #[derive(Debug, Clone, Deserialize)]
