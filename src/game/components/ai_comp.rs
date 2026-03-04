@@ -1,5 +1,5 @@
-use crate::config::*;
 use crate::ai::*;
+use crate::config::*;
 use bevy::prelude::*;
 
 #[derive(Component)]

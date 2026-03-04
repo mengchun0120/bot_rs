@@ -1,6 +1,6 @@
 use crate::ai::*;
 use crate::config::*;
-use crate::game::{*, components::*};
+use crate::game::{components::*, *};
 use crate::game_utils::*;
 use crate::misc::*;
 use bevy::prelude::*;

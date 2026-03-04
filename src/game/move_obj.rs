@@ -1,5 +1,5 @@
 use crate::config::*;
-use crate::game::{*, components::*};
+use crate::game::{components::*, *};
 use crate::game_utils::*;
 use crate::misc::*;
 use bevy::prelude::*;
@@ -138,7 +138,7 @@ pub fn move_missile(
     }
 }
 
-fn update_obj_pos(
+pub fn update_obj_pos(
     entity: Entity,
     new_pos: Vec2,
     transform: &mut Transform,

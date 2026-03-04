@@ -1,4 +1,4 @@
-use crate::game::{*, components::*};
+use crate::game::{components::*, *};
 use crate::game_utils::*;
 use bevy::prelude::*;
 
@@ -6,6 +6,7 @@ pub fn update_missiles(
     mut missile_query: Query<(Entity, &mut Transform, &MoveComponent), With<MissileComponent>>,
     mut hp_query: Query<&mut HPComponent>,
     mut enemy_search_query: Query<&mut EnemySearchComponent>,
+    mut pierce_query: Query<&mut PierceComponent>,
     mut world_info: ResMut<WorldInfo>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -34,19 +35,36 @@ pub fn update_missiles(
             );
         }
 
-        let _ = move_missile(
-            entity,
-            move_comp.speed,
-            transform.as_mut(),
-            &mut hp_query,
-            world_info.as_mut(),
-            game_map.as_mut(),
-            game_obj_lib.as_mut(),
-            game_lib.as_ref(),
-            new_obj_queue.as_mut(),
-            despawn_pool.as_mut(),
-            &mut commands,
-            time.as_ref(),
-        );
+        if let Ok(mut pierce_comp) = pierce_query.get_mut(entity) {
+            let _ = pierce_comp.move_obj(
+                entity,
+                move_comp.speed,
+                transform.as_mut(),
+                &mut hp_query,
+                world_info.as_ref(),
+                game_map.as_mut(),
+                game_obj_lib.as_mut(),
+                game_lib.as_ref(),
+                new_obj_queue.as_mut(),
+                despawn_pool.as_mut(),
+                &mut commands,
+                time.as_ref(),
+            );
+        } else {
+            let _ = move_missile(
+                entity,
+                move_comp.speed,
+                transform.as_mut(),
+                &mut hp_query,
+                world_info.as_mut(),
+                game_map.as_mut(),
+                game_obj_lib.as_mut(),
+                game_lib.as_ref(),
+                new_obj_queue.as_mut(),
+                despawn_pool.as_mut(),
+                &mut commands,
+                time.as_ref(),
+            );
+        }
     }
 }

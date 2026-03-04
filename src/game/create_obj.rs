@@ -1,5 +1,5 @@
 use crate::config::*;
-use crate::game::{*, components::*};
+use crate::game::{components::*, *};
 use crate::game_utils::*;
 use crate::misc::*;
 use bevy::prelude::*;
@@ -220,8 +220,8 @@ pub fn create_missile(
             MissileFeature::Guided(cfg) => {
                 cmd.insert(EnemySearchComponent::new(cfg));
             }
-            _ => {
-
+            MissileFeature::Pierce(cfg) => {
+                cmd.insert(PierceComponent::new(cfg));
             }
         }
     }

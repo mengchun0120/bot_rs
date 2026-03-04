@@ -70,6 +70,7 @@ pub struct DamageConfig {
 #[derive(Debug, Clone, Deserialize)]
 pub enum MissileFeature {
     Guided(EnemySearchConfig),
+    Pierce(PierceConfig),
 }
 
 #[derive(Debug, Clone, Deserialize)]
