@@ -1,5 +1,5 @@
 use crate::ai::*;
-use crate::game::*;
+use crate::game::{*, components::*};
 use crate::game_utils::*;
 use bevy::prelude::*;
 

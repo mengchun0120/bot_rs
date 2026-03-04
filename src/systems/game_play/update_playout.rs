@@ -1,4 +1,5 @@
-use crate::{game::*, game_utils::*};
+use crate::game::components::*;
+use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn update_playout(
