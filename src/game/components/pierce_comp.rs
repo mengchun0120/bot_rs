@@ -70,6 +70,7 @@ impl PierceComponent {
                 new_obj_queue,
                 commands,
             )?;
+            despawn_pool.add(entity, game_obj_lib)?;
             Ok(MoveResult::Collided)
         } else {
             update_obj_pos(

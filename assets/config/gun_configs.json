@@ -13,6 +13,13 @@
         "fire_point": [25.0, 0.0],
         "z": -0.5
     },
+    "green_pierce_launcher": {
+        "image": "green_standard_gun",
+        "missile": "green_pierce_missile",
+        "size": [40.0, 20.0],
+        "fire_point": [25.0, 0.0],
+        "z": -0.5
+    },
     "orange_standard_gun": {
         "image": "orange_standard_gun",
         "missile": "orange_standard_missile",

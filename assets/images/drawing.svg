@@ -28,8 +28,8 @@
      inkscape:document-units="mm"
      showgrid="true"
      inkscape:zoom="2.1871107"
-     inkscape:cx="487.17242"
-     inkscape:cy="110.19104"
+     inkscape:cx="464.3112"
+     inkscape:cy="698.1814"
      inkscape:window-width="1920"
      inkscape:window-height="1112"
      inkscape:window-x="-8"
@@ -166,6 +166,20 @@
          cy="20.021181"
          rx="9.9198599"
          ry="9.4964514" />
+    </g>
+    <g
+       id="g9"
+       inkscape:export-filename="pierce.png"
+       inkscape:export-xdpi="83.143616"
+       inkscape:export-ydpi="83.143616">
+      <path
+         style="fill:#74c700;fill-opacity:0.695531;stroke:#006200;stroke-width:0.35;stroke-opacity:0.703911;stroke-dasharray:none"
+         d="m 129.68403,189.68709 25.28355,5.0809 h -20.32362 z"
+         id="path8" />
+      <path
+         style="fill:#74c700;fill-opacity:0.695531;stroke:#006200;stroke-width:0.35;stroke-dasharray:none;stroke-opacity:0.703911"
+         d="m 129.86505,199.83229 25.28355,-5.0809 h -20.32362 z"
+         id="path8-1" />
     </g>
   </g>
 </svg>

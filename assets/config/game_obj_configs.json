@@ -14,19 +14,9 @@
                     "missile_name": "green_guided_missile",
                     "gun_components": [
                         {
-                            "config_name": "green_standard_gun",
+                            "config_name": "green_pierce_launcher",
                             "pos": [30.0, 0.0],
                             "direction": [1.0, 0.0]
-                        },
-                        {
-                            "config_name": "green_missile_launcher",
-                            "pos": [21.213203435596427, 21.213203435596427],
-                            "direction": [0.7071067811865476, 0.7071067811865476]
-                        },
-                        {
-                            "config_name": "green_standard_gun",
-                            "pos": [21.213203435596427, -21.213203435596427],
-                            "direction": [0.7071067811865476, -0.7071067811865476]
                         }
                     ],
                     "fire_duration": 0.2
@@ -55,9 +45,9 @@
                             "direction": [1.0, 0.0]
                         }
                     ],
-                    "fire_duration": 1.0
+                    "fire_duration": 3.0
                 },
-                "ai": "regular_chase_shoot",
+                "ai": "sniper",
                 "on_death_actions": [{"Phaseout": 1.0}]
             }
         }
@@ -134,6 +124,36 @@
                         "Guided": {
                             "search_span": 100.0,
                             "search_wait_duration": 1.0
+                        }
+                    }
+                ],
+                "on_death_actions": [
+                    {
+                        "DoDamage": {
+                            "damage_range": 40.0,
+                            "damage": 50.0
+                        }
+                    },
+                    {"PlayFrame": "green_explosion"}
+                ]
+            }
+        }
+    },
+    {
+        "name": "green_pierce_missile",
+        "config": {
+            "Missile": {
+                "image": "green_pierce_missile",
+                "size": [20.0, 10.0],
+                "z": 1.0,
+                "side": "Player",
+                "speed": 80.0,
+                "collide_span": 5.0,
+                "features": [
+                    {
+                        "Pierce": {
+                            "max_pierce_count": 2,
+                            "pierce_damage": 20.0
                         }
                     }
                 ],
