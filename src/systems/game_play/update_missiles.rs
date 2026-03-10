@@ -3,10 +3,8 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn update_missiles(
-    mut missile_query: Query<(Entity, &mut Transform, &MoveComponent), With<MissileComponent>>,
+    mut missile_query: Query<(Entity, &mut Transform, &MoveComponent, &mut MissileComponent)>,
     mut hp_query: Query<&mut HPComponent>,
-    mut enemy_search_query: Query<&mut EnemySearchComponent>,
-    mut pierce_query: Query<&mut PierceComponent>,
     mut world_info: ResMut<WorldInfo>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -16,7 +14,7 @@ pub fn update_missiles(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, mut transform, move_comp) in missile_query.iter_mut() {
+    for (entity, mut transform, move_comp, mut missile_comp) in missile_query.iter_mut() {
         let Ok(obj) = game_obj_lib.get(&entity).cloned() else {
             continue;
         };
@@ -25,8 +23,8 @@ pub fn update_missiles(
             continue;
         }
 
-        if let Ok(mut enemy_search_comp) = enemy_search_query.get_mut(entity) {
-            let _ = enemy_search_comp.update(
+        if let Some(enemy_search_ability) = missile_comp.enemy_search_ability.as_mut() {
+            let _ = enemy_search_ability.update(
                 &entity,
                 transform.as_mut(),
                 game_map.as_ref(),
@@ -35,8 +33,8 @@ pub fn update_missiles(
             );
         }
 
-        if let Ok(mut pierce_comp) = pierce_query.get_mut(entity) {
-            let _ = pierce_comp.move_obj(
+        if let Some(pierce_ability) = missile_comp.pierce_ability.as_mut() {
+            let _ = pierce_ability.move_obj(
                 entity,
                 move_comp.speed,
                 transform.as_mut(),

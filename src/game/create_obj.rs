@@ -213,18 +213,7 @@ pub fn create_missile(
 
     cmd.insert(create_transform(&pos, &direction, config.z, world_info));
     cmd.insert(MoveComponent::new(speed.unwrap_or(config.speed)));
-    cmd.insert(MissileComponent);
-
-    for feature in config.features.iter() {
-        match feature {
-            MissileFeature::Guided(cfg) => {
-                cmd.insert(EnemySearchComponent::new(cfg));
-            }
-            MissileFeature::Pierce(cfg) => {
-                cmd.insert(PierceComponent::new(cfg));
-            }
-        }
-    }
+    cmd.insert(MissileComponent::new(&config.features));
 
     add_obj(
         entity,

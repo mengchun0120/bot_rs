@@ -11,10 +11,9 @@
                 "collide_span": 21.2132,
                 "hp": 100.0,
                 "weapon_config": {
-                    "missile_name": "green_guided_missile",
                     "gun_components": [
                         {
-                            "config_name": "green_pierce_launcher",
+                            "config_name": "green_missile_launcher",
                             "pos": [30.0, 0.0],
                             "direction": [1.0, 0.0]
                         }
@@ -37,7 +36,6 @@
                 "collide_span": 21.2132,
                 "hp": 40.0,
                 "weapon_config": {
-                    "missile_name": "orange_standard_missile",
                     "gun_components": [
                         {
                             "config_name": "orange_standard_gun",
