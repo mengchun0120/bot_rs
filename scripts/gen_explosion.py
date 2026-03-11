@@ -1,23 +1,29 @@
 import json
 import math
 import sys
+import random
 from PIL import Image, ImageDraw
 
 def get_ball_directions(ball_count):
-    delta_angle = 2.0 * math.pi / ball_count
-    angle = 0.0
     directions = []
     for _ in range(ball_count):
+        angle = random.random() * 2.0 * math.pi
         x = math.cos(angle)
         y = math.sin(angle)
         directions.append((x, y))
-        angle += delta_angle
     return directions
 
-def get_ball_positions(origin, ball_directions, ball_speed, t):
-    distance = ball_speed * t
+def get_speeds(ball_count, min_speed, max_speed):
+    speeds = []
+    for _ in range(ball_count):
+        speed = random.random() * float(max_speed - min_speed) + float(min_speed)
+        speeds.append(speed)
+    return speeds
+
+def get_ball_positions(origin, ball_directions, speeds, t):
     positions = []
-    for direction in ball_directions:
+    for index, direction in enumerate(ball_directions):
+        distance = speeds[index] * t
         x = origin[0] + distance * direction[0]
         y = origin[1] + distance * direction[1]
         positions.append((x, y))
@@ -38,21 +44,25 @@ def gen_explosion_frames(config_json):
     ball_radius = config_json["ball_radius"]
     ball_count = config_json["ball_count"]
     ball_color = config_json["ball_color"]
-    ball_speed = config_json["ball_speed"]
+    max_speed = config_json["max_speed"]
+    min_speed = config_json["min_speed"]
     duration = config_json["duration"]
     frames_per_second = config_json["frames_per_second"]
     frame_duration = 1.0 / float(frames_per_second)
     frame_count = int(duration * frames_per_second)
     ball_directions = get_ball_directions(ball_count)
-    image_size = (ball_speed * duration + ball_radius) * 2
+    speeds = get_speeds(ball_count, min_speed, max_speed)
+    image_size = (max_speed * duration + ball_radius) * 2
     delta_alpha = float(255) / frame_count
     origin = [image_size / 2.0, image_size / 2.0]
+
+    print(f"image_size={image_size}")
 
     t = 0.0
     alpha = float(ball_color[3])
     images = []
     for _ in range(frame_count):
-        ball_positions = get_ball_positions(origin, ball_directions, ball_speed, t)
+        ball_positions = get_ball_positions(origin, ball_directions, speeds, t)
         color = (ball_color[0], ball_color[1], ball_color[2], int(alpha))
         img = create_frame(int(image_size), ball_positions, ball_radius, color)
         images.append(img)

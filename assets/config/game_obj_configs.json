@@ -172,7 +172,7 @@
         "config": {
             "PlayFrame": {
                 "image": "green_explosion",
-                "size": [70.0, 70.0],
+                "size": [64.0, 64.0],
                 "z": 1.0,
                 "frame_count": 24,
                 "frames_per_second": 24
@@ -184,7 +184,7 @@
         "config": {
             "PlayFrame": {
                 "image": "orange_explosion",
-                "size": [70.0, 70.0],
+                "size": [64.0, 64.0],
                 "z": 1.0,
                 "frame_count": 24,
                 "frames_per_second": 24

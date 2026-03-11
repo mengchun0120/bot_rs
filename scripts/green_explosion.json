@@ -1,8 +1,9 @@
 {
-    "ball_radius": 5.0,
+    "ball_radius": 2.0,
     "ball_color": [108, 255, 0, 255],
-    "ball_count": 6,
-    "ball_speed": 30.0,
+    "ball_count": 60,
+    "min_speed": 10.0,
+    "max_speed": 30.0,
     "duration": 1.0,
     "frames_per_second": 24
 }
