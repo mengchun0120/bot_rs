@@ -213,7 +213,7 @@ pub fn create_missile(
 
     cmd.insert(create_transform(&pos, &direction, config.z, world_info));
     cmd.insert(MoveComponent::new(speed.unwrap_or(config.speed)));
-    cmd.insert(MissileComponent::new(&config.features));
+    cmd.insert(MissileComponent::new(config));
 
     add_obj(
         entity,

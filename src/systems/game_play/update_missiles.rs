@@ -3,7 +3,12 @@ use crate::game_utils::*;
 use bevy::prelude::*;
 
 pub fn update_missiles(
-    mut missile_query: Query<(Entity, &mut Transform, &MoveComponent, &mut MissileComponent)>,
+    mut missile_query: Query<(
+        Entity,
+        &mut Transform,
+        &MoveComponent,
+        &mut MissileComponent,
+    )>,
     mut hp_query: Query<&mut HPComponent>,
     mut world_info: ResMut<WorldInfo>,
     mut game_map: ResMut<GameMap>,
@@ -21,6 +26,24 @@ pub fn update_missiles(
 
         if obj.state != GameObjState::Alive {
             continue;
+        }
+
+        if let Some(alive_timer) = missile_comp.alive_timer.as_mut() {
+            if alive_timer.tick(time.delta()).is_finished() {
+                if on_death(
+                    entity,
+                    &mut hp_query,
+                    game_map.as_ref(),
+                    game_obj_lib.as_mut(),
+                    game_lib.as_ref(),
+                    new_obj_queue.as_mut(),
+                    &mut commands,
+                ).is_ok() {
+                    let _ = despawn_pool.add(entity, game_obj_lib.as_mut());
+                }
+
+                continue;
+            }
         }
 
         if let Some(enemy_search_ability) = missile_comp.enemy_search_ability.as_mut() {

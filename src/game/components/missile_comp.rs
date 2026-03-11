@@ -8,6 +8,7 @@ use std::collections::HashSet;
 
 #[derive(Component)]
 pub struct MissileComponent {
+    pub alive_timer: Option<Timer>,
     pub enemy_search_ability: Option<EnemySearchAbility>,
     pub pierce_ability: Option<PierceAbility>,
 }
@@ -28,13 +29,18 @@ pub struct PierceAbility {
 }
 
 impl MissileComponent {
-    pub fn new(features: &Vec<MissileFeature>) -> Self {
+    pub fn new(config: &MissileConfig) -> Self {
         let mut result = MissileComponent {
+            alive_timer: None,
             enemy_search_ability: None,
             pierce_ability: None,
         };
 
-        for feature in features.iter() {
+        if let Some(alive_time) = config.alive_time {
+            result.alive_timer = Some(Timer::from_seconds(alive_time, TimerMode::Once));
+        }
+
+        for feature in config.features.iter() {
             match feature {
                 MissileFeature::Guided(cfg) => {
                     result.enemy_search_ability = Some(EnemySearchAbility::new(cfg));

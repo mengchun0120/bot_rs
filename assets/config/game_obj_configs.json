@@ -71,6 +71,7 @@
                 "side": "Player",
                 "speed": 120.0,
                 "collide_span": 5.0,
+                "alive_time": 5.0,
                 "features": [],
                 "on_death_actions": [
                     {
@@ -94,6 +95,7 @@
                 "side": "AI",
                 "speed": 80.0,
                 "collide_span": 5.0,
+                "alive_time": 5.0,
                 "features": [],
                 "on_death_actions": [
                     {
@@ -117,6 +119,7 @@
                 "side": "Player",
                 "speed": 80.0,
                 "collide_span": 5.0,
+                "alive_time": 5.0,
                 "features": [
                     {
                         "Guided": {
@@ -147,6 +150,7 @@
                 "side": "Player",
                 "speed": 80.0,
                 "collide_span": 5.0,
+                "alive_time": 5.0,
                 "features": [
                     {
                         "Pierce": {

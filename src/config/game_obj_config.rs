@@ -41,6 +41,7 @@ pub struct MissileConfig {
     pub side: GameObjSide,
     pub speed: f32,
     pub collide_span: f32,
+    pub alive_time: Option<f32>,
     pub features: Vec<MissileFeature>,
     pub on_death_actions: Vec<OnDeathAction>,
 }
