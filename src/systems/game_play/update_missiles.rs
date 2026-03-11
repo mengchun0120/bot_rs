@@ -38,7 +38,9 @@ pub fn update_missiles(
                     game_lib.as_ref(),
                     new_obj_queue.as_mut(),
                     &mut commands,
-                ).is_ok() {
+                )
+                .is_ok()
+                {
                     let _ = despawn_pool.add(entity, game_obj_lib.as_mut());
                 }
 

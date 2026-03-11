@@ -39,6 +39,9 @@ pub fn on_death(
             OnDeathAction::Phaseout(duration) => {
                 on_phaseout(entity, *duration, game_obj_lib, commands)?;
             }
+            OnDeathAction::SpawnMissile(spawn_missile_config) => {
+                on_spawn_missile(&obj.pos, spawn_missile_config, game_lib, new_obj_queue)?;
+            }
         }
     }
 
@@ -129,6 +132,30 @@ fn on_phaseout(
         cmd.remove::<AIBotComponent>();
     }
     cmd.insert(PlayoutComponent::new(phaseout));
+
+    Ok(())
+}
+
+fn on_spawn_missile(
+    pos: &Vec2,
+    spawn_missile_config: &SpawnMissileConfig,
+    game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
+) -> Result<(), MyError> {
+    let mut angle: f32 = 0.0;
+    let delta_angle = 2.0 * std::f32::consts::PI / spawn_missile_config.count as f32;
+    let config_index = game_lib.get_game_obj_config_index(&spawn_missile_config.missile)?;
+
+    for _ in 0..spawn_missile_config.count {
+        let new_obj = NewObj {
+            config_index,
+            pos: pos.clone(),
+            direction: Vec2::new(angle.cos(), angle.sin()),
+            speed: None,
+        };
+        new_obj_queue.push(new_obj);
+        angle += delta_angle;
+    }
 
     Ok(())
 }

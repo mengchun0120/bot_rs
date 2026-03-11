@@ -60,12 +60,19 @@ pub enum OnDeathAction {
     DoDamage(DamageConfig),
     PlayFrame(String),
     Phaseout(f32),
+    SpawnMissile(SpawnMissileConfig),
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct DamageConfig {
     pub damage_range: f32,
     pub damage: f32,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SpawnMissileConfig {
+    pub count: usize,
+    pub missile: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]

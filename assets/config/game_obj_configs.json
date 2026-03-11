@@ -80,7 +80,9 @@
                             "damage": 50.0
                         }
                     },
-                    {"PlayFrame": "green_explosion"}
+                    {
+                        "PlayFrame": "green_explosion"
+                    }
                 ]
             }
         }
@@ -104,7 +106,9 @@
                             "damage": 10.0
                         }
                     },
-                    {"PlayFrame": "orange_explosion"}
+                    {
+                        "PlayFrame": "orange_explosion"
+                    }
                 ]
             }
         }
@@ -135,7 +139,15 @@
                             "damage": 50.0
                         }
                     },
-                    {"PlayFrame": "green_explosion"}
+                    {
+                        "PlayFrame": "green_explosion"
+                    },
+                    {
+                        "SpawnMissile": {
+                            "count": 6,
+                            "missile": "green_standard_missile"
+                        }
+                    }
                 ]
             }
         }
@@ -166,7 +178,9 @@
                             "damage": 50.0
                         }
                     },
-                    {"PlayFrame": "green_explosion"}
+                    {
+                        "PlayFrame": "green_explosion"
+                    }
                 ]
             }
         }
