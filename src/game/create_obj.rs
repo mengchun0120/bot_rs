@@ -103,6 +103,18 @@ pub fn create_obj_by_index(
             commands,
             game_info,
         ),
+        GameObjConfig::Goodie(config) => create_goodie(
+            config_index,
+            pos,
+            direction,
+            config,
+            world_info,
+            game_map,
+            game_obj_lib,
+            game_lib,
+            commands,
+            game_info,
+        ),
     }
 }
 
@@ -329,6 +341,60 @@ fn create_tile(
     );
 
     debug!("Created Tile {}", entity);
+
+    Ok(())
+}
+
+fn create_goodie(
+    config_index: usize,
+    pos: Vec2,
+    direction: Vec2,
+    goodie_config: &GoodieConfig,
+    world_info: &WorldInfo,
+    game_map: &mut GameMap,
+    game_obj_lib: &mut GameObjLib,
+    game_lib: &GameLib,
+    commands: &mut Commands,
+    game_info: &mut GameInfo,
+) -> Result<(), MyError> {
+    if check_collide(
+        None,
+        &pos,
+        goodie_config.collide_span,
+        game_lib.game_config.max_collide_span,
+        world_info,
+        game_map,
+        game_obj_lib,
+    ) {
+        let msg = "create_goodie failed because of collision".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    }
+
+    let visible = world_info.check_pos_visible(&pos);
+    let size = arr_to_vec2(&goodie_config.size);
+    let entity = create_main_body(&goodie_config.image, size, visible, game_lib, commands)?;
+    let mut cmd = commands.entity(entity);
+
+    cmd.insert(create_transform(
+        &pos,
+        &direction,
+        goodie_config.z,
+        world_info,
+    ));
+
+    add_obj(
+        entity,
+        config_index,
+        pos,
+        direction,
+        game_map,
+        game_obj_lib,
+        game_lib,
+        game_info,
+    );
+
+    debug!("Created Goodie {}", entity);
 
     Ok(())
 }

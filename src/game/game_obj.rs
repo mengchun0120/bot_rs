@@ -25,6 +25,7 @@ pub enum GameObjType {
     Tile,
     Missile,
     PlayFrame,
+    Goodie,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]

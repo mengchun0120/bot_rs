@@ -3,6 +3,8 @@ use crate::game::{components::*, *};
 use crate::game_utils::*;
 use crate::misc::*;
 use bevy::prelude::*;
+use rand::Rng;
+use rand::seq::IndexedRandom;
 
 pub fn on_death(
     entity: Entity,
@@ -41,6 +43,9 @@ pub fn on_death(
             }
             OnDeathAction::SpawnMissile(spawn_missile_config) => {
                 on_spawn_missile(&obj.pos, spawn_missile_config, game_lib, new_obj_queue)?;
+            }
+            OnDeathAction::DropGoodie(prob) => {
+                on_drop_goodie(&obj.pos, *prob, game_lib, new_obj_queue)?;
             }
         }
     }
@@ -155,6 +160,31 @@ fn on_spawn_missile(
         };
         new_obj_queue.push(new_obj);
         angle += delta_angle;
+    }
+
+    Ok(())
+}
+
+fn on_drop_goodie(
+    pos: &Vec2,
+    prob: f32,
+    game_lib: &GameLib,
+    new_obj_queue: &mut NewObjQueue,
+) -> Result<(), MyError> {
+    let mut rng = rand::rng();
+
+    if rng.random_range(0.0..1.0) > prob {
+        return Ok(());
+    }
+
+    if let Some(config_index) = game_lib.goodies().choose(&mut rng) {
+        let new_obj = NewObj {
+            config_index: *config_index,
+            pos: pos.clone(),
+            direction: Vec2::new(1.0, 0.0),
+            speed: None,
+        };
+        new_obj_queue.push(new_obj);
     }
 
     Ok(())

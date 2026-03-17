@@ -56,11 +56,22 @@ pub struct PlayFrameConfig {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct GoodieConfig {
+    pub image: String,
+    pub size: [f32; 2],
+    pub z: f32,
+    pub collide_span: f32,
+    pub duration: f32,
+    pub effect: GoodieEffect,
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub enum OnDeathAction {
     DoDamage(DamageConfig),
     PlayFrame(String),
     Phaseout(f32),
     SpawnMissile(SpawnMissileConfig),
+    DropGoodie(f32),
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -94,11 +105,20 @@ pub struct PierceConfig {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub enum GoodieEffect {
+    Invincible,
+    SpeedBooster(f32),
+    FastShooter(f32),
+    HPFiller,
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub enum GameObjConfig {
     Tile(TileConfig),
     Bot(BotConfig),
     Missile(MissileConfig),
     PlayFrame(PlayFrameConfig),
+    Goodie(GoodieConfig),
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -114,6 +134,7 @@ impl GameObjConfig {
             Self::Missile(cfg) => (cfg.side, cfg.collide_span, GameObjType::Missile),
             Self::PlayFrame(_) => (GameObjSide::Neutral, 0.0, GameObjType::PlayFrame),
             Self::Tile(cfg) => (GameObjSide::Neutral, cfg.collide_span, GameObjType::Tile),
+            Self::Goodie(cfg) => (GameObjSide::Neutral, cfg.collide_span, GameObjType::Goodie),
         }
     }
 }

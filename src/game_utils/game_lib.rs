@@ -13,6 +13,7 @@ pub struct GameLib {
     gun_configs: HashMap<String, GunConfig>,
     texture_atlas_layouts: HashMap<String, Handle<TextureAtlasLayout>>,
     ai_configs: HashMap<String, AIConfig>,
+    goodies: Vec<usize>,
 }
 
 impl GameLib {
@@ -30,6 +31,7 @@ impl GameLib {
             gun_configs: HashMap::new(),
             texture_atlas_layouts: HashMap::new(),
             ai_configs: HashMap::new(),
+            goodies: Vec::new(),
         };
 
         game_lib.load_images(asset_server)?;
@@ -110,6 +112,11 @@ impl GameLib {
         }
     }
 
+    #[inline]
+    pub fn goodies(&self) -> &Vec<usize> {
+        &self.goodies
+    }
+
     fn load_images(&mut self, asset_server: &AssetServer) -> Result<(), MyError> {
         let assets_dir = PathBuf::from("assets");
         let image_dir = self.game_config.image_dir();
@@ -149,11 +156,16 @@ impl GameLib {
             self.game_obj_config_index_map
                 .insert(named_config.name.clone(), index);
 
-            if let GameObjConfig::PlayFrame(cfg) = &named_config.config {
-                let layout = Self::create_tex_atlas_layout(&cfg.size, cfg.frame_count, layouts);
-
-                self.texture_atlas_layouts
-                    .insert(named_config.name.clone(), layout);
+            match &named_config.config {
+                GameObjConfig::PlayFrame(cfg) => {
+                    let layout = Self::create_tex_atlas_layout(&cfg.size, cfg.frame_count, layouts);
+                    self.texture_atlas_layouts
+                        .insert(named_config.name.clone(), layout);
+                }
+                GameObjConfig::Goodie(_) => {
+                    self.goodies.push(index);
+                }
+                _ => {}
             }
         }
 
