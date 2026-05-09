@@ -12,7 +12,7 @@ pub struct GameLib {
     images: HashMap<String, Handle<Image>>,
     gun_configs: HashMap<String, GunConfig>,
     texture_atlas_layouts: HashMap<String, Handle<TextureAtlasLayout>>,
-    ai_configs: HashMap<String, AIConfig>,
+    ai_configs: HashMap<String, AiConfig>,
     goodies: Vec<usize>,
 }
 
@@ -101,11 +101,11 @@ impl GameLib {
     }
 
     #[inline]
-    pub fn get_ai_config(&self, name: &String) -> Result<&AIConfig, MyError> {
+    pub fn get_ai_config(&self, name: &String) -> Result<&AiConfig, MyError> {
         match self.ai_configs.get(name) {
             Some(ai_config) => Ok(ai_config),
             None => {
-                let msg = format!("Cannot find AIConfig {}", name);
+                let msg = format!("Cannot find AiConfig {}", name);
                 error!(msg);
                 Err(MyError::NotFound(msg))
             }

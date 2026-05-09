@@ -1,4 +1,4 @@
-use crate::game::*;
+use crate::game::MapPos;
 use bevy::prelude::*;
 use std::collections::{HashSet, hash_set::Iter};
 

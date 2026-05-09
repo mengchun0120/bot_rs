@@ -1,5 +1,5 @@
-use crate::game::*;
-use crate::misc::*;
+use crate::game::GameObj;
+use crate::misc::MyError;
 use bevy::prelude::*;
 use std::collections::HashMap;
 

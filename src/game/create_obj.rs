@@ -1,7 +1,16 @@
-use crate::config::*;
-use crate::game::{components::*, *};
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::config::{
+    BotConfig, GameMapObjConfig, GameObjConfig, GameObjSide, GoodieConfig, MissileConfig,
+    PlayFrameConfig, TileConfig, WeaponConfig,
+};
+use crate::game::{
+    GameObj, GameObjState, PlayFrame,
+    components::{
+        AiBotComponent, AiComponent, HpComponent, InView, MissileComponent, MoveComponent,
+        PlayerComponent, PlayoutComponent, TileComponent, WeaponComponent,
+    },
+};
+use crate::game_utils::{GameInfo, GameLib, GameMap, GameObjLib, WorldInfo};
+use crate::misc::{AppState, MyError, arr_to_vec2, check_collide, get_rotation};
 use bevy::prelude::*;
 
 pub fn create_obj_by_config(
@@ -154,14 +163,14 @@ fn create_bot(
     cmd.insert(create_transform(&pos, &direction, config.z, world_info));
     cmd.insert(MoveComponent::new(speed.unwrap_or(0.0)));
     cmd.insert(weapon_comp);
-    cmd.insert(HPComponent::new(config.hp));
+    cmd.insert(HpComponent::new(config.hp));
 
     match config.side {
         GameObjSide::Player => {
             cmd.insert(PlayerComponent);
         }
         GameObjSide::AI => {
-            cmd.insert(AIBotComponent);
+            cmd.insert(AiBotComponent);
             if let Some(ai_config_name) = config.ai.as_ref() {
                 let ai_comp = create_ai_comp(ai_config_name, game_lib)?;
                 cmd.insert(ai_comp);
@@ -190,7 +199,7 @@ fn create_bot(
     Ok(())
 }
 
-pub fn create_missile(
+fn create_missile(
     config_index: usize,
     pos: Vec2,
     direction: Vec2,
@@ -523,8 +532,8 @@ fn add_obj(
     game_obj_lib.insert(entity, obj);
 }
 
-fn create_ai_comp(ai_config_name: &String, game_lib: &GameLib) -> Result<AIComponent, MyError> {
+fn create_ai_comp(ai_config_name: &String, game_lib: &GameLib) -> Result<AiComponent, MyError> {
     let ai_config = game_lib.get_ai_config(ai_config_name)?;
-    let ai_comp = AIComponent::new(ai_config);
+    let ai_comp = AiComponent::new(ai_config);
     Ok(ai_comp)
 }

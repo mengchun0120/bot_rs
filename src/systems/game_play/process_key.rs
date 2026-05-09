@@ -1,5 +1,9 @@
-use crate::game::{components::*, *};
-use crate::game_utils::*;
+use crate::game::{
+    GameObjState,
+    components::{MoveComponent, PlayerComponent, WeaponComponent},
+    try_shoot,
+};
+use crate::game_utils::{GameLib, GameObjLib, NewObjQueue, WorldInfo};
 use bevy::prelude::*;
 
 pub fn process_key(

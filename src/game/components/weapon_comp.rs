@@ -1,6 +1,6 @@
-use crate::config::*;
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::config::WeaponConfig;
+use crate::game_utils::GameLib;
+use crate::misc::{MyError, arr_to_vec2};
 use bevy::prelude::*;
 
 #[derive(Component)]

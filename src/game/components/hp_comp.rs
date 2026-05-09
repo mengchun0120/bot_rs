@@ -1,11 +1,11 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct HPComponent {
+pub struct HpComponent {
     hp: f32,
 }
 
-impl HPComponent {
+impl HpComponent {
     pub fn new(hp: f32) -> Self {
         Self { hp }
     }

@@ -1,7 +1,15 @@
-use crate::config::*;
-use crate::game::{components::*, *};
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::config::{EnemySearchConfig, MissileConfig, MissileFeature, PierceConfig};
+use crate::game::{
+    GameObj, GameObjState, GameObjType, MoveResult, components::HpComponent, on_death,
+    update_obj_pos,
+};
+use crate::game_utils::{
+    DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, RectRegion, WorldInfo,
+};
+use crate::misc::{
+    MyError, check_collide_bounds, check_collide_obj, check_collide_objs, get_collide_region,
+    get_rotation,
+};
 use bevy::prelude::*;
 use rand::seq::IndexedRandom;
 use std::collections::HashSet;
@@ -180,7 +188,7 @@ impl PierceAbility {
         entity: Entity,
         speed: f32,
         transform: &mut Transform,
-        hp_query: &mut Query<&mut HPComponent>,
+        hp_query: &mut Query<&mut HpComponent>,
         world_info: &WorldInfo,
         game_map: &mut GameMap,
         game_obj_lib: &mut GameObjLib,
@@ -241,7 +249,7 @@ impl PierceAbility {
         &mut self,
         entity: Entity,
         obj: &GameObj,
-        hp_query: &mut Query<&mut HPComponent>,
+        hp_query: &mut Query<&mut HpComponent>,
         world_info: &WorldInfo,
         game_map: &mut GameMap,
         game_obj_lib: &mut GameObjLib,
@@ -286,7 +294,7 @@ impl PierceAbility {
         &mut self,
         entity: Entity,
         obj: &GameObj,
-        hp_query: &mut Query<&mut HPComponent>,
+        hp_query: &mut Query<&mut HpComponent>,
         game_map: &GameMap,
         game_obj_lib: &mut GameObjLib,
         game_lib: &GameLib,

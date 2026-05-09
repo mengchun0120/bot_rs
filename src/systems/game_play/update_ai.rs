@@ -1,5 +1,8 @@
-use crate::game::{components::*, *};
-use crate::game_utils::*;
+use crate::game::{
+    GameObjState,
+    components::{AiBotComponent, AiComponent, InView, MoveComponent, WeaponComponent},
+};
+use crate::game_utils::{GameInfo, GameLib, GameObjLib};
 use bevy::prelude::*;
 
 pub fn update_ai(
@@ -8,10 +11,10 @@ pub fn update_ai(
             Entity,
             &mut MoveComponent,
             &mut WeaponComponent,
-            &mut AIComponent,
+            &mut AiComponent,
             &mut Transform,
         ),
-        (With<AIBotComponent>, With<InView>),
+        (With<AiBotComponent>, With<InView>),
     >,
     mut game_obj_lib: ResMut<GameObjLib>,
     game_lib: Res<GameLib>,

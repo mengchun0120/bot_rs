@@ -1,9 +1,12 @@
-use crate::ai::*;
-use crate::game::{components::*, *};
-use crate::game_utils::*;
+use crate::ai::AiAction;
+use crate::game::{
+    GameObj,
+    components::{MoveComponent, WeaponComponent},
+};
+use crate::game_utils::GameLib;
 use bevy::prelude::*;
 
-pub trait AIEngine: Send + Sync {
+pub trait AiEngine: Send + Sync {
     fn run(
         &mut self,
         obj: &mut GameObj,
@@ -15,5 +18,5 @@ pub trait AIEngine: Send + Sync {
         time: &Time,
     );
 
-    fn cur_action(&self) -> AIAction;
+    fn cur_action(&self) -> AiAction;
 }

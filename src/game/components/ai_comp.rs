@@ -1,18 +1,18 @@
-use crate::ai::*;
-use crate::config::*;
+use crate::ai::{AiEngine, ChaseShootAiEngine};
+use crate::config::AiConfig;
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct AIComponent {
-    pub engine: Box<dyn AIEngine>,
+pub struct AiComponent {
+    pub engine: Box<dyn AiEngine>,
 }
 
-impl AIComponent {
-    pub fn new(ai_config: &AIConfig) -> Self {
+impl AiComponent {
+    pub fn new(ai_config: &AiConfig) -> Self {
         let engine = match ai_config {
-            AIConfig::ChaseShoot(config) => Box::new(ChaseShootAIEngine::new(*config)),
+            AiConfig::ChaseShoot(config) => Box::new(ChaseShootAiEngine::new(*config)),
         };
 
-        AIComponent { engine }
+        AiComponent { engine }
     }
 }

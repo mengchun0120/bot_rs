@@ -4,7 +4,7 @@ use bevy::prelude::*;
 pub struct PlayerComponent;
 
 #[derive(Component)]
-pub struct AIBotComponent;
+pub struct AiBotComponent;
 
 #[derive(Component)]
 pub struct TileComponent;

@@ -1,4 +1,4 @@
-use crate::game_utils::*;
+use crate::game_utils::{GameMap, GameObjLib, MapRegion, WorldInfo};
 use bevy::prelude::*;
 
 pub fn check_collide(

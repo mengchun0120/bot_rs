@@ -1,6 +1,6 @@
-use crate::config::*;
-use crate::game::*;
-use crate::misc::*;
+use crate::config::WeaponConfig;
+use crate::game::GameObjType;
+use crate::misc::MyError;
 use bevy::prelude::*;
 use serde::Deserialize;
 

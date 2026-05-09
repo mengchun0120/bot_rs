@@ -6,10 +6,10 @@ pub mod game_obj_lib;
 pub mod new_obj_queue;
 pub mod world_info;
 
-pub use despawn_pool::*;
-pub use game_info::*;
-pub use game_lib::*;
-pub use game_map::*;
-pub use game_obj_lib::*;
-pub use new_obj_queue::*;
-pub use world_info::*;
+pub use despawn_pool::DespawnPool;
+pub use game_info::GameInfo;
+pub use game_lib::GameLib;
+pub use game_map::{GameMap, MapIterator, MapRegion, RectRegion};
+pub use game_obj_lib::GameObjLib;
+pub use new_obj_queue::{NewObj, NewObjQueue};
+pub use world_info::WorldInfo;

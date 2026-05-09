@@ -1,5 +1,5 @@
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::game_utils::GameInfo;
+use crate::misc::GameState;
 use bevy::prelude::*;
 
 pub fn check_game(game_info: Res<GameInfo>, mut game_state: ResMut<NextState<GameState>>) {

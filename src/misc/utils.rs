@@ -1,6 +1,6 @@
-use crate::game_utils::*;
-use crate::misc::*;
-use bevy::prelude::*;
+use crate::game_utils::WorldInfo;
+use crate::misc::MyError;
+use bevy::prelude::{Camera, GlobalTransform, Quat, Resource, Vec2, error};
 use clap::Parser;
 use serde::de::DeserializeOwned;
 use serde_json;

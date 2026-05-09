@@ -1,5 +1,9 @@
-use crate::game::{components::*, *};
-use crate::game_utils::*;
+use crate::game::{
+    GameObjState,
+    components::{HpComponent, MoveComponent, PlayerComponent},
+    move_bot,
+};
+use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
 use bevy::prelude::*;
 
 pub fn update_player(
@@ -7,7 +11,7 @@ pub fn update_player(
         (Entity, &mut Transform, &mut Visibility, &MoveComponent),
         With<PlayerComponent>,
     >,
-    mut hp_query: Query<&mut HPComponent>,
+    mut hp_query: Query<&mut HpComponent>,
     mut game_map: ResMut<GameMap>,
     world_info: Res<WorldInfo>,
     mut game_obj_lib: ResMut<GameObjLib>,

@@ -5,8 +5,8 @@ mod game_utils;
 mod misc;
 mod systems;
 
-use crate::misc::*;
-use crate::systems::*;
+use crate::misc::{AppState, Args, setup_log};
+use crate::systems::{game_plugin, menu_plugin, setup_app, splash_plugin};
 use bevy::{log::LogPlugin, prelude::*};
 use clap::Parser;
 

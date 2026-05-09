@@ -1,15 +1,18 @@
-use crate::ai::*;
-use crate::config::*;
-use crate::game::{components::*, *};
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::ai::{AiAction, AiEngine};
+use crate::config::ChaseShootAiConfig;
+use crate::game::{
+    GameObj,
+    components::{MoveComponent, WeaponComponent},
+};
+use crate::game_utils::GameLib;
+use crate::misc::get_rotation;
 use bevy::prelude::*;
 use rand::{Rng, rng};
 use std::time::Duration;
 
-pub struct ChaseShootAIEngine {
-    config: ChaseShootAIConfig,
-    action: AIAction,
+pub struct ChaseShootAiEngine {
+    config: ChaseShootAiConfig,
+    action: AiAction,
     action_timer: Timer,
     direction_keep_timer: Timer,
     directions: Vec<WeightedDirection>,
@@ -23,11 +26,11 @@ struct WeightedDirection {
 const DIRECTION_WEIGHTS: [f32; 4] = [1.0, 1.0, 3.0, 5.0];
 const TOTAL_WEIGHTS: f32 = 10.0;
 
-impl ChaseShootAIEngine {
-    pub fn new(config: ChaseShootAIConfig) -> Self {
+impl ChaseShootAiEngine {
+    pub fn new(config: ChaseShootAiConfig) -> Self {
         Self {
             config,
-            action: AIAction::DoNothing,
+            action: AiAction::DoNothing,
             action_timer: Timer::from_seconds(0.0, TimerMode::Repeating),
             direction_keep_timer: Timer::from_seconds(0.0, TimerMode::Repeating),
             directions: Self::init_directions(),
@@ -81,13 +84,13 @@ impl ChaseShootAIEngine {
         Self::set_direction(obj, transform, (player_pos - obj.pos).normalize());
 
         match self.action {
-            AIAction::Chase => {
+            AiAction::Chase => {
                 let Ok(config) = game_lib.get_game_obj_config(obj.config_index).bot_config() else {
                     return;
                 };
                 move_comp.speed = config.speed;
             }
-            AIAction::Shoot => {
+            AiAction::Shoot => {
                 move_comp.speed = 0.0;
                 weapon_comp.fire_timer.reset();
             }
@@ -95,17 +98,17 @@ impl ChaseShootAIEngine {
         }
     }
 
-    fn rand_action(config: &ChaseShootAIConfig) -> (AIAction, f32, f32) {
+    fn rand_action(config: &ChaseShootAiConfig) -> (AiAction, f32, f32) {
         let mut r = rng();
         if r.random_range(0.0..=1.0) < config.chase_prob {
             (
-                AIAction::Chase,
+                AiAction::Chase,
                 config.chase_duration,
                 config.chase_direction_keeptime,
             )
         } else {
             (
-                AIAction::Shoot,
+                AiAction::Shoot,
                 config.shoot_duration,
                 config.shoot_direction_keeptime,
             )
@@ -195,7 +198,7 @@ impl ChaseShootAIEngine {
     }
 }
 
-impl AIEngine for ChaseShootAIEngine {
+impl AiEngine for ChaseShootAiEngine {
     fn run(
         &mut self,
         obj: &mut GameObj,
@@ -206,7 +209,7 @@ impl AIEngine for ChaseShootAIEngine {
         game_lib: &GameLib,
         time: &Time,
     ) {
-        if self.action == AIAction::DoNothing {
+        if self.action == AiAction::DoNothing {
             self.reset_action(obj, transform, move_comp, weapon_comp, player_pos, game_lib);
         } else {
             self.action_timer.tick(time.delta());
@@ -214,10 +217,10 @@ impl AIEngine for ChaseShootAIEngine {
                 self.reset_action(obj, transform, move_comp, weapon_comp, player_pos, game_lib);
             } else {
                 match self.action {
-                    AIAction::Chase => {
+                    AiAction::Chase => {
                         self.run_chase(obj, transform, move_comp, player_pos, game_lib, time);
                     }
-                    AIAction::Shoot => {
+                    AiAction::Shoot => {
                         self.run_shoot(obj, transform, player_pos, time);
                     }
                     _ => {}
@@ -226,7 +229,7 @@ impl AIEngine for ChaseShootAIEngine {
         }
     }
 
-    fn cur_action(&self) -> AIAction {
+    fn cur_action(&self) -> AiAction {
         self.action
     }
 }

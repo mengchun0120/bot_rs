@@ -1,7 +1,9 @@
-use crate::config::*;
-use crate::game::*;
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::config::{GameConfig, GameMapConfig, GameMapObjConfig};
+use crate::game::create_obj_by_config;
+use crate::game_utils::{
+    DespawnPool, GameInfo, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo,
+};
+use crate::misc::{Args, GameState, arr_to_vec2, read_json};
 use bevy::prelude::*;
 
 pub fn setup_game(

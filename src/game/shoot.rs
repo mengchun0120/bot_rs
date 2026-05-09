@@ -1,6 +1,6 @@
-use crate::game::components::*;
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::game::components::WeaponComponent;
+use crate::game_utils::{GameLib, GameObjLib, NewObj, NewObjQueue, WorldInfo};
+use crate::misc::MyError;
 use bevy::prelude::*;
 
 pub fn try_shoot(

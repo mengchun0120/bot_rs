@@ -1,6 +1,6 @@
-use crate::game::*;
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::game::GameObjState;
+use crate::game_utils::GameObjLib;
+use crate::misc::MyError;
 use bevy::prelude::*;
 use std::collections::HashSet;
 

@@ -1,4 +1,4 @@
-use crate::game::*;
+use crate::game::Playout;
 use bevy::prelude::*;
 
 #[derive(Component, Deref, DerefMut)]

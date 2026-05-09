@@ -1,6 +1,9 @@
-use crate::game::{components::*, *};
-use crate::game_utils::*;
-use bevy::prelude::*;
+use crate::game::{
+    GameObjState,
+    components::{InView, PlayerComponent},
+};
+use crate::game_utils::{DespawnPool, GameMap, GameObjLib, WorldInfo};
+use bevy::{ecs::entity::ContainsEntity, prelude::*};
 
 pub fn update_origin(
     player_query: Single<Entity, With<PlayerComponent>>,

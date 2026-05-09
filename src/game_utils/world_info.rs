@@ -1,4 +1,4 @@
-use crate::game_utils::*;
+use crate::game_utils::RectRegion;
 use bevy::prelude::*;
 
 #[derive(Debug, Resource)]

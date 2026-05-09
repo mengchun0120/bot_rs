@@ -1,7 +1,11 @@
-use crate::config::*;
-use crate::game::{components::*, *};
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::config::GameObjSide;
+use crate::game::{
+    GameObjState, GameObjType,
+    components::{HpComponent, InView},
+    on_death,
+};
+use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
+use crate::misc::{MyError, check_collide, check_collide_obj};
 use bevy::prelude::*;
 use std::collections::HashSet;
 
@@ -17,7 +21,7 @@ pub fn move_bot(
     speed: f32,
     transform: &mut Transform,
     visibility: &mut Visibility,
-    hp_query: &mut Query<&mut HPComponent>,
+    hp_query: &mut Query<&mut HpComponent>,
     world_info: &WorldInfo,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
@@ -82,7 +86,7 @@ pub fn move_missile(
     entity: Entity,
     speed: f32,
     transform: &mut Transform,
-    hp_query: &mut Query<&mut HPComponent>,
+    hp_query: &mut Query<&mut HpComponent>,
     world_info: &WorldInfo,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
@@ -183,7 +187,7 @@ fn capture_missiles(
     pos: &Vec2,
     collide_span: f32,
     side: GameObjSide,
-    hp_query: &mut Query<&mut HPComponent>,
+    hp_query: &mut Query<&mut HpComponent>,
     game_map: &GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,

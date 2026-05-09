@@ -1,4 +1,4 @@
-use crate::config::*;
+use crate::config::GameObjSide;
 use bevy::prelude::*;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]

@@ -1,5 +1,9 @@
-use crate::game::{components::*, *};
-use crate::game_utils::*;
+use crate::game::{
+    GameObjState,
+    components::{HpComponent, MissileComponent, MoveComponent},
+    move_missile, on_death,
+};
+use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
 use bevy::prelude::*;
 
 pub fn update_missiles(
@@ -9,7 +13,7 @@ pub fn update_missiles(
         &MoveComponent,
         &mut MissileComponent,
     )>,
-    mut hp_query: Query<&mut HPComponent>,
+    mut hp_query: Query<&mut HpComponent>,
     mut world_info: ResMut<WorldInfo>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,

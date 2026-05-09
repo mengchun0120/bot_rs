@@ -1,6 +1,12 @@
-use crate::ai::*;
-use crate::game::{components::*, *};
-use crate::game_utils::*;
+use crate::ai::AiAction;
+use crate::game::{
+    GameObjState, MoveResult,
+    components::{
+        AiBotComponent, AiComponent, HpComponent, InView, MoveComponent, WeaponComponent,
+    },
+    move_bot, try_shoot,
+};
+use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
 use bevy::prelude::*;
 
 pub fn update_ai_bots(
@@ -11,11 +17,11 @@ pub fn update_ai_bots(
             &mut Visibility,
             &mut MoveComponent,
             &mut WeaponComponent,
-            &AIComponent,
+            &AiComponent,
         ),
-        (With<AIBotComponent>, With<InView>),
+        (With<AiBotComponent>, With<InView>),
     >,
-    mut hp_query: Query<&mut HPComponent>,
+    mut hp_query: Query<&mut HpComponent>,
     world_info: Res<WorldInfo>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -37,7 +43,7 @@ pub fn update_ai_bots(
         }
 
         match ai_comp.engine.cur_action() {
-            AIAction::Chase => {
+            AiAction::Chase => {
                 match move_bot(
                     entity,
                     move_comp.speed,
@@ -63,7 +69,7 @@ pub fn update_ai_bots(
                     _ => {}
                 }
             }
-            AIAction::Shoot => {
+            AiAction::Shoot => {
                 let _ = try_shoot(
                     entity,
                     move_comp.speed,

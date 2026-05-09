@@ -1,14 +1,17 @@
-use crate::config::*;
-use crate::game::{components::*, *};
-use crate::game_utils::*;
-use crate::misc::*;
+use crate::config::{GameObjSide, OnDeathAction, SpawnMissileConfig};
+use crate::game::{
+    GameObjState, GameObjType, Phaseout,
+    components::{AiBotComponent, HpComponent, PlayoutComponent},
+};
+use crate::game_utils::{GameLib, GameMap, GameObjLib, NewObj, NewObjQueue};
+use crate::misc::{MyError, check_collide_obj};
 use bevy::prelude::*;
 use rand::Rng;
 use rand::seq::IndexedRandom;
 
 pub fn on_death(
     entity: Entity,
-    hp_query: &mut Query<&mut HPComponent>,
+    hp_query: &mut Query<&mut HpComponent>,
     game_map: &GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -58,7 +61,7 @@ fn on_do_damage(
     side: GameObjSide,
     damage_range: f32,
     damage: f32,
-    hp_query: &mut Query<&mut HPComponent>,
+    hp_query: &mut Query<&mut HpComponent>,
     game_map: &GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -134,7 +137,7 @@ fn on_phaseout(
 
     obj.state = GameObjState::Phaseout;
     if obj.is_ai_bot() {
-        cmd.remove::<AIBotComponent>();
+        cmd.remove::<AiBotComponent>();
     }
     cmd.insert(PlayoutComponent::new(phaseout));
 

@@ -1,4 +1,4 @@
-use crate::misc::*;
+use crate::misc::MyError;
 use bevy::prelude::*;
 
 #[derive(Resource, Debug)]

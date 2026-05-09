@@ -1,5 +1,5 @@
-use crate::game::*;
-use crate::game_utils::*;
+use crate::game::create_obj_by_index;
+use crate::game_utils::{GameInfo, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
 use bevy::prelude::*;
 
 pub fn add_new_objs(
