@@ -231,11 +231,6 @@ fn create_missile(
         return Err(MyError::Other(msg));
     }
 
-    if speed.is_none() {
-        let msg = "speed is none".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
-    }
     let speed = speed.or(Some(config.speed));
     let size = arr_to_vec2(&config.size);
     let entity = create_main_body(&config.image, size, true, game_lib, commands)?;
