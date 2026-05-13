@@ -5,8 +5,8 @@ use crate::config::{
 use crate::game::{
     GameObj, GameObjState, PlayFrame,
     components::{
-        AiBotComponent, AiComponent, HpComponent, InView, MissileComponent,
-        PlayerComponent, PlayoutComponent, TileComponent, WeaponComponent,
+        AiBotComponent, AiComponent, InView, MissileComponent, PlayerComponent, PlayoutComponent,
+        TileComponent, WeaponComponent,
     },
 };
 use crate::game_utils::{GameInfo, GameLib, GameMap, GameObjLib, WorldInfo};
@@ -163,7 +163,6 @@ fn create_bot(
 
     cmd.insert(create_transform(&pos, &direction, config.z, world_info));
     cmd.insert(weapon_comp);
-    cmd.insert(HpComponent::new(config.hp));
 
     match config.side {
         GameObjSide::Player => {
@@ -189,6 +188,7 @@ fn create_bot(
         pos,
         direction,
         speed,
+        Some(config.hp),
         game_map,
         game_obj_lib,
         game_lib,
@@ -245,6 +245,7 @@ fn create_missile(
         pos,
         direction,
         speed,
+        None,
         game_map,
         game_obj_lib,
         game_lib,
@@ -292,6 +293,7 @@ fn create_play_frame(
         config_index,
         pos,
         direction,
+        None,
         None,
         game_map,
         game_obj_lib,
@@ -349,6 +351,7 @@ fn create_tile(
         pos,
         direction,
         None,
+        None,
         game_map,
         game_obj_lib,
         game_lib,
@@ -403,6 +406,7 @@ fn create_goodie(
         config_index,
         pos,
         direction,
+        None,
         None,
         game_map,
         game_obj_lib,
@@ -510,6 +514,7 @@ fn add_obj(
     pos: Vec2,
     direction: Vec2,
     speed: Option<f32>,
+    hp: Option<f32>,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -527,6 +532,7 @@ fn add_obj(
         side,
         collide_span,
         speed,
+        hp,
         obj_type,
         state: GameObjState::Alive,
     };

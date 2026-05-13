@@ -1,9 +1,5 @@
 use crate::config::GameObjSide;
-use crate::game::{
-    GameObjState, GameObjType,
-    components::{HpComponent, InView},
-    on_death,
-};
+use crate::game::{GameObjState, GameObjType, components::InView, on_death};
 use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
 use crate::misc::{MyError, check_collide, check_collide_obj};
 use bevy::prelude::*;
@@ -21,7 +17,6 @@ pub fn move_bot(
     speed: f32,
     transform: &mut Transform,
     visibility: &mut Visibility,
-    hp_query: &mut Query<&mut HpComponent>,
     world_info: &WorldInfo,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
@@ -66,7 +61,6 @@ pub fn move_bot(
         &new_pos,
         obj.collide_span,
         obj.side,
-        hp_query,
         game_map,
         game_obj_lib,
         game_lib,
@@ -86,7 +80,6 @@ pub fn move_missile(
     entity: Entity,
     speed: f32,
     transform: &mut Transform,
-    hp_query: &mut Query<&mut HpComponent>,
     world_info: &WorldInfo,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
@@ -120,7 +113,6 @@ pub fn move_missile(
     if collided {
         on_death(
             entity,
-            hp_query,
             game_map,
             game_obj_lib,
             game_lib,
@@ -187,7 +179,6 @@ fn capture_missiles(
     pos: &Vec2,
     collide_span: f32,
     side: GameObjSide,
-    hp_query: &mut Query<&mut HpComponent>,
     game_map: &GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -202,7 +193,6 @@ fn capture_missiles(
         for entity in collided_missiles {
             on_death(
                 entity,
-                hp_query,
                 game_map,
                 game_obj_lib,
                 game_lib,

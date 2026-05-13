@@ -1,18 +1,9 @@
-use crate::game::{
-    GameObjState,
-    components::{HpComponent, MissileComponent},
-    move_missile, on_death,
-};
+use crate::game::{GameObjState, components::MissileComponent, move_missile, on_death};
 use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
 use bevy::prelude::*;
 
 pub fn update_missiles(
-    mut missile_query: Query<(
-        Entity,
-        &mut Transform,
-        &mut MissileComponent,
-    )>,
-    mut hp_query: Query<&mut HpComponent>,
+    mut missile_query: Query<(Entity, &mut Transform, &mut MissileComponent)>,
     mut world_info: ResMut<WorldInfo>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -35,7 +26,6 @@ pub fn update_missiles(
             if alive_timer.tick(time.delta()).is_finished() {
                 if on_death(
                     entity,
-                    &mut hp_query,
                     game_map.as_ref(),
                     game_obj_lib.as_mut(),
                     game_lib.as_ref(),
@@ -71,7 +61,6 @@ pub fn update_missiles(
                 entity,
                 speed,
                 transform.as_mut(),
-                &mut hp_query,
                 world_info.as_ref(),
                 game_map.as_mut(),
                 game_obj_lib.as_mut(),
@@ -86,7 +75,6 @@ pub fn update_missiles(
                 entity,
                 speed,
                 transform.as_mut(),
-                &mut hp_query,
                 world_info.as_mut(),
                 game_map.as_mut(),
                 game_obj_lib.as_mut(),

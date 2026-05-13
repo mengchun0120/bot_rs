@@ -1,9 +1,7 @@
 use crate::ai::AiAction;
 use crate::game::{
     GameObjState, MoveResult,
-    components::{
-        AiBotComponent, AiComponent, HpComponent, InView, WeaponComponent,
-    },
+    components::{AiBotComponent, AiComponent, InView, WeaponComponent},
     move_bot, try_shoot,
 };
 use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
@@ -20,7 +18,6 @@ pub fn update_ai_bots(
         ),
         (With<AiBotComponent>, With<InView>),
     >,
-    mut hp_query: Query<&mut HpComponent>,
     world_info: Res<WorldInfo>,
     mut game_map: ResMut<GameMap>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -30,8 +27,7 @@ pub fn update_ai_bots(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, mut transform, mut visibility, mut weapon_comp, ai_comp) in
-        ai_bot_query.iter_mut()
+    for (entity, mut transform, mut visibility, mut weapon_comp, ai_comp) in ai_bot_query.iter_mut()
     {
         let Ok(obj) = game_obj_lib.get(&entity) else {
             continue;
@@ -48,7 +44,6 @@ pub fn update_ai_bots(
                     obj.speed.unwrap_or(0.0),
                     transform.as_mut(),
                     visibility.as_mut(),
-                    &mut hp_query,
                     world_info.as_ref(),
                     game_map.as_mut(),
                     game_obj_lib.as_mut(),

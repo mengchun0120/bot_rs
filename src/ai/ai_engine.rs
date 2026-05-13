@@ -1,8 +1,5 @@
 use crate::ai::AiAction;
-use crate::game::{
-    GameObj,
-    components::WeaponComponent,
-};
+use crate::game::{GameObj, components::WeaponComponent};
 use crate::game_utils::GameLib;
 use bevy::prelude::*;
 

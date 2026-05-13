@@ -1,7 +1,7 @@
 use crate::config::{GameObjSide, OnDeathAction, SpawnMissileConfig};
 use crate::game::{
     GameObjState, GameObjType, Phaseout,
-    components::{AiBotComponent, HpComponent, PlayoutComponent},
+    components::{AiBotComponent, PlayoutComponent},
 };
 use crate::game_utils::{GameLib, GameMap, GameObjLib, NewObj, NewObjQueue};
 use crate::misc::{MyError, check_collide_obj};
@@ -11,7 +11,6 @@ use rand::seq::IndexedRandom;
 
 pub fn on_death(
     entity: Entity,
-    hp_query: &mut Query<&mut HpComponent>,
     game_map: &GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -30,7 +29,6 @@ pub fn on_death(
                     obj.side,
                     damage_config.damage_range,
                     damage_config.damage,
-                    hp_query,
                     game_map,
                     game_obj_lib,
                     game_lib,
@@ -61,7 +59,6 @@ fn on_do_damage(
     side: GameObjSide,
     damage_range: f32,
     damage: f32,
-    hp_query: &mut Query<&mut HpComponent>,
     game_map: &GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -77,24 +74,28 @@ fn on_do_damage(
     );
 
     for entity in game_map.map_iter(&region) {
-        if let Ok(obj) = game_obj_lib.get(&entity)
+        if let Ok(obj) = game_obj_lib.get_mut(&entity)
             && obj.state == GameObjState::Alive
             && obj.side != side
             && obj.obj_type == GameObjType::Bot
             && check_collide_obj(pos, damage_range, &obj.pos, obj.collide_span)
-            && let Ok(mut hp_comp) = hp_query.get_mut(entity)
         {
-            hp_comp.update(-damage);
-            if hp_comp.hp() == 0.0 {
-                on_death(
-                    entity,
-                    hp_query,
-                    game_map,
-                    game_obj_lib,
-                    game_lib,
-                    new_obj_queue,
-                    commands,
-                )?;
+            if let Some(hp) = obj.hp {
+                let new_hp = (hp - damage).max(0.0);
+                obj.hp = Some(new_hp);
+                if new_hp == 0.0 {
+                    on_death(
+                        entity,
+                        game_map,
+                        game_obj_lib,
+                        game_lib,
+                        new_obj_queue,
+                        commands,
+                    )?;
+                }
+            } else {
+                error!("Bot's hp is none");
+                continue;
             }
         }
     }

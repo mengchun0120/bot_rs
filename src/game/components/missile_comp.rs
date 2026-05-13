@@ -1,8 +1,5 @@
 use crate::config::{EnemySearchConfig, MissileConfig, MissileFeature, PierceConfig};
-use crate::game::{
-    GameObj, GameObjState, GameObjType, MoveResult, components::HpComponent, on_death,
-    update_obj_pos,
-};
+use crate::game::{GameObj, GameObjState, GameObjType, MoveResult, on_death, update_obj_pos};
 use crate::game_utils::{
     DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, RectRegion, WorldInfo,
 };
@@ -188,7 +185,6 @@ impl PierceAbility {
         entity: Entity,
         speed: f32,
         transform: &mut Transform,
-        hp_query: &mut Query<&mut HpComponent>,
         world_info: &WorldInfo,
         game_map: &mut GameMap,
         game_obj_lib: &mut GameObjLib,
@@ -213,7 +209,6 @@ impl PierceAbility {
         if self.check_collide(
             entity,
             &obj,
-            hp_query,
             world_info,
             game_map,
             game_obj_lib,
@@ -223,7 +218,6 @@ impl PierceAbility {
         )? {
             on_death(
                 entity,
-                hp_query,
                 game_map,
                 game_obj_lib,
                 game_lib,
@@ -249,7 +243,6 @@ impl PierceAbility {
         &mut self,
         entity: Entity,
         obj: &GameObj,
-        hp_query: &mut Query<&mut HpComponent>,
         world_info: &WorldInfo,
         game_map: &mut GameMap,
         game_obj_lib: &mut GameObjLib,
@@ -268,7 +261,6 @@ impl PierceAbility {
             self.check_pierce_objs(
                 entity,
                 obj,
-                hp_query,
                 game_map,
                 game_obj_lib,
                 game_lib,
@@ -294,7 +286,6 @@ impl PierceAbility {
         &mut self,
         entity: Entity,
         obj: &GameObj,
-        hp_query: &mut Query<&mut HpComponent>,
         game_map: &GameMap,
         game_obj_lib: &mut GameObjLib,
         game_lib: &GameLib,
@@ -314,7 +305,7 @@ impl PierceAbility {
                 continue;
             }
 
-            let Ok(obj2) = game_obj_lib.get(&e) else {
+            let Ok(obj2) = game_obj_lib.get_mut(&e) else {
                 continue;
             };
 
@@ -325,19 +316,15 @@ impl PierceAbility {
                 collide = true;
 
                 if obj2.obj_type == GameObjType::Bot && obj2.side != obj.side {
-                    if let Ok(mut hp) = hp_query.get_mut(e) {
-                        hp.update(-self.damage);
-                        if hp.hp() <= 0.0 {
-                            on_death(
-                                e,
-                                hp_query,
-                                game_map,
-                                game_obj_lib,
-                                game_lib,
-                                new_obj_queue,
-                                commands,
-                            )?;
+                    if let Some(hp) = obj2.hp {
+                        let new_hp = (hp - self.damage).max(0.0);
+                        obj2.hp = Some(new_hp);
+                        if new_hp <= 0.0 {
+                            on_death(e, game_map, game_obj_lib, game_lib, new_obj_queue, commands)?;
                         }
+                    } else {
+                        error!("Bot's hp is None");
+                        continue;
                     }
                 }
             }

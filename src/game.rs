@@ -14,14 +14,12 @@ pub use shoot::try_shoot;
 
 pub mod components {
     pub mod ai_comp;
-    pub mod hp_comp;
     pub mod markers;
     pub mod missile_comp;
     pub mod playout_comp;
     pub mod weapon_comp;
 
     pub use ai_comp::AiComponent;
-    pub use hp_comp::HpComponent;
     pub use markers::{AiBotComponent, InView, PlayerComponent, TileComponent};
     pub use missile_comp::{EnemySearchAbility, MissileComponent, PierceAbility};
     pub use playout_comp::PlayoutComponent;

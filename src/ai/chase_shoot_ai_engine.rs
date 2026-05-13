@@ -1,9 +1,6 @@
 use crate::ai::{AiAction, AiEngine};
 use crate::config::ChaseShootAiConfig;
-use crate::game::{
-    GameObj,
-    components::WeaponComponent,
-};
+use crate::game::{GameObj, components::WeaponComponent};
 use crate::game_utils::GameLib;
 use crate::misc::get_rotation;
 use bevy::prelude::*;

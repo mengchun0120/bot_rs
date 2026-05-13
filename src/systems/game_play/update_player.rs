@@ -1,17 +1,9 @@
-use crate::game::{
-    GameObjState,
-    components::{HpComponent, PlayerComponent},
-    move_bot,
-};
+use crate::game::{GameObjState, components::PlayerComponent, move_bot};
 use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
 use bevy::prelude::*;
 
 pub fn update_player(
-    mut player_query: Query<
-        (Entity, &mut Transform, &mut Visibility),
-        With<PlayerComponent>,
-    >,
-    mut hp_query: Query<&mut HpComponent>,
+    mut player_query: Query<(Entity, &mut Transform, &mut Visibility), With<PlayerComponent>>,
     mut game_map: ResMut<GameMap>,
     world_info: Res<WorldInfo>,
     mut game_obj_lib: ResMut<GameObjLib>,
@@ -43,7 +35,6 @@ pub fn update_player(
         speed,
         transform.as_mut(),
         visibility.as_mut(),
-        &mut hp_query,
         world_info.as_ref(),
         game_map.as_mut(),
         game_obj_lib.as_mut(),

@@ -17,6 +17,7 @@ pub struct GameObj {
     pub state: GameObjState,
     pub collide_span: f32,
     pub speed: Option<f32>,
+    pub hp: Option<f32>,
     pub obj_type: GameObjType,
 }
 
