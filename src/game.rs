@@ -17,7 +17,6 @@ pub mod components {
     pub mod hp_comp;
     pub mod markers;
     pub mod missile_comp;
-    pub mod move_comp;
     pub mod playout_comp;
     pub mod weapon_comp;
 
@@ -25,7 +24,6 @@ pub mod components {
     pub use hp_comp::HpComponent;
     pub use markers::{AiBotComponent, InView, PlayerComponent, TileComponent};
     pub use missile_comp::{EnemySearchAbility, MissileComponent, PierceAbility};
-    pub use move_comp::MoveComponent;
     pub use playout_comp::PlayoutComponent;
     pub use weapon_comp::WeaponComponent;
 }

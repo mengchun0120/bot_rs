@@ -5,7 +5,7 @@ use crate::config::{
 use crate::game::{
     GameObj, GameObjState, PlayFrame,
     components::{
-        AiBotComponent, AiComponent, HpComponent, InView, MissileComponent, MoveComponent,
+        AiBotComponent, AiComponent, HpComponent, InView, MissileComponent,
         PlayerComponent, PlayoutComponent, TileComponent, WeaponComponent,
     },
 };
@@ -154,6 +154,7 @@ fn create_bot(
         return Err(MyError::Other(msg));
     }
 
+    let speed = speed.or(Some(config.speed));
     let visible = world_info.check_pos_visible(&pos);
     let size = arr_to_vec2(&config.size);
     let entity = create_main_body(&config.image, size, visible, game_lib, commands)?;
@@ -161,7 +162,6 @@ fn create_bot(
     let mut cmd = commands.entity(entity);
 
     cmd.insert(create_transform(&pos, &direction, config.z, world_info));
-    cmd.insert(MoveComponent::new(speed.unwrap_or(0.0)));
     cmd.insert(weapon_comp);
     cmd.insert(HpComponent::new(config.hp));
 
@@ -188,6 +188,7 @@ fn create_bot(
         config_index,
         pos,
         direction,
+        speed,
         game_map,
         game_obj_lib,
         game_lib,
@@ -212,28 +213,35 @@ fn create_missile(
     commands: &mut Commands,
     game_info: &mut GameInfo,
 ) -> Result<(), MyError> {
-    if !world_info.check_pos_visible(&pos)
-        || check_collide(
-            None,
-            &pos,
-            config.collide_span,
-            game_lib.game_config.max_collide_span,
-            world_info,
-            game_map,
-            game_obj_lib,
-        )
-    {
+    if !world_info.check_pos_visible(&pos) {
+        return Ok(()); // Don't create missile if it is outside of player's view
+    }
+
+    if check_collide(
+        None,
+        &pos,
+        config.collide_span,
+        game_lib.game_config.max_collide_span,
+        world_info,
+        game_map,
+        game_obj_lib,
+    ) {
         let msg = "create_missile failed because of collision".to_string();
         error!(msg);
         return Err(MyError::Other(msg));
     }
 
+    if speed.is_none() {
+        let msg = "speed is none".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    }
+    let speed = speed.or(Some(config.speed));
     let size = arr_to_vec2(&config.size);
     let entity = create_main_body(&config.image, size, true, game_lib, commands)?;
     let mut cmd = commands.entity(entity);
 
     cmd.insert(create_transform(&pos, &direction, config.z, world_info));
-    cmd.insert(MoveComponent::new(speed.unwrap_or(config.speed)));
     cmd.insert(MissileComponent::new(config));
 
     add_obj(
@@ -241,6 +249,7 @@ fn create_missile(
         config_index,
         pos,
         direction,
+        speed,
         game_map,
         game_obj_lib,
         game_lib,
@@ -288,6 +297,7 @@ fn create_play_frame(
         config_index,
         pos,
         direction,
+        None,
         game_map,
         game_obj_lib,
         game_lib,
@@ -343,6 +353,7 @@ fn create_tile(
         config_index,
         pos,
         direction,
+        None,
         game_map,
         game_obj_lib,
         game_lib,
@@ -397,6 +408,7 @@ fn create_goodie(
         config_index,
         pos,
         direction,
+        None,
         game_map,
         game_obj_lib,
         game_lib,
@@ -502,6 +514,7 @@ fn add_obj(
     config_index: usize,
     pos: Vec2,
     direction: Vec2,
+    speed: Option<f32>,
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
     game_lib: &GameLib,
@@ -518,6 +531,7 @@ fn add_obj(
         map_pos: game_map.get_map_pos(&pos),
         side,
         collide_span,
+        speed,
         obj_type,
         state: GameObjState::Alive,
     };

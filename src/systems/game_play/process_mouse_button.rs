@@ -1,6 +1,6 @@
 use crate::game::{
     GameObjState,
-    components::{MoveComponent, PlayerComponent},
+    components::PlayerComponent,
 };
 use crate::game_utils::{GameLib, GameObjLib, WorldInfo};
 use crate::misc::{get_rotation, translate_cursor_pos};
@@ -8,7 +8,7 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
 pub fn process_mouse_button(
-    mut player_query: Single<(Entity, &mut MoveComponent, &mut Transform), With<PlayerComponent>>,
+    mut player_query: Single<(Entity, &mut Transform), With<PlayerComponent>>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     window_query: Single<&Window, With<PrimaryWindow>>,
     camera_query: Single<(&Camera, &GlobalTransform)>,
@@ -43,7 +43,7 @@ pub fn process_mouse_button(
         let direction = (cursor_pos - obj.pos).normalize();
 
         obj.direction = direction;
-        player_query.1.speed = config.speed;
-        player_query.2.rotation = get_rotation(&direction);
+        obj.speed = Some(config.speed);
+        player_query.1.rotation = get_rotation(&direction);
     }
 }

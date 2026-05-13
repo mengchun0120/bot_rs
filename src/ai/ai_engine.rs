@@ -1,7 +1,7 @@
 use crate::ai::AiAction;
 use crate::game::{
     GameObj,
-    components::{MoveComponent, WeaponComponent},
+    components::WeaponComponent,
 };
 use crate::game_utils::GameLib;
 use bevy::prelude::*;
@@ -11,7 +11,6 @@ pub trait AiEngine: Send + Sync {
         &mut self,
         obj: &mut GameObj,
         transform: &mut Transform,
-        move_comp: &mut MoveComponent,
         weapon_comp: &mut WeaponComponent,
         player_pos: &Vec2,
         game_lib: &GameLib,

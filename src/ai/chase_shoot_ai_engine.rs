@@ -2,7 +2,7 @@ use crate::ai::{AiAction, AiEngine};
 use crate::config::ChaseShootAiConfig;
 use crate::game::{
     GameObj,
-    components::{MoveComponent, WeaponComponent},
+    components::WeaponComponent,
 };
 use crate::game_utils::GameLib;
 use crate::misc::get_rotation;
@@ -41,13 +41,12 @@ impl ChaseShootAiEngine {
         &mut self,
         obj: &mut GameObj,
         transform: &mut Transform,
-        move_comp: &mut MoveComponent,
         player_pos: &Vec2,
         game_lib: &GameLib,
         time: &Time,
     ) {
-        if move_comp.speed == 0.0 {
-            self.reconfig_direction(obj, transform, move_comp, player_pos, game_lib);
+        if obj.speed == Some(0.0) {
+            self.reconfig_direction(obj, transform, player_pos, game_lib);
         } else {
             self.check_direction_keep_timer(obj, transform, player_pos, time);
         }
@@ -67,7 +66,6 @@ impl ChaseShootAiEngine {
         &mut self,
         obj: &mut GameObj,
         transform: &mut Transform,
-        move_comp: &mut MoveComponent,
         weapon_comp: &mut WeaponComponent,
         player_pos: &Vec2,
         game_lib: &GameLib,
@@ -88,10 +86,10 @@ impl ChaseShootAiEngine {
                 let Ok(config) = game_lib.get_game_obj_config(obj.config_index).bot_config() else {
                     return;
                 };
-                move_comp.speed = config.speed;
+                obj.speed = Some(config.speed);
             }
             AiAction::Shoot => {
-                move_comp.speed = 0.0;
+                obj.speed = Some(0.0);
                 weapon_comp.fire_timer.reset();
             }
             _ => {}
@@ -146,7 +144,6 @@ impl ChaseShootAiEngine {
         &mut self,
         obj: &mut GameObj,
         transform: &mut Transform,
-        move_comp: &mut MoveComponent,
         player_pos: &Vec2,
         game_lib: &GameLib,
     ) {
@@ -156,7 +153,7 @@ impl ChaseShootAiEngine {
         let Ok(config) = game_lib.get_game_obj_config(obj.config_index).bot_config() else {
             return;
         };
-        move_comp.speed = config.speed;
+        obj.speed = Some(config.speed);
         self.direction_keep_timer.reset();
     }
 
@@ -203,22 +200,21 @@ impl AiEngine for ChaseShootAiEngine {
         &mut self,
         obj: &mut GameObj,
         transform: &mut Transform,
-        move_comp: &mut MoveComponent,
         weapon_comp: &mut WeaponComponent,
         player_pos: &Vec2,
         game_lib: &GameLib,
         time: &Time,
     ) {
         if self.action == AiAction::DoNothing {
-            self.reset_action(obj, transform, move_comp, weapon_comp, player_pos, game_lib);
+            self.reset_action(obj, transform, weapon_comp, player_pos, game_lib);
         } else {
             self.action_timer.tick(time.delta());
             if self.action_timer.is_finished() {
-                self.reset_action(obj, transform, move_comp, weapon_comp, player_pos, game_lib);
+                self.reset_action(obj, transform, weapon_comp, player_pos, game_lib);
             } else {
                 match self.action {
                     AiAction::Chase => {
-                        self.run_chase(obj, transform, move_comp, player_pos, game_lib, time);
+                        self.run_chase(obj, transform, player_pos, game_lib, time);
                     }
                     AiAction::Shoot => {
                         self.run_shoot(obj, transform, player_pos, time);

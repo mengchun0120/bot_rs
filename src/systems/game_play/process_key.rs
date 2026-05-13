@@ -1,6 +1,6 @@
 use crate::game::{
     GameObjState,
-    components::{MoveComponent, PlayerComponent, WeaponComponent},
+    components::{PlayerComponent, WeaponComponent},
     try_shoot,
 };
 use crate::game_utils::{GameLib, GameObjLib, NewObjQueue, WorldInfo};
@@ -8,7 +8,7 @@ use bevy::prelude::*;
 
 pub fn process_key(
     mut player_query: Query<
-        (Entity, &mut MoveComponent, &mut WeaponComponent),
+        (Entity, &mut WeaponComponent),
         With<PlayerComponent>,
     >,
     key_input: Res<ButtonInput<KeyCode>>,
@@ -18,22 +18,27 @@ pub fn process_key(
     mut new_obj_queue: ResMut<NewObjQueue>,
     time: Res<Time>,
 ) {
-    let Ok((entity, mut move_comp, mut weapon_comp)) = player_query.single_mut() else {
+    let Ok((entity, mut weapon_comp)) = player_query.single_mut() else {
         return;
     };
 
-    if let Ok(obj) = game_obj_lib.get(&entity) {
-        if obj.state != GameObjState::Alive {
-            return;
-        }
-    } else {
+    let Ok(obj) = game_obj_lib.get_mut(&entity) else {
+        return;
+    };
+
+    if obj.state != GameObjState::Alive {
         return;
     }
+
+    let Some(speed) = obj.speed else {
+        error!("speed is none");
+        return;
+    };
 
     if key_input.just_pressed(KeyCode::KeyF) || key_input.pressed(KeyCode::KeyF) {
         if try_shoot(
             entity,
-            move_comp.speed,
+            speed,
             weapon_comp.as_mut(),
             world_info.as_ref(),
             game_obj_lib.as_mut(),
@@ -46,6 +51,6 @@ pub fn process_key(
             error!("Failed to shoot");
         }
     } else if key_input.just_pressed(KeyCode::KeyS) {
-        move_comp.speed = 0.0;
+        obj.speed = Some(0.0);
     }
 }

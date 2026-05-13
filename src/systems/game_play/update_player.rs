@@ -1,6 +1,6 @@
 use crate::game::{
     GameObjState,
-    components::{HpComponent, MoveComponent, PlayerComponent},
+    components::{HpComponent, PlayerComponent},
     move_bot,
 };
 use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
@@ -8,7 +8,7 @@ use bevy::prelude::*;
 
 pub fn update_player(
     mut player_query: Query<
-        (Entity, &mut Transform, &mut Visibility, &MoveComponent),
+        (Entity, &mut Transform, &mut Visibility),
         With<PlayerComponent>,
     >,
     mut hp_query: Query<&mut HpComponent>,
@@ -21,21 +21,26 @@ pub fn update_player(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    let Ok((entity, mut transform, mut visibility, move_comp)) = player_query.single_mut() else {
+    let Ok((entity, mut transform, mut visibility)) = player_query.single_mut() else {
         return;
     };
 
-    if let Ok(obj) = game_obj_lib.get(&entity) {
-        if obj.state != GameObjState::Alive {
-            return;
-        }
-    } else {
+    let Ok(obj) = game_obj_lib.get(&entity) else {
+        return;
+    };
+
+    if obj.state != GameObjState::Alive {
         return;
     }
 
+    let Some(speed) = obj.speed else {
+        error!("speed is none");
+        return;
+    };
+
     let _ = move_bot(
         entity,
-        move_comp.speed,
+        speed,
         transform.as_mut(),
         visibility.as_mut(),
         &mut hp_query,

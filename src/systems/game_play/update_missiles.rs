@@ -1,6 +1,6 @@
 use crate::game::{
     GameObjState,
-    components::{HpComponent, MissileComponent, MoveComponent},
+    components::{HpComponent, MissileComponent},
     move_missile, on_death,
 };
 use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
@@ -10,7 +10,6 @@ pub fn update_missiles(
     mut missile_query: Query<(
         Entity,
         &mut Transform,
-        &MoveComponent,
         &mut MissileComponent,
     )>,
     mut hp_query: Query<&mut HpComponent>,
@@ -23,7 +22,7 @@ pub fn update_missiles(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, mut transform, move_comp, mut missile_comp) in missile_query.iter_mut() {
+    for (entity, mut transform, mut missile_comp) in missile_query.iter_mut() {
         let Ok(obj) = game_obj_lib.get(&entity).cloned() else {
             continue;
         };
@@ -62,10 +61,15 @@ pub fn update_missiles(
             );
         }
 
+        let Some(speed) = obj.speed else {
+            error!("speed is None");
+            continue;
+        };
+
         if let Some(pierce_ability) = missile_comp.pierce_ability.as_mut() {
             let _ = pierce_ability.move_obj(
                 entity,
-                move_comp.speed,
+                speed,
                 transform.as_mut(),
                 &mut hp_query,
                 world_info.as_ref(),
@@ -80,7 +84,7 @@ pub fn update_missiles(
         } else {
             let _ = move_missile(
                 entity,
-                move_comp.speed,
+                speed,
                 transform.as_mut(),
                 &mut hp_query,
                 world_info.as_mut(),

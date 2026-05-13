@@ -2,7 +2,7 @@ use crate::ai::AiAction;
 use crate::game::{
     GameObjState, MoveResult,
     components::{
-        AiBotComponent, AiComponent, HpComponent, InView, MoveComponent, WeaponComponent,
+        AiBotComponent, AiComponent, HpComponent, InView, WeaponComponent,
     },
     move_bot, try_shoot,
 };
@@ -15,7 +15,6 @@ pub fn update_ai_bots(
             Entity,
             &mut Transform,
             &mut Visibility,
-            &mut MoveComponent,
             &mut WeaponComponent,
             &AiComponent,
         ),
@@ -31,14 +30,14 @@ pub fn update_ai_bots(
     mut commands: Commands,
     time: Res<Time>,
 ) {
-    for (entity, mut transform, mut visibility, mut move_comp, mut weapon_comp, ai_comp) in
+    for (entity, mut transform, mut visibility, mut weapon_comp, ai_comp) in
         ai_bot_query.iter_mut()
     {
-        if let Ok(obj) = game_obj_lib.get(&entity) {
-            if obj.state != GameObjState::Alive {
-                continue;
-            }
-        } else {
+        let Ok(obj) = game_obj_lib.get(&entity) else {
+            continue;
+        };
+
+        if obj.state != GameObjState::Alive {
             continue;
         }
 
@@ -46,7 +45,7 @@ pub fn update_ai_bots(
             AiAction::Chase => {
                 match move_bot(
                     entity,
-                    move_comp.speed,
+                    obj.speed.unwrap_or(0.0),
                     transform.as_mut(),
                     visibility.as_mut(),
                     &mut hp_query,
@@ -60,10 +59,10 @@ pub fn update_ai_bots(
                     time.as_ref(),
                 ) {
                     Ok(MoveResult::Collided) => {
-                        if let Ok(obj) = game_obj_lib.get(&entity)
+                        if let Ok(obj) = game_obj_lib.get_mut(&entity)
                             && obj.state == GameObjState::Alive
                         {
-                            move_comp.speed = 0.0;
+                            obj.speed = Some(0.0);
                         }
                     }
                     _ => {}
@@ -72,7 +71,7 @@ pub fn update_ai_bots(
             AiAction::Shoot => {
                 let _ = try_shoot(
                     entity,
-                    move_comp.speed,
+                    obj.speed.unwrap_or(0.0),
                     weapon_comp.as_mut(),
                     world_info.as_ref(),
                     game_obj_lib.as_mut(),

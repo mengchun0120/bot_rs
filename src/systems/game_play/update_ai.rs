@@ -1,6 +1,6 @@
 use crate::game::{
     GameObjState,
-    components::{AiBotComponent, AiComponent, InView, MoveComponent, WeaponComponent},
+    components::{AiBotComponent, AiComponent, InView, WeaponComponent},
 };
 use crate::game_utils::{GameInfo, GameLib, GameObjLib};
 use bevy::prelude::*;
@@ -9,7 +9,6 @@ pub fn update_ai(
     mut aibot_query: Query<
         (
             Entity,
-            &mut MoveComponent,
             &mut WeaponComponent,
             &mut AiComponent,
             &mut Transform,
@@ -32,7 +31,7 @@ pub fn update_ai(
         return;
     }
 
-    for (entity, mut move_comp, mut weapon_comp, mut ai_comp, mut transform) in
+    for (entity, mut weapon_comp, mut ai_comp, mut transform) in
         aibot_query.iter_mut()
     {
         let Ok(obj) = game_obj_lib.get_mut(&entity) else {
@@ -46,7 +45,6 @@ pub fn update_ai(
         ai_comp.engine.run(
             obj,
             transform.as_mut(),
-            move_comp.as_mut(),
             weapon_comp.as_mut(),
             &player.pos,
             game_lib.as_ref(),
