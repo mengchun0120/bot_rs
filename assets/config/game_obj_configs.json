@@ -46,7 +46,10 @@
                     "fire_duration": 3.0
                 },
                 "ai": "sniper",
-                "on_death_actions": [{"Phaseout": 1.0}]
+                "on_death_actions": [
+                    { "DropGoodie": 0.5 },
+                    { "Phaseout": 1.0 }
+                ]
             }
         }
     },
@@ -206,6 +209,62 @@
                 "z": 1.0,
                 "frame_count": 24,
                 "frames_per_second": 24
+            }
+        }
+    },
+    {
+        "name": "invincible_goodie",
+        "config": {
+            "Goodie": {
+                "image": "invincible",
+                "size": [40.0, 40.0],
+                "z": 0.0,
+                "collide_span": 20.0,
+                "duration": 30.0,
+                "effect": "Invincible"
+            }
+        }
+    },
+    {
+        "name": "hp_filler_goodie",
+        "config": {
+            "Goodie": {
+                "image": "hp_filler",
+                "size": [40.0, 40.0],
+                "z": 0.0,
+                "collide_span": 20.0,
+                "duration": 30.0,
+                "effect": "HpFiller"
+            }
+        }
+    },
+        {
+        "name": "speed_booster_goodie",
+        "config": {
+            "Goodie": {
+                "image": "speed_boosters",
+                "size": [40.0, 40.0],
+                "z": 0.0,
+                "collide_span": 20.0,
+                "duration": 30.0,
+                "effect": {
+                    "SpeedBooster": 1.5
+                }
+            }
+        }
+    },
+    {
+        "name": "fast_shooter_goodie",
+        "config": {
+            "Goodie": {
+                "image": "fast_shooter",
+                "size": [40.0, 40.0],
+                "z": 0.0,
+                "collide_span": 20.0,
+                "duration": 30.0,
+                "effect": {
+                    "FastShooter": 2.0
+                }
             }
         }
     }

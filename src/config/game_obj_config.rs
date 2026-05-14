@@ -109,7 +109,7 @@ pub enum GoodieEffect {
     Invincible,
     SpeedBooster(f32),
     FastShooter(f32),
-    HPFiller,
+    HpFiller,
 }
 
 #[derive(Debug, Clone, Deserialize)]

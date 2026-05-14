@@ -9,5 +9,9 @@
     "orange_standard_gun": "orange_standard_gun.png",
     "green_explosion": "green_explosion.png",
     "orange_explosion": "orange_explosion.png",
-    "green_pierce_missile": "green_pierce_missile.png"
+    "green_pierce_missile": "green_pierce_missile.png",
+    "invincible": "invincible.png",
+    "hp_filler": "hp_filler.png",
+    "speed_booster": "speed_booster.png",
+    "fast_shooter": "fast_shooter.png"
 }
