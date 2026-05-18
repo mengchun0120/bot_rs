@@ -52,8 +52,14 @@ pub fn move_bot(
             game_obj_lib,
         )?;
 
-        if obj.side == GameObjSide::AI {
-            update_bot_visibility(entity, &new_pos, visibility, world_info, commands);
+        match obj.side {
+            GameObjSide::AI => {
+                update_bot_visibility(entity, &new_pos, visibility, world_info, commands);
+            },
+            GameObjSide::Player => {
+                capture_goodies(&new_pos, obj.collide_span, game_map, game_obj_lib, game_lib, despawn_pool)?;
+            },
+            _ => {}
         }
     }
 
@@ -235,4 +241,33 @@ fn get_collided_missiles(
     }
 
     collided_missiles
+}
+
+fn capture_goodies(
+    pos: &Vec2,
+    collide_span: f32,
+    game_map: &GameMap,
+    game_obj_lib: &mut GameObjLib,
+    game_lib: &GameLib,
+    despawn_pool: &mut DespawnPool,
+) -> Result<(), MyError> {
+    let total_span = collide_span + game_lib.game_config.max_collide_span;
+    let region = game_map.get_region(
+        pos.x - total_span,
+        pos.y - total_span,
+        pos.x + total_span,
+        pos.y + total_span,
+    );
+
+    for entity in game_map.map_iter(&region) {
+        if let Ok(obj) = game_obj_lib.get(&entity)
+            && obj.obj_type == GameObjType::Goodie
+            && obj.state == GameObjState::Alive
+            && check_collide_obj(pos, collide_span, &obj.pos, obj.collide_span)
+        {
+            despawn_pool.add(entity, game_obj_lib)?;
+        }
+    }
+
+    Ok(())
 }
