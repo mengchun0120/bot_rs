@@ -1,4 +1,4 @@
-use crate::config::*;
+use crate::config::{AiConfig, GameConfig, GameObjConfig, GunConfig, NamedGameObjConfig};
 use crate::misc::{my_error::*, utils::*};
 use bevy::prelude::*;
 use std::collections::HashMap;

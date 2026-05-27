@@ -1,10 +1,14 @@
 pub mod game_plugin;
+pub mod gen_map;
 pub mod menu;
+pub mod run_game;
 pub mod setup_app;
 pub mod splash;
 
 pub use game_plugin::game_plugin;
+pub use gen_map::gen_map;
 pub use menu::menu_plugin;
+pub use run_game::run_game;
 pub use setup_app::setup_app;
 pub use splash::splash_plugin;
 

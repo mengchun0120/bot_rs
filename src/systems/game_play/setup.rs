@@ -52,11 +52,15 @@ fn read_map_config(
     game_config: &GameConfig,
     exit_app: &mut MessageWriter<AppExit>,
 ) -> Option<GameMapConfig> {
-    let game_map_path = game_config.map_dir().join(&args.map_path);
+    let Some(map_path) = &args.map else {
+        error!("map missing from args");
+        return None;
+    };
+    let game_map_path = game_config.map_dir().join(map_path);
     let map_config: GameMapConfig = match read_json(game_map_path) {
         Ok(c) => c,
         Err(err) => {
-            error!("Failed to read map from {:?}: {}", args.map_path, err);
+            error!("Failed to read map from {:?}: {}", args.map, err);
             exit_app.write(AppExit::error());
             return None;
         }

@@ -1,0 +1,101 @@
+{
+    "row_count": 30,
+    "col_count": 30,
+    "player": {
+        "config_name": "player_bot",
+        "pos": [100.0, 100.0],
+        "direction": [1.0, 0.0]
+    },
+    "objs": [
+        {
+            "config_name": "ai_bot",
+            "pos": [200.0, 100.0],
+            "direction": [0.0, 1.0]
+        },
+        {
+            "config_name": "ai_bot",
+            "pos": [300.0, 200.0],
+            "direction": [0.0, 1.0]
+        },
+        {
+            "config_name": "ai_bot",
+            "pos": [400.0, 300.0],
+            "direction": [0.0, 1.0]
+        },
+        {
+            "config_name": "ai_bot",
+            "pos": [500.0, 400.0],
+            "direction": [0.0, 1.0]
+        },
+        {
+            "config_name": "ai_bot",
+            "pos": [600.0, 500.0],
+            "direction": [0.0, 1.0]
+        },
+        {
+            "config_name": "ai_bot",
+            "pos": [700.0, 600.0],
+            "direction": [0.0, 1.0]
+        },
+                {
+            "config_name": "ai_bot",
+            "pos": [200.0, 800.0],
+            "direction": [0.0, 1.0]
+        },
+        {
+            "config_name": "ai_bot",
+            "pos": [300.0, 900.0],
+            "direction": [0.0, 1.0]
+        },
+                {
+            "config_name": "ai_bot",
+            "pos": [400.0, 1000.0],
+            "direction": [0.0, 1.0]
+        },
+        {
+            "config_name": "ai_bot",
+            "pos": [500.0, 1100.0],
+            "direction": [0.0, 1.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [200.0, 200.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [520.0, 200.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [600.0, 200.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [800.0, 200.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [880.0, 200.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [960.0, 200.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [1040.0, 200.0],
+            "direction": [1.0, 0.0]
+        },
+        {
+            "config_name": "steel_tile",
+            "pos": [1120.0, 200.0],
+            "direction": [1.0, 0.0]
+        }
+    ]
+}
