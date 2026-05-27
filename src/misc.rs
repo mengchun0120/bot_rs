@@ -8,4 +8,6 @@ pub use collide::{
 };
 pub use my_error::MyError;
 pub use states::{AppState, GameState};
-pub use utils::{Args, arr_to_vec2, get_rotation, read_json, setup_log, translate_cursor_pos};
+pub use utils::{
+    AppMode, Args, arr_to_vec2, get_rotation, read_json, setup_log, translate_cursor_pos,
+};

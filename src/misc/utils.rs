@@ -1,7 +1,7 @@
 use crate::game_utils::WorldInfo;
 use crate::misc::MyError;
 use bevy::prelude::{Camera, GlobalTransform, Quat, Resource, Vec2, error};
-use clap::Parser;
+use clap::{Parser, ValueEnum};
 use serde::de::DeserializeOwned;
 use serde_json;
 use std::{
@@ -12,16 +12,28 @@ use std::{
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::{EnvFilter, fmt, prelude::*};
 
+#[derive(Debug, Clone, ValueEnum)]
+pub enum AppMode {
+    RunGame,
+    GenMap,
+}
+
 #[derive(Parser, Resource)]
 pub struct Args {
-    #[arg(short, long)]
-    pub log_path: PathBuf,
+    #[arg(long, value_enum)]
+    pub mode: AppMode,
 
-    #[arg(short, long)]
-    pub config_path: PathBuf,
+    #[arg(long)]
+    pub log: PathBuf,
 
-    #[arg(short, long)]
-    pub map_path: PathBuf,
+    #[arg(long)]
+    pub game_config: Option<PathBuf>,
+
+    #[arg(long)]
+    pub gen_map_config: Option<PathBuf>,
+
+    #[arg(long)]
+    pub map: Option<PathBuf>,
 }
 
 pub fn read_json<T, P>(path: P) -> Result<T, MyError>

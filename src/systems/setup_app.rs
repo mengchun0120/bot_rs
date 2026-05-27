@@ -13,8 +13,13 @@ pub fn setup_app(
     mut app_state: ResMut<NextState<AppState>>,
     mut exit_app: MessageWriter<AppExit>,
 ) {
+    let Some(game_config_path) = &args.game_config else {
+        error!("game_config missing from args");
+        return;
+    };
+
     let Some(game_lib) = load_game_lib(
-        &args.config_path,
+        game_config_path,
         asset_server.as_ref(),
         layouts.as_mut(),
         &mut exit_app,
