@@ -47,7 +47,7 @@ impl GameObj {
 
     #[inline]
     pub fn is_ai_bot(&self) -> bool {
-        self.side == GameObjSide::AI && self.obj_type == GameObjType::Bot
+        self.side == GameObjSide::Ai && self.obj_type == GameObjType::Bot
     }
 
     #[inline]

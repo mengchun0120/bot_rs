@@ -168,7 +168,7 @@ fn create_bot(
         GameObjSide::Player => {
             cmd.insert(PlayerComponent);
         }
-        GameObjSide::AI => {
+        GameObjSide::Ai => {
             cmd.insert(AiBotComponent);
             if let Some(ai_config_name) = config.ai.as_ref() {
                 let ai_comp = create_ai_comp(ai_config_name, game_lib)?;

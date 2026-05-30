@@ -5,7 +5,11 @@
     "algorithm": {
         "Island": {
             "min_island_dist": 100.0,
-            "max_island_dist": 120.0
+            "max_island_dist": 120.0,
+            "min_island_width": 120.0,
+            "max_island_width": 160.0,
+            "min_island_height": 120.0,
+            "max_island_height": 160.0
         }
     }
 }

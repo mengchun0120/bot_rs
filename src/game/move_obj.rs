@@ -53,12 +53,19 @@ pub fn move_bot(
         )?;
 
         match obj.side {
-            GameObjSide::AI => {
+            GameObjSide::Ai => {
                 update_bot_visibility(entity, &new_pos, visibility, world_info, commands);
-            },
+            }
             GameObjSide::Player => {
-                capture_goodies(&new_pos, obj.collide_span, game_map, game_obj_lib, game_lib, despawn_pool)?;
-            },
+                capture_goodies(
+                    &new_pos,
+                    obj.collide_span,
+                    game_map,
+                    game_obj_lib,
+                    game_lib,
+                    despawn_pool,
+                )?;
+            }
             _ => {}
         }
     }

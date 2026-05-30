@@ -7,7 +7,7 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize, PartialEq, Eq, Copy, Clone)]
 pub enum GameObjSide {
     Player,
-    AI,
+    Ai,
     Neutral,
 }
 

@@ -17,4 +17,8 @@ pub enum GenMapAlgorithmConfig {
 pub struct IslandGenMapAlgorithm {
     pub min_island_dist: f32,
     pub max_island_dist: f32,
+    pub min_island_width: f32,
+    pub max_island_width: f32,
+    pub min_island_height: f32,
+    pub max_island_height: f32,
 }
