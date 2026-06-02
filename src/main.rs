@@ -6,7 +6,7 @@ mod misc;
 mod systems;
 
 use crate::misc::{AppMode, Args, setup_log};
-use crate::systems::{gen_map, run_game};
+use crate::systems::{gen_map::gen_map, run_game};
 use bevy::prelude::*;
 use clap::Parser;
 

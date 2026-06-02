@@ -1,12 +1,10 @@
 pub mod game_plugin;
-pub mod gen_map;
 pub mod menu;
 pub mod run_game;
 pub mod setup_app;
 pub mod splash;
 
 pub use game_plugin::game_plugin;
-pub use gen_map::gen_map;
 pub use menu::menu_plugin;
 pub use run_game::run_game;
 pub use setup_app::setup_app;
@@ -42,4 +40,12 @@ mod game_play {
     pub use update_origin::update_origin;
     pub use update_player::update_player;
     pub use update_playout::update_playout;
+}
+
+pub mod gen_map {
+    mod gen_island_map;
+    pub mod gen_map;
+    mod generated_map;
+
+    pub use gen_map::gen_map;
 }
