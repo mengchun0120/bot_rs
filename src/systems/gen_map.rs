@@ -8,7 +8,6 @@ use bevy::prelude::*;
 use rand::{Rng, rng, rngs::ThreadRng};
 use std::path::PathBuf;
 
-
 pub fn gen_map(args: Args) {
     let Some((game_config_path, gen_map_config_path, map_path)) = validate_args(&args) else {
         return;

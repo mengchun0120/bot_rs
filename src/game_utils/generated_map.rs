@@ -9,7 +9,6 @@ pub enum GeneratedMapItem {
     Bot(BotConfigPair),
     Tile(TileConfigPair),
 }
-
 pub struct GeneratedMap {
     player_pos: Option<(usize, usize)>,
     map: Vec<Vec<Vec<GeneratedMapItem>>>,

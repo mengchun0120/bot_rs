@@ -1,10 +1,12 @@
-use crate::config::{GameConfig, GameMapConfig, GameMapObjConfig};
+use crate::config::{GameConfig, GameMapConfig};
 use crate::game::create_obj_by_config;
 use crate::game_utils::{
     DespawnPool, GameInfo, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo,
 };
 use crate::misc::{Args, GameState, arr_to_vec2, read_json};
 use bevy::prelude::*;
+
+const PLAYER_CONFIG_NAME: &str = "player_bot";
 
 pub fn setup_game(
     args: Res<Args>,
@@ -17,8 +19,9 @@ pub fn setup_game(
     let Some(map_config) = read_map_config(args.as_ref(), game_config, &mut exit_app) else {
         return;
     };
-
-    let mut world_info = create_world_info(game_config, &map_config);
+    let Some(mut world_info) = create_world_info(game_config, &map_config, &mut exit_app) else {
+        return;
+    };
     let mut game_obj_lib = GameObjLib::new();
     let mut game_info = GameInfo::new();
 
@@ -68,18 +71,28 @@ fn read_map_config(
     Some(map_config)
 }
 
-fn create_world_info(game_config: &GameConfig, map_config: &GameMapConfig) -> WorldInfo {
+fn create_world_info(
+    game_config: &GameConfig,
+    map_config: &GameMapConfig,
+    exit_app: &mut MessageWriter<AppExit>,
+) -> Option<WorldInfo> {
     let world_width = game_config.cell_size * map_config.col_count as f32;
     let world_height = game_config.cell_size * map_config.row_count as f32;
-    let player_pos = arr_to_vec2(&map_config.player.pos);
-    WorldInfo::new(
+    let Some(player_pos) = find_player_pos(map_config) else {
+        error!("Cannot find player in map");
+        exit_app.write(AppExit::error());
+        return None;
+    };
+    let world_info = WorldInfo::new(
         world_width,
         world_height,
         game_config.window_width(),
         game_config.window_height(),
         game_config.window_ext_size,
         &player_pos,
-    )
+    );
+
+    Some(world_info)
 }
 
 fn load_game_map(
@@ -93,8 +106,9 @@ fn load_game_map(
     game_info: &mut GameInfo,
 ) -> Option<GameMap> {
     let mut game_map = GameMap::new(map_config.row_count, map_config.col_count, cell_size);
-    let mut add_func = |map_obj_config: &GameMapObjConfig| -> bool {
-        match create_obj_by_config(
+
+    for map_obj_config in map_config.objs.iter() {
+        if let Err(err) = create_obj_by_config(
             map_obj_config,
             world_info,
             &mut game_map,
@@ -103,23 +117,21 @@ fn load_game_map(
             commands,
             game_info,
         ) {
-            Ok(()) => true,
-            Err(err) => {
-                error!("Failed to add obj: {}", err);
-                exit_app.write(AppExit::error());
-                false
-            }
-        }
-    };
-
-    if !add_func(&map_config.player) {
-        return None;
-    }
-    for map_obj_config in map_config.objs.iter() {
-        if !add_func(map_obj_config) {
+            error!("Failed to add obj: {}", err);
+            exit_app.write(AppExit::error());
             return None;
         }
     }
 
     Some(game_map)
+}
+
+fn find_player_pos(map_config: &GameMapConfig) -> Option<Vec2> {
+    for obj_config in map_config.objs.iter() {
+        if obj_config.config_name == PLAYER_CONFIG_NAME {
+            return Some(arr_to_vec2(&obj_config.pos));
+        }
+    }
+
+    None
 }

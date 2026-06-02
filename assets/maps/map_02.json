@@ -1,12 +1,12 @@
 {
     "row_count": 30,
     "col_count": 30,
-    "player": {
-        "config_name": "player_bot",
-        "pos": [100.0, 100.0],
-        "direction": [1.0, 0.0]
-    },
     "objs": [
+        {
+            "config_name": "player_bot",
+            "pos": [100.0, 100.0],
+            "direction": [1.0, 0.0]
+        },
         {
             "config_name": "ai_bot",
             "pos": [200.0, 100.0],

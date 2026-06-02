@@ -4,7 +4,6 @@ use serde::Deserialize;
 pub struct GameMapConfig {
     pub row_count: usize,
     pub col_count: usize,
-    pub player: GameMapObjConfig,
     pub objs: Vec<GameMapObjConfig>,
 }
 
