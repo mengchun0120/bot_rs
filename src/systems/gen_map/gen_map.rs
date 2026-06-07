@@ -2,10 +2,7 @@ use crate::config::{
     GameConfig, GameObjConfig, GameObjSide, GenMapAlgorithmConfig, GenMapConfig, NamedGameObjConfig,
 };
 use crate::misc::{Args, read_json};
-use crate::systems::gen_map::{
-    gen_island_map::gen_island_map,
-    generated_map::{BotConfigPair, TileConfigPair},
-};
+use crate::systems::gen_map::gen_island_map::gen_island_map;
 use bevy::prelude::*;
 use std::path::PathBuf;
 
@@ -24,7 +21,7 @@ pub fn gen_map(args: Args) {
         return;
     };
 
-    let Some(map) = (match &gen_map_config.algorithm {
+    let Ok(map) = (match &gen_map_config.algorithm {
         GenMapAlgorithmConfig::Island(_) => gen_island_map(
             &game_config,
             &gen_map_config,
@@ -32,6 +29,10 @@ pub fn gen_map(args: Args) {
             &ai_bot_configs,
             &tile_configs,
         ),
+        _ => {
+            error!("Unsupported algorithm for generating map");
+            return;
+        }
     }) else {
         return;
     };
@@ -102,24 +103,28 @@ fn load_configs(
 
 fn extract_obj_configs(
     obj_configs: &Vec<NamedGameObjConfig>,
-) -> Option<(BotConfigPair, Vec<BotConfigPair>, Vec<TileConfigPair>)> {
-    let mut player_config: Option<BotConfigPair> = None;
-    let mut ai_bot_configs: Vec<BotConfigPair> = Vec::new();
-    let mut tile_configs: Vec<TileConfigPair> = Vec::new();
+) -> Option<(
+    NamedGameObjConfig,
+    Vec<NamedGameObjConfig>,
+    Vec<NamedGameObjConfig>,
+)> {
+    let mut player_config: Option<NamedGameObjConfig> = None;
+    let mut ai_bot_configs: Vec<NamedGameObjConfig> = Vec::new();
+    let mut tile_configs: Vec<NamedGameObjConfig> = Vec::new();
 
     for obj_config in obj_configs.iter() {
         match &obj_config.config {
             GameObjConfig::Bot(bot_config) => match bot_config.side {
                 GameObjSide::Player => {
-                    player_config = Some((obj_config.name.clone(), bot_config.clone()));
+                    player_config = Some(obj_config.clone());
                 }
                 GameObjSide::Ai => {
-                    ai_bot_configs.push((obj_config.name.clone(), bot_config.clone()));
+                    ai_bot_configs.push(obj_config.clone());
                 }
                 _ => {}
             },
             GameObjConfig::Tile(tile_config) => {
-                tile_configs.push((obj_config.name.clone(), tile_config.clone()));
+                tile_configs.push(obj_config.clone());
             }
             _ => {}
         }

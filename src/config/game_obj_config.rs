@@ -146,7 +146,7 @@ impl NamedGameObjConfig {
             GameObjConfig::Bot(cfg) => Ok(cfg),
             _ => {
                 let msg = "Not a Bot".to_string();
-                debug!(msg);
+                error!(msg);
                 Err(MyError::Other(msg))
             }
         }
@@ -158,7 +158,19 @@ impl NamedGameObjConfig {
             GameObjConfig::Missile(cfg) => Ok(cfg),
             _ => {
                 let msg = "Not a Missile".to_string();
-                debug!(msg);
+                error!(msg);
+                Err(MyError::Other(msg))
+            }
+        }
+    }
+
+    #[inline]
+    pub fn tile_config(&self) -> Result<&TileConfig, MyError> {
+        match &self.config {
+            GameObjConfig::Tile(config) => Ok(config),
+            _ => {
+                let msg = "Not a Tile".to_string();
+                error!(msg);
                 Err(MyError::Other(msg))
             }
         }

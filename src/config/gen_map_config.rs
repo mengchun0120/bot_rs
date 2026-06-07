@@ -11,6 +11,7 @@ pub struct GenMapConfig {
 #[derive(Debug, Deserialize)]
 pub enum GenMapAlgorithmConfig {
     Island(IslandGenMapAlgorithm),
+    Lines(LinesAlgorithm),
 }
 
 #[derive(Debug, Deserialize)]
@@ -22,3 +23,6 @@ pub struct IslandGenMapAlgorithm {
     pub min_island_height: f32,
     pub max_island_height: f32,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct LinesAlgorithm {}

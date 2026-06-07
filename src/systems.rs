@@ -45,6 +45,7 @@ mod game_play {
 pub mod gen_map {
     mod gen_island_map;
     pub mod gen_map;
+    mod gen_map_utils;
     mod generated_map;
 
     pub use gen_map::gen_map;
