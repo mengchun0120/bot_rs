@@ -2,7 +2,7 @@ use crate::config::{
     GameConfig, GameObjConfig, GameObjSide, GenMapAlgorithmConfig, GenMapConfig, NamedGameObjConfig,
 };
 use crate::misc::{Args, read_json};
-use crate::systems::gen_map::gen_island_map::gen_island_map;
+use crate::systems::gen_map::{gen_island_map::gen_island_map, gen_map_utils::write_gen_map};
 use bevy::prelude::*;
 use std::path::PathBuf;
 
@@ -36,6 +36,8 @@ pub fn gen_map(args: Args) {
     }) else {
         return;
     };
+
+    let _ = write_gen_map(&map, map_path);
 }
 
 fn validate_args(args: &Args) -> Option<(&PathBuf, &PathBuf, &PathBuf)> {
@@ -71,16 +73,13 @@ fn load_configs(
         }
     };
 
-    let game_obj_config_path = game_config
-        .config_dir()
-        .join(game_config.game_obj_config_file());
-    let game_obj_configs: Vec<NamedGameObjConfig> = match read_json(&game_obj_config_path) {
+    let game_obj_config_file = game_config.game_obj_config_file();
+    let game_obj_configs: Vec<NamedGameObjConfig> = match read_json(&game_obj_config_file) {
         Ok(obj_configs) => obj_configs,
         Err(err) => {
             error!(
                 "Failed to read GameObjConfig's from {:?}: {}",
-                game_obj_config_path.as_os_str(),
-                err
+                game_obj_config_file, err
             );
             return None;
         }
@@ -123,7 +122,7 @@ fn extract_obj_configs(
                 }
                 _ => {}
             },
-            GameObjConfig::Tile(tile_config) => {
+            GameObjConfig::Tile(_) => {
                 tile_configs.push(obj_config.clone());
             }
             _ => {}

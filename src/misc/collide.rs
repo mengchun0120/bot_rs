@@ -76,6 +76,7 @@ pub fn check_collide_objs(
         }
 
         if check_collide_obj(&pos, collide_span, &obj2.pos, obj2.collide_span) {
+            info!("{:?} collide with {:?}", pos, obj2);
             return true;
         }
     }

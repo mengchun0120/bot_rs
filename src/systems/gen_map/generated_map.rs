@@ -1,9 +1,12 @@
-use crate::{config::NamedGameObjConfig, game_utils::MapRegion, misc::MyError};
+use crate::config::{GameMapConfig, GameMapObjConfig, NamedGameObjConfig};
+use crate::game_utils::MapRegion;
+use crate::misc::MyError;
 use bevy::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct GeneratedMapItem {
     pub pos: Vec2,
+    pub direction: Vec2,
     pub config: NamedGameObjConfig,
 }
 
@@ -91,32 +94,52 @@ impl GeneratedMap {
         Ok(region)
     }
 
-    pub fn add(&mut self, x: f32, y: f32, config: NamedGameObjConfig) -> Result<(), MyError> {
-        if x < 0.0 || x >= self.width() {
-            let msg = format!("x={} is out of range", x);
+    pub fn add(
+        &mut self,
+        pos: Vec2,
+        direction: Vec2,
+        config: NamedGameObjConfig,
+    ) -> Result<(), MyError> {
+        if pos.x < 0.0 || pos.x >= self.width() || pos.y < 0.0 || pos.y >= self.height() {
+            let msg = format!("pos={} is out of range", pos);
             error!(msg);
             return Err(MyError::Other(msg));
         }
 
-        if y < 0.0 || y >= self.height() {
-            let msg = format!("y={} is out of range", y);
-            error!(msg);
-            return Err(MyError::Other(msg));
-        }
-
-        let row = self.get_index(y);
-        let col = self.get_index(x);
+        let row = self.get_index(pos.y);
+        let col = self.get_index(pos.x);
 
         self.map[row][col].push(GeneratedMapItem {
-            pos: Vec2::new(x, y),
+            pos,
+            direction,
             config,
         });
 
         Ok(())
     }
 
-    #[inline]
-    pub fn get_map(&self) -> &Vec<Vec<Vec<GeneratedMapItem>>> {
-        &self.map
+    pub fn to_map_config(&self) -> GameMapConfig {
+        let mut objs: Vec<GameMapObjConfig> = Vec::new();
+
+        for row in self.map.iter() {
+            for cell in row.iter() {
+                for item in cell.iter() {
+                    objs.push(GameMapObjConfig {
+                        config_name: item.config.name.clone(),
+                        pos: [item.pos.x, item.pos.y],
+                        direction: [item.direction.x, item.direction.y],
+                        speed: None,
+                    });
+                }
+            }
+        }
+
+        let map_config = GameMapConfig {
+            row_count: self.row_count(),
+            col_count: self.col_count(),
+            objs,
+        };
+
+        map_config
     }
 }

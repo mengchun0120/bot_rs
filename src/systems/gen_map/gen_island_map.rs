@@ -32,7 +32,7 @@ pub fn gen_island_map(
         gen_map_config.ai_bot_count,
         player_config,
         ai_bot_configs,
-    );
+    )?;
 
     Ok(map)
 }
@@ -186,7 +186,9 @@ fn add_tiles_to_island(
     for _ in 0..tile_count_y {
         let mut x1 = x + collide_span;
         for _ in 0..tile_count_x {
-            map.add(x1, y1, config.clone())?;
+            let pos = Vec2::new(x1, y1);
+            let direction = Vec2::new(1.0, 0.0);
+            map.add(pos, direction, config.clone())?;
             x1 += span;
         }
         y1 += span;
