@@ -5,32 +5,20 @@
     {
       "config_name": "ai_bot",
       "pos": [
-        657.60913,
-        21.2132
+        330.0,
+        30.0
       ],
       "direction": [
-        -0.85466486,
-        -0.5191801
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "ai_bot",
-      "pos": [
-        318.19797,
-        63.6396
-      ],
-      "direction": [
-        0.31341428,
-        0.9496165
+        -0.010262774,
+        -0.9999473
       ],
       "speed": null
     },
     {
       "config_name": "steel_tile",
       "pos": [
-        139.37712,
-        121.11703
+        136.50604,
+        128.24261
       ],
       "direction": [
         1.0,
@@ -41,8 +29,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        179.37712,
-        121.11703
+        176.70604,
+        128.24261
       ],
       "direction": [
         1.0,
@@ -53,8 +41,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        219.37712,
-        121.11703
+        216.90604,
+        128.24261
       ],
       "direction": [
         1.0,
@@ -65,8 +53,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        259.37714,
-        121.11703
+        358.07675,
+        130.46541
       ],
       "direction": [
         1.0,
@@ -77,8 +65,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        415.2423,
-        133.91037
+        398.27676,
+        130.46541
       ],
       "direction": [
         1.0,
@@ -89,296 +77,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        455.2423,
-        133.91037
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        495.2423,
-        133.91037
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        535.2423,
-        133.91037
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        689.37933,
-        134.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        729.37933,
-        134.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        769.37933,
-        134.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        809.37933,
-        134.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        964.36615,
-        138.62947
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        1004.36615,
-        138.62947
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        1044.3662,
-        138.62947
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        139.37712,
-        161.11703
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        179.37712,
-        161.11703
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        219.37712,
-        161.11703
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        259.37714,
-        161.11703
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        415.2423,
-        173.91037
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        455.2423,
-        173.91037
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        495.2423,
-        173.91037
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        535.2423,
-        173.91037
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        689.37933,
-        174.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        729.37933,
-        174.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        769.37933,
-        174.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        809.37933,
-        174.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        964.36615,
-        178.62947
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        1004.36615,
-        178.62947
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        1044.3662,
-        178.62947
+        438.47678,
+        130.46541
       ],
       "direction": [
         1.0,
@@ -389,32 +89,20 @@
     {
       "config_name": "ai_bot",
       "pos": [
-        1124.2994,
-        190.9188
+        510.0,
+        150.0
       ],
       "direction": [
-        0.7630267,
-        0.64636695
+        0.3696108,
+        -0.92918664
       ],
       "speed": null
     },
     {
       "config_name": "steel_tile",
       "pos": [
-        139.37712,
-        201.11703
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        179.37712,
-        201.11703
+        581.0577,
+        121.60371
       ],
       "direction": [
         1.0,
@@ -425,8 +113,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        219.37712,
-        201.11703
+        621.2577,
+        121.60371
       ],
       "direction": [
         1.0,
@@ -437,8 +125,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        259.37714,
-        201.11703
+        661.4577,
+        121.60371
       ],
       "direction": [
         1.0,
@@ -449,8 +137,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        415.2423,
-        213.91037
+        814.8521,
+        121.95028
       ],
       "direction": [
         1.0,
@@ -461,8 +149,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        455.2423,
-        213.91037
+        855.0521,
+        121.95028
       ],
       "direction": [
         1.0,
@@ -473,68 +161,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        495.2423,
-        213.91037
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        535.2423,
-        213.91037
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        689.37933,
-        214.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        729.37933,
-        214.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        769.37933,
-        214.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        809.37933,
-        214.57898
+        895.25214,
+        121.95028
       ],
       "direction": [
         1.0,
@@ -545,20 +173,20 @@
     {
       "config_name": "ai_bot",
       "pos": [
-        869.7411,
-        233.34518
+        1170.0,
+        150.0
       ],
       "direction": [
-        -0.66895795,
-        -0.74330026
+        0.094724834,
+        0.9955035
       ],
       "speed": null
     },
     {
       "config_name": "steel_tile",
       "pos": [
-        964.36615,
-        218.62947
+        136.50604,
+        168.44261
       ],
       "direction": [
         1.0,
@@ -569,8 +197,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        1004.36615,
-        218.62947
+        176.70604,
+        168.44261
       ],
       "direction": [
         1.0,
@@ -581,8 +209,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        1044.3662,
-        218.62947
+        216.90604,
+        168.44261
       ],
       "direction": [
         1.0,
@@ -593,8 +221,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        139.37712,
-        241.11703
+        358.07675,
+        170.6654
       ],
       "direction": [
         1.0,
@@ -605,8 +233,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        179.37712,
-        241.11703
+        398.27676,
+        170.6654
       ],
       "direction": [
         1.0,
@@ -617,8 +245,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        219.37712,
-        241.11703
+        438.47678,
+        170.6654
       ],
       "direction": [
         1.0,
@@ -629,8 +257,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        259.37714,
-        241.11703
+        581.0577,
+        161.80371
       ],
       "direction": [
         1.0,
@@ -641,8 +269,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        689.37933,
-        254.57898
+        621.2577,
+        161.80371
       ],
       "direction": [
         1.0,
@@ -653,8 +281,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        729.37933,
-        254.57898
+        661.4577,
+        161.80371
       ],
       "direction": [
         1.0,
@@ -665,8 +293,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        769.37933,
-        254.57898
+        814.8521,
+        162.15028
       ],
       "direction": [
         1.0,
@@ -677,44 +305,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        809.37933,
-        254.57898
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "ai_bot",
-      "pos": [
-        997.02026,
-        318.19797
-      ],
-      "direction": [
-        -0.97214645,
-        -0.23437415
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "ai_bot",
-      "pos": [
-        1166.7258,
-        360.62436
-      ],
-      "direction": [
-        0.6256592,
-        -0.7800965
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        125.0672,
-        408.42114
+        855.0521,
+        162.15028
       ],
       "direction": [
         1.0,
@@ -725,8 +317,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        165.0672,
-        408.42114
+        895.25214,
+        162.15028
       ],
       "direction": [
         1.0,
@@ -737,8 +329,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        205.0672,
-        408.42114
+        136.50604,
+        208.64261
       ],
       "direction": [
         1.0,
@@ -749,8 +341,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        245.0672,
-        408.42114
+        176.70604,
+        208.64261
       ],
       "direction": [
         1.0,
@@ -761,8 +353,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        388.0084,
-        406.8412
+        216.90604,
+        208.64261
       ],
       "direction": [
         1.0,
@@ -773,8 +365,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        428.0084,
-        406.8412
+        358.07675,
+        210.8654
       ],
       "direction": [
         1.0,
@@ -785,8 +377,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        468.0084,
-        406.8412
+        398.27676,
+        210.8654
       ],
       "direction": [
         1.0,
@@ -797,8 +389,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        508.0084,
-        406.8412
+        438.47678,
+        210.8654
       ],
       "direction": [
         1.0,
@@ -809,8 +401,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        657.1221,
-        408.5468
+        581.0577,
+        202.00371
       ],
       "direction": [
         1.0,
@@ -821,8 +413,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        697.1221,
-        408.5468
+        621.2577,
+        202.00371
       ],
       "direction": [
         1.0,
@@ -833,8 +425,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        737.1221,
-        408.5468
+        661.4577,
+        202.00371
       ],
       "direction": [
         1.0,
@@ -845,8 +437,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        884.33264,
-        414.38892
+        814.8521,
+        202.35028
       ],
       "direction": [
         1.0,
@@ -857,8 +449,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        924.33264,
-        414.38892
+        855.0521,
+        202.35028
       ],
       "direction": [
         1.0,
@@ -869,8 +461,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        964.33264,
-        414.38892
+        895.25214,
+        202.35028
       ],
       "direction": [
         1.0,
@@ -881,32 +473,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        1004.33264,
-        414.38892
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "ai_bot",
-      "pos": [
-        1166.7258,
-        403.05075
-      ],
-      "direction": [
-        0.29265645,
-        -0.95621765
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        125.0672,
-        448.42114
+        134.96016,
+        354.5482
       ],
       "direction": [
         1.0,
@@ -917,8 +485,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        165.0672,
-        448.42114
+        175.16016,
+        354.5482
       ],
       "direction": [
         1.0,
@@ -929,8 +497,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        205.0672,
-        448.42114
+        215.36015,
+        354.5482
       ],
       "direction": [
         1.0,
@@ -941,8 +509,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        245.0672,
-        448.42114
+        364.17838,
+        351.2211
       ],
       "direction": [
         1.0,
@@ -953,8 +521,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        388.0084,
-        446.8412
+        404.3784,
+        351.2211
       ],
       "direction": [
         1.0,
@@ -965,8 +533,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        428.0084,
-        446.8412
+        444.5784,
+        351.2211
       ],
       "direction": [
         1.0,
@@ -977,8 +545,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        468.0084,
-        446.8412
+        812.73474,
+        351.8903
       ],
       "direction": [
         1.0,
@@ -989,8 +557,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        508.0084,
-        446.8412
+        852.93475,
+        351.8903
       ],
       "direction": [
         1.0,
@@ -1001,176 +569,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        657.1221,
-        448.5468
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        697.1221,
-        448.5468
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        737.1221,
-        448.5468
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        884.33264,
-        454.38892
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        924.33264,
-        454.38892
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        964.33264,
-        454.38892
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        1004.33264,
-        454.38892
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        125.0672,
-        488.42114
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        165.0672,
-        488.42114
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        205.0672,
-        488.42114
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        245.0672,
-        488.42114
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        388.0084,
-        486.8412
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        428.0084,
-        486.8412
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        468.0084,
-        486.8412
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        508.0084,
-        486.8412
+        893.13477,
+        351.8903
       ],
       "direction": [
         1.0,
@@ -1181,32 +581,20 @@
     {
       "config_name": "ai_bot",
       "pos": [
-        572.75635,
-        487.90353
+        30.0,
+        390.0
       ],
       "direction": [
-        -0.02511337,
-        0.99968463
+        0.32588422,
+        -0.94540966
       ],
       "speed": null
     },
     {
       "config_name": "steel_tile",
       "pos": [
-        657.1221,
-        488.5468
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        697.1221,
-        488.5468
+        134.96016,
+        394.7482
       ],
       "direction": [
         1.0,
@@ -1217,8 +605,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        737.1221,
-        488.5468
+        175.16016,
+        394.7482
       ],
       "direction": [
         1.0,
@@ -1229,8 +617,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        884.33264,
-        494.38892
+        215.36015,
+        394.7482
       ],
       "direction": [
         1.0,
@@ -1241,8 +629,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        924.33264,
-        494.38892
+        364.17838,
+        391.4211
       ],
       "direction": [
         1.0,
@@ -1253,8 +641,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        964.33264,
-        494.38892
+        404.3784,
+        391.4211
       ],
       "direction": [
         1.0,
@@ -1265,8 +653,572 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        1004.33264,
-        494.38892
+        444.5784,
+        391.4211
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        589.6848,
+        365.45865
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        629.8848,
+        365.45865
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        670.08484,
+        365.45865
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        812.73474,
+        392.0903
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        852.93475,
+        392.0903
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        893.13477,
+        392.0903
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "ai_bot",
+      "pos": [
+        1110.0,
+        390.0
+      ],
+      "direction": [
+        -0.44499037,
+        -0.89553535
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        134.96016,
+        434.9482
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        175.16016,
+        434.9482
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        215.36015,
+        434.9482
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        364.17838,
+        431.62112
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        404.3784,
+        431.62112
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        444.5784,
+        431.62112
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        589.6848,
+        405.65866
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        629.8848,
+        405.65866
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        670.08484,
+        405.65866
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        812.73474,
+        432.2903
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        852.93475,
+        432.2903
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        893.13477,
+        432.2903
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        589.6848,
+        445.85867
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        629.8848,
+        445.85867
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        670.08484,
+        445.85867
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "ai_bot",
+      "pos": [
+        150.0,
+        510.0
+      ],
+      "direction": [
+        0.9636821,
+        -0.267052
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        126.236176,
+        592.8312
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        166.43617,
+        592.8312
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        206.63617,
+        592.8312
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        353.6768,
+        586.3147
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        393.8768,
+        586.3147
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        434.0768,
+        586.3147
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        578.313,
+        596.86194
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        618.513,
+        596.86194
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        658.713,
+        596.86194
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        814.55414,
+        590.5137
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        854.75415,
+        590.5137
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        894.95416,
+        590.5137
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        126.236176,
+        633.0312
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        166.43617,
+        633.0312
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        206.63617,
+        633.0312
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        353.6768,
+        626.5147
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        393.8768,
+        626.5147
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        434.0768,
+        626.5147
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        578.313,
+        637.06195
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        618.513,
+        637.06195
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        658.713,
+        637.06195
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        814.55414,
+        630.7137
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        854.75415,
+        630.7137
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        894.95416,
+        630.7137
       ],
       "direction": [
         1.0,
@@ -1277,32 +1229,20 @@
     {
       "config_name": "player_bot",
       "pos": [
-        445.47714,
-        530.32996
+        1110.0,
+        630.0
       ],
       "direction": [
-        -0.87266344,
-        0.4883222
+        0.28798014,
+        0.95763636
       ],
       "speed": null
     },
     {
       "config_name": "steel_tile",
       "pos": [
-        884.33264,
-        534.3889
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        924.33264,
-        534.3889
+        126.236176,
+        673.2312
       ],
       "direction": [
         1.0,
@@ -1313,8 +1253,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        964.33264,
-        534.3889
+        166.43617,
+        673.2312
       ],
       "direction": [
         1.0,
@@ -1325,8 +1265,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        1004.33264,
-        534.3889
+        206.63617,
+        673.2312
       ],
       "direction": [
         1.0,
@@ -1337,8 +1277,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        390.6343,
-        679.73486
+        353.6768,
+        666.7147
       ],
       "direction": [
         1.0,
@@ -1349,8 +1289,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        430.6343,
-        679.73486
+        393.8768,
+        666.7147
       ],
       "direction": [
         1.0,
@@ -1361,8 +1301,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        470.6343,
-        679.73486
+        434.0768,
+        666.7147
       ],
       "direction": [
         1.0,
@@ -1373,8 +1313,68 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        510.6343,
-        679.73486
+        578.313,
+        677.26196
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        618.513,
+        677.26196
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        658.713,
+        677.26196
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        814.55414,
+        670.9137
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        854.75415,
+        670.9137
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        894.95416,
+        670.9137
       ],
       "direction": [
         1.0,
@@ -1385,92 +1385,80 @@
     {
       "config_name": "ai_bot",
       "pos": [
-        954.5939,
-        657.60913
+        750.0,
+        690.0
       ],
       "direction": [
-        -0.9418958,
-        -0.3359052
+        0.16710313,
+        0.98593944
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "ai_bot",
+      "pos": [
+        990.0,
+        690.0
+      ],
+      "direction": [
+        0.78060025,
+        -0.6250306
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "ai_bot",
+      "pos": [
+        90.0,
+        750.0
+      ],
+      "direction": [
+        0.48335093,
+        -0.87542665
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "ai_bot",
+      "pos": [
+        270.0,
+        750.0
+      ],
+      "direction": [
+        -0.99502647,
+        -0.09961089
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "ai_bot",
+      "pos": [
+        750.0,
+        750.0
+      ],
+      "direction": [
+        -0.88783026,
+        -0.46017107
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "ai_bot",
+      "pos": [
+        1110.0,
+        750.0
+      ],
+      "direction": [
+        0.7574007,
+        -0.65295035
       ],
       "speed": null
     },
     {
       "config_name": "steel_tile",
       "pos": [
-        128.02634,
-        688.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        168.02634,
-        688.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        208.02634,
-        688.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        248.02634,
-        688.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        390.6343,
-        719.73486
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        430.6343,
-        719.73486
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        470.6343,
-        719.73486
+        132.39632,
+        832.53284
       ],
       "direction": [
         1.0,
@@ -1481,8 +1469,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        510.6343,
-        719.73486
+        172.59631,
+        832.53284
       ],
       "direction": [
         1.0,
@@ -1493,8 +1481,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        668.1699,
-        693.106
+        212.79631,
+        832.53284
       ],
       "direction": [
         1.0,
@@ -1505,8 +1493,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        708.1699,
-        693.106
+        360.3749,
+        822.56067
       ],
       "direction": [
         1.0,
@@ -1517,8 +1505,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        748.1699,
-        693.106
+        400.57492,
+        822.56067
       ],
       "direction": [
         1.0,
@@ -1529,8 +1517,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        892.79694,
-        686.25
+        440.77493,
+        822.56067
       ],
       "direction": [
         1.0,
@@ -1541,8 +1529,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        932.79694,
-        686.25
+        586.8794,
+        821.06366
       ],
       "direction": [
         1.0,
@@ -1553,8 +1541,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        972.79694,
-        686.25
+        627.0794,
+        821.06366
       ],
       "direction": [
         1.0,
@@ -1565,8 +1553,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        128.02634,
-        728.5475
+        667.2794,
+        821.06366
       ],
       "direction": [
         1.0,
@@ -1577,8 +1565,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        168.02634,
-        728.5475
+        825.5282,
+        832.00854
       ],
       "direction": [
         1.0,
@@ -1589,8 +1577,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        208.02634,
-        728.5475
+        865.7282,
+        832.00854
       ],
       "direction": [
         1.0,
@@ -1601,8 +1589,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        248.02634,
-        728.5475
+        905.9282,
+        832.00854
       ],
       "direction": [
         1.0,
@@ -1613,8 +1601,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        390.6343,
-        759.73486
+        132.39632,
+        872.73285
       ],
       "direction": [
         1.0,
@@ -1625,8 +1613,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        430.6343,
-        759.73486
+        172.59631,
+        872.73285
       ],
       "direction": [
         1.0,
@@ -1637,8 +1625,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        470.6343,
-        759.73486
+        212.79631,
+        872.73285
       ],
       "direction": [
         1.0,
@@ -1649,8 +1637,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        510.6343,
-        759.73486
+        360.3749,
+        862.7607
       ],
       "direction": [
         1.0,
@@ -1661,8 +1649,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        668.1699,
-        733.106
+        400.57492,
+        862.7607
       ],
       "direction": [
         1.0,
@@ -1673,8 +1661,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        708.1699,
-        733.106
+        440.77493,
+        862.7607
       ],
       "direction": [
         1.0,
@@ -1685,8 +1673,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        748.1699,
-        733.106
+        586.8794,
+        861.2637
       ],
       "direction": [
         1.0,
@@ -1697,8 +1685,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        892.79694,
-        726.25
+        627.0794,
+        861.2637
       ],
       "direction": [
         1.0,
@@ -1709,8 +1697,8 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        932.79694,
-        726.25
+        667.2794,
+        861.2637
       ],
       "direction": [
         1.0,
@@ -1721,8 +1709,176 @@
     {
       "config_name": "steel_tile",
       "pos": [
-        972.79694,
-        726.25
+        825.5282,
+        872.20856
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        865.7282,
+        872.20856
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        905.9282,
+        872.20856
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        132.39632,
+        912.93286
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        172.59631,
+        912.93286
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        212.79631,
+        912.93286
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        360.3749,
+        902.9607
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        400.57492,
+        902.9607
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        440.77493,
+        902.9607
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        586.8794,
+        901.4637
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        627.0794,
+        901.4637
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        667.2794,
+        901.4637
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        825.5282,
+        912.40857
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        865.7282,
+        912.40857
+      ],
+      "direction": [
+        1.0,
+        0.0
+      ],
+      "speed": null
+    },
+    {
+      "config_name": "steel_tile",
+      "pos": [
+        905.9282,
+        912.40857
       ],
       "direction": [
         1.0,
@@ -1733,828 +1889,36 @@
     {
       "config_name": "ai_bot",
       "pos": [
-        1039.4467,
-        742.4619
+        450.0,
+        990.0
       ],
       "direction": [
-        -0.36509714,
-        0.9309694
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "ai_bot",
-      "pos": [
-        1124.2994,
-        742.4619
-      ],
-      "direction": [
-        -0.110949546,
-        0.99382603
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        128.02634,
-        768.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        168.02634,
-        768.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        208.02634,
-        768.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        248.02634,
-        768.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        390.6343,
-        799.73486
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        430.6343,
-        799.73486
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        470.6343,
-        799.73486
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        510.6343,
-        799.73486
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        668.1699,
-        773.106
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        708.1699,
-        773.106
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        748.1699,
-        773.106
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        892.79694,
-        766.25
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        932.79694,
-        766.25
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        972.79694,
-        766.25
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        128.02634,
-        808.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        168.02634,
-        808.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        208.02634,
-        808.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        248.02634,
-        808.5475
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        668.1699,
-        813.106
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        708.1699,
-        813.106
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        748.1699,
-        813.106
-      ],
-      "direction": [
-        1.0,
-        0.0
+        -0.26611784,
+        -0.9639405
       ],
       "speed": null
     },
     {
       "config_name": "ai_bot",
       "pos": [
-        912.1675,
-        912.1675
+        450.0,
+        1110.0
       ],
       "direction": [
-        0.870352,
-        -0.49243
+        -0.4210371,
+        -0.9070434
       ],
       "speed": null
     },
     {
       "config_name": "ai_bot",
       "pos": [
-        954.5939,
-        912.1675
+        690.0,
+        1170.0
       ],
       "direction": [
-        0.97776335,
-        0.20971127
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        633.8353,
-        959.43805
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        673.8353,
-        959.43805
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        713.8353,
-        959.43805
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "ai_bot",
-      "pos": [
-        997.02026,
-        954.5939
-      ],
-      "direction": [
-        -0.8092261,
-        0.58749735
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        130.44081,
-        963.33386
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        170.44081,
-        963.33386
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        210.44081,
-        963.33386
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        250.44081,
-        963.33386
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        407.3006,
-        964.66656
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        447.3006,
-        964.66656
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        487.3006,
-        964.66656
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        633.8353,
-        999.43805
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        673.8353,
-        999.43805
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        713.8353,
-        999.43805
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "ai_bot",
-      "pos": [
-        742.4619,
-        997.02026
-      ],
-      "direction": [
-        -0.7631681,
-        0.6462
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        859.1808,
-        965.49945
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        899.1808,
-        965.49945
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        939.1808,
-        965.49945
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        130.44081,
-        1003.33386
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        170.44081,
-        1003.33386
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        210.44081,
-        1003.33386
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        250.44081,
-        1003.33386
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        407.3006,
-        1004.66656
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        447.3006,
-        1004.66656
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        487.3006,
-        1004.66656
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        633.8353,
-        1039.438
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        673.8353,
-        1039.438
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        713.8353,
-        1039.438
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        859.1808,
-        1005.49945
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        899.1808,
-        1005.49945
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        939.1808,
-        1005.49945
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        130.44081,
-        1043.3339
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        170.44081,
-        1043.3339
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        210.44081,
-        1043.3339
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        250.44081,
-        1043.3339
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        407.3006,
-        1044.6665
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        447.3006,
-        1044.6665
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        487.3006,
-        1044.6665
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        633.8353,
-        1079.438
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        673.8353,
-        1079.438
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        713.8353,
-        1079.438
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        859.1808,
-        1045.4995
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        899.1808,
-        1045.4995
-      ],
-      "direction": [
-        1.0,
-        0.0
-      ],
-      "speed": null
-    },
-    {
-      "config_name": "steel_tile",
-      "pos": [
-        939.1808,
-        1045.4995
-      ],
-      "direction": [
-        1.0,
-        0.0
+        0.42957312,
+        0.90303206
       ],
       "speed": null
     }

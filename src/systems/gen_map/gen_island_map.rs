@@ -1,5 +1,5 @@
 use crate::config::{
-    GameConfig, GameObjConfig, GenMapAlgorithmConfig, GenMapConfig, IslandGenMapAlgorithm,
+    GameConfig, GenMapAlgorithmConfig, GenMapConfig, IslandGenMapAlgorithm,
     NamedGameObjConfig,
 };
 use crate::misc::MyError;
@@ -105,7 +105,7 @@ fn find_tile_for_island(
     tile_indices.shuffle(&mut r);
 
     for i in tile_indices {
-        let collide_span = tile_configs[i].tile_config()?.collide_span;
+        let collide_span = get_tile_collide_span(&tile_configs[i])?;
         let tile_span = 2.0 * collide_span;
         let Some((dist_x, tile_count_x)) = get_island_gap_span(
             &mut r,
@@ -179,7 +179,7 @@ fn add_tiles_to_island(
     tile_count_y: usize,
     config: &NamedGameObjConfig,
 ) -> Result<(f32, f32), MyError> {
-    let collide_span = config.tile_config()?.collide_span;
+    let collide_span = get_tile_collide_span(config)?;
     let span = collide_span * 2.0;
     let mut y1 = y + collide_span;
 
@@ -198,4 +198,8 @@ fn add_tiles_to_island(
     let new_y = y + tile_count_y as f32 * span;
 
     Ok((new_x, new_y))
+}
+
+fn get_tile_collide_span(obj_config: &NamedGameObjConfig) -> Result<f32, MyError> {
+    Ok(obj_config.tile_config()?.collide_span + 0.1)
 }

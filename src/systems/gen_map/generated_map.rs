@@ -109,6 +109,8 @@ impl GeneratedMap {
         let row = self.get_index(pos.y);
         let col = self.get_index(pos.x);
 
+        info!("Added obj {:?} with pos={} direction={} at ({}, {})", config, pos, direction, row, col);
+
         self.map[row][col].push(GeneratedMapItem {
             pos,
             direction,

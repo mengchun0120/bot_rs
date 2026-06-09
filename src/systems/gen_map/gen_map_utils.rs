@@ -3,7 +3,11 @@ use crate::misc::{MyError, check_collide_obj};
 use crate::systems::gen_map::generated_map::GeneratedMap;
 use bevy::prelude::*;
 use core::f32;
-use rand::{Rng, rng, rngs::ThreadRng, seq::SliceRandom};
+use rand::{
+    Rng, rng,
+    rngs::ThreadRng,
+    seq::{IndexedRandom, SliceRandom},
+};
 use std::fs::File;
 use std::path::PathBuf;
 
@@ -13,31 +17,39 @@ pub fn gen_bots(
     player_config: &NamedGameObjConfig,
     ai_bot_configs: &Vec<NamedGameObjConfig>,
 ) -> Result<(), MyError> {
-    let max_bot_collide_span = get_max_bot_collide_span(player_config, ai_bot_configs)?;
-    let mut spots = get_candidate_spots_for_bots(map.width(), map.height(), max_bot_collide_span);
+    if ai_bot_configs.is_empty() {
+        let msg = "ai_bot_configs is empty".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    }
+
+    let max_size = get_max_bot_size(player_config, ai_bot_configs)?;
+
+    info!("max_bot_size={}", max_size);
+
+    let mut spots = get_candidate_spots_for_bots(map, max_size)?;
     if spots.len() == 0 {
         let msg = "Failed to generate bots: map is full".to_string();
         error!(msg);
         return Err(MyError::Other(msg));
     }
 
+    info!("Candidate spots for bots: {}", spots.len());
+
     let mut r = rng();
     spots.shuffle(&mut r);
 
-    if !add_bot_to_map(map, &mut spots, player_config, max_bot_collide_span, &mut r)? {
-        let msg = "Failed to add player to map".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
-    }
+    let pos = spots.pop().unwrap();
+    let direction = random_direction(&mut r);
+    map.add(pos, direction, player_config.clone())?;
 
-    for _ in 0..ai_bot_count {
-        if !add_random_bot_to_map(
-            map,
-            &mut spots,
-            ai_bot_configs,
-            max_bot_collide_span,
-            &mut r,
-        )? {
+    let count = ai_bot_count.min(spots.len());
+    for _ in 0..count {
+        if let Some(pos) = spots.pop() {
+            let direction = random_direction(&mut r);
+            let bot_config = ai_bot_configs.choose(&mut r).unwrap();
+            map.add(pos, direction, bot_config.clone())?;
+        } else {
             break;
         }
     }
@@ -63,54 +75,60 @@ pub fn write_gen_map(map: &GeneratedMap, file_path: &PathBuf) -> bool {
     true
 }
 
-fn get_max_bot_collide_span(
+fn get_max_bot_size(
     player_config: &NamedGameObjConfig,
     ai_bot_configs: &Vec<NamedGameObjConfig>,
 ) -> Result<f32, MyError> {
     let bot_config = player_config.bot_config()?;
-    let mut max_collide_span = bot_config.collide_span;
+    let mut max_size = bot_config.size[0].max(bot_config.size[1]);
 
     for config in ai_bot_configs.iter() {
         let bot_config = config.bot_config()?;
+        let size = bot_config.size[0].max(bot_config.size[1]);
 
-        if bot_config.collide_span > max_collide_span {
-            max_collide_span = bot_config.collide_span;
+        if size > max_size {
+            max_size = size;
         }
     }
 
-    Ok(max_collide_span)
+    Ok(max_size)
 }
 
-fn get_candidate_spots_for_bots(width: f32, height: f32, max_bot_collide_span: f32) -> Vec<Vec2> {
+fn get_candidate_spots_for_bots(
+    map: &GeneratedMap,
+    max_bot_size: f32,
+) -> Result<Vec<Vec2>, MyError> {
     let mut spots: Vec<Vec2> = Vec::new();
-    let span = 2.0 * max_bot_collide_span;
-    let mut y = max_bot_collide_span;
+    let half_size = max_bot_size / 2.0;
+    let mut y = half_size;
+    let height = map.height();
+    let width = map.width();
 
     while y < height {
-        let mut x = max_bot_collide_span;
+        let mut x = half_size;
 
         while x < width {
-            spots.push(Vec2::new(x, y));
-            x += span;
+            let pos = Vec2::new(x, y);
+
+            if !check_collide_tile(map, &pos, half_size)? {
+                spots.push(pos);
+            }
+
+            x += max_bot_size;
         }
 
-        y += span;
+        y += max_bot_size;
     }
 
-    spots
+    Ok(spots)
 }
 
-fn check_collide_tile(
-    map: &GeneratedMap,
-    pos: &Vec2,
-    collide_span: f32,
-    max_bot_collide_span: f32,
-) -> Result<bool, MyError> {
+fn check_collide_tile(map: &GeneratedMap, pos: &Vec2, collide_span: f32) -> Result<bool, MyError> {
     let region = map.get_map_region(
-        pos.x - max_bot_collide_span,
-        pos.y - max_bot_collide_span,
-        pos.x + max_bot_collide_span,
-        pos.y + max_bot_collide_span,
+        pos.x - collide_span,
+        pos.y - collide_span,
+        pos.x + collide_span,
+        pos.y + collide_span,
     )?;
 
     for row in region.start_row..=region.end_row {
@@ -130,46 +148,7 @@ fn check_collide_tile(
     Ok(false)
 }
 
-fn add_bot_to_map(
-    map: &mut GeneratedMap,
-    spots: &mut Vec<Vec2>,
-    obj_config: &NamedGameObjConfig,
-    max_bot_collide_span: f32,
-    r: &mut ThreadRng,
-) -> Result<bool, MyError> {
-    let collide_span = obj_config.bot_config()?.collide_span;
-
-    for i in 0..spots.len() {
-        let collide = check_collide_tile(map, &spots[i], collide_span, max_bot_collide_span)?;
-        if !collide {
-            let theta = r.random_range(0.0..(2.0 * f32::consts::PI));
-            let direction = Vec2::new(theta.cos(), theta.sin());
-
-            map.add(spots[i].clone(), direction, obj_config.clone())?;
-            spots.swap_remove(i);
-
-            return Ok(true)
-        }
-    }
-
-    Ok(false)
-}
-
-fn add_random_bot_to_map(
-    map: &mut GeneratedMap,
-    spots: &mut Vec<Vec2>,
-    ai_bot_configs: &Vec<NamedGameObjConfig>,
-    max_bot_collide_span: f32,
-    r: &mut ThreadRng,
-) -> Result<bool, MyError> {
-    let mut ai_bot_indices: Vec<usize> = (0..ai_bot_configs.len()).collect();
-    ai_bot_indices.shuffle(r);
-
-    for i in ai_bot_indices {
-        if add_bot_to_map(map, spots, &ai_bot_configs[i], max_bot_collide_span, r)? {
-            return Ok(true);
-        }
-    }
-
-    Ok(false)
+fn random_direction(r: &mut ThreadRng) -> Vec2 {
+    let theta = r.random_range(0.0..(2.0 * f32::consts::PI));
+    Vec2::new(theta.cos(), theta.sin())
 }
