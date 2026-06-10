@@ -14,7 +14,8 @@ pub fn process_mouse_button(
     game_lib: Res<GameLib>,
 ) {
     if mouse_button_input.just_pressed(MouseButton::Right) {
-        let Ok(obj) = game_obj_lib.get_mut(&player_query.0) else {
+        let Some(obj) = game_obj_lib.get_mut(&player_query.0) else {
+            error!("Failed to find obj in GameObjLib");
             return;
         };
 

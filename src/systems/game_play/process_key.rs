@@ -19,7 +19,8 @@ pub fn process_key(
         return;
     };
 
-    let Ok(obj) = game_obj_lib.get_mut(&entity) else {
+    let Some(obj) = game_obj_lib.get_mut(&entity) else {
+        error!("Failed to find obj in GameObjLib");
         return;
     };
 

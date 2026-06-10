@@ -1,6 +1,7 @@
 use crate::game::components::WeaponComponent;
 use crate::game_utils::{GameLib, GameObjLib, NewObj, NewObjQueue, WorldInfo};
 use crate::misc::MyError;
+use crate::obj_missing_from_lib;
 use bevy::prelude::*;
 
 pub fn try_shoot(
@@ -19,9 +20,7 @@ pub fn try_shoot(
     }
 
     let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-        let msg = "Faield to find obj in GameObjLib".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
+        return obj_missing_from_lib!();
     };
     let base_velocity = base_speed * obj.direction;
 

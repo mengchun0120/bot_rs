@@ -2,6 +2,7 @@ use crate::config::GameObjSide;
 use crate::game::{GameObjState, GameObjType, components::InView, on_death};
 use crate::game_utils::{DespawnPool, GameLib, GameMap, GameObjLib, NewObjQueue, WorldInfo};
 use crate::misc::{MyError, check_collide, check_collide_obj};
+use crate::obj_missing_from_lib;
 use bevy::prelude::*;
 use std::collections::HashSet;
 
@@ -31,9 +32,7 @@ pub fn move_bot(
     }
 
     let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-        let msg = "Failed to find obj in GameObjLib".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
+        return obj_missing_from_lib!();
     };
     let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
     let collided = check_collide(
@@ -111,9 +110,7 @@ pub fn move_missile(
     }
 
     let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-        let msg = "Failed to find obj in GameObjLib".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
+        return obj_missing_from_lib!();
     };
     let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
 
@@ -163,7 +160,9 @@ pub fn update_obj_pos(
     game_map: &mut GameMap,
     game_obj_lib: &mut GameObjLib,
 ) -> Result<(), MyError> {
-    let obj = game_obj_lib.get_mut(&entity)?;
+    let Some(obj) = game_obj_lib.get_mut(&entity) else {
+        return obj_missing_from_lib!();
+    };
 
     obj.pos = new_pos;
 

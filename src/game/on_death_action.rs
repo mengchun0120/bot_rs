@@ -5,6 +5,7 @@ use crate::game::{
 };
 use crate::game_utils::{GameLib, GameMap, GameObjLib, NewObj, NewObjQueue};
 use crate::misc::{MyError, check_collide_obj};
+use crate::obj_missing_from_lib;
 use bevy::prelude::*;
 use rand::Rng;
 use rand::seq::IndexedRandom;
@@ -18,9 +19,7 @@ pub fn on_death(
     commands: &mut Commands,
 ) -> Result<(), MyError> {
     let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-        let msg = "Failed to find obj in GameObjLib".to_string();
-        error!(msg);
-        return Err(MyError::Other(msg));
+        return obj_missing_from_lib!();
     };
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
     let on_death_actions = obj_config.get_on_death_actions()?;
@@ -78,7 +77,7 @@ fn on_do_damage(
     );
 
     for entity in game_map.map_iter(&region) {
-        if let Ok(obj) = game_obj_lib.get_mut(&entity)
+        if let Some(obj) = game_obj_lib.get_mut(&entity)
             && obj.state == GameObjState::Alive
             && obj.side != side
             && obj.obj_type == GameObjType::Bot
@@ -129,7 +128,9 @@ fn on_phaseout(
     game_obj_lib: &mut GameObjLib,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
-    let obj = game_obj_lib.get_mut(&entity)?;
+    let Some(obj) = game_obj_lib.get_mut(&entity) else {
+        return obj_missing_from_lib!();
+    };
 
     if obj.state != GameObjState::Alive {
         let msg = format!("Failed to phaseout: GameObj {} is not alive", entity);

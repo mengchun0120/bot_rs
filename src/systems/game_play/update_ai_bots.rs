@@ -54,7 +54,7 @@ pub fn update_ai_bots(
                     time.as_ref(),
                 ) {
                     Ok(MoveResult::Collided) => {
-                        if let Ok(obj) = game_obj_lib.get_mut(&entity)
+                        if let Some(obj) = game_obj_lib.get_mut(&entity)
                             && obj.state == GameObjState::Alive
                         {
                             obj.speed = Some(0.0);

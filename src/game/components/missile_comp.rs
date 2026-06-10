@@ -7,6 +7,7 @@ use crate::misc::{
     MyError, check_collide_bounds, check_collide_obj, check_collide_objs, get_collide_region,
     get_rotation,
 };
+use crate::obj_missing_from_lib;
 use bevy::prelude::*;
 use rand::seq::IndexedRandom;
 use std::collections::HashSet;
@@ -98,11 +99,11 @@ impl EnemySearchAbility {
         game_obj_lib: &mut GameObjLib,
     ) -> Result<(), MyError> {
         let Some(target_pos) = game_obj_lib.get(target).map(|o| o.pos) else {
-            let msg = "Failed to find obj in GameObjLib".to_string();
-            error!(msg);
-            return Err(MyError::Other(msg));
+            return obj_missing_from_lib!();
         };
-        let obj = game_obj_lib.get_mut(entity)?;
+        let Some(obj) = game_obj_lib.get_mut(entity) else {
+            return obj_missing_from_lib!();
+        };
 
         obj.direction = (target_pos - obj.pos).normalize();
         transform.rotation = get_rotation(&obj.direction);
@@ -118,9 +119,7 @@ impl EnemySearchAbility {
         game_obj_lib: &mut GameObjLib,
     ) -> Result<(), MyError> {
         let Some(obj) = game_obj_lib.get(entity).cloned() else {
-            let msg = "Failed to find obj in GameObjLib".to_string();
-            error!(msg);
-            return Err(MyError::Other(msg));
+            return obj_missing_from_lib!();
         };
         let search_region = RectRegion::new(
             obj.pos.x - self.search_span,
@@ -168,9 +167,7 @@ impl EnemySearchAbility {
         };
 
         let Some(obj) = game_obj_lib.get(&target) else {
-            let msg = "Failed to find obj in GameObjLib".to_string();
-            error!(msg);
-            return Err(MyError::Other(msg));
+            return obj_missing_from_lib!();
         };
 
         if obj.state != GameObjState::Alive {
@@ -211,9 +208,7 @@ impl PierceAbility {
         }
 
         let Some(obj) = game_obj_lib.get(&entity).cloned() else {
-            let msg = "Failed to find obj in GameObjLib".to_string();
-            error!(msg);
-            return Err(MyError::Other(msg));
+            return obj_missing_from_lib!();
         };
         let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
 
@@ -321,7 +316,7 @@ impl PierceAbility {
                 continue;
             }
 
-            let Ok(obj2) = game_obj_lib.get_mut(&e) else {
+            let Some(obj2) = game_obj_lib.get_mut(&e) else {
                 continue;
             };
 

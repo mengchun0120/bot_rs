@@ -10,7 +10,8 @@ pub fn process_cursor(
     world_info: Res<WorldInfo>,
     mut game_obj_lib: ResMut<GameObjLib>,
 ) {
-    let Ok(obj) = game_obj_lib.get_mut(&player_query.0) else {
+    let Some(obj) = game_obj_lib.get_mut(&player_query.0) else {
+        error!("Failed to find obj in GameObjLib");
         return;
     };
 

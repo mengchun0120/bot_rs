@@ -1,6 +1,7 @@
 use crate::game::GameObjState;
 use crate::game_utils::GameObjLib;
 use crate::misc::MyError;
+use crate::obj_missing_from_lib;
 use bevy::prelude::*;
 use std::collections::HashSet;
 
@@ -13,7 +14,9 @@ impl DespawnPool {
     }
 
     pub fn add(&mut self, entity: Entity, game_obj_lib: &mut GameObjLib) -> Result<(), MyError> {
-        let obj = game_obj_lib.get_mut(&entity)?;
+        let Some(obj) = game_obj_lib.get_mut(&entity) else {
+            return obj_missing_from_lib!();
+        };
 
         if obj.state == GameObjState::Dead {
             let msg = "Obj is already dead".to_string();

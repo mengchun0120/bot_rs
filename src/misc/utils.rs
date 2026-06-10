@@ -94,3 +94,25 @@ pub fn translate_cursor_pos(
 
     Some(world_info.viewport_to_world(&pos))
 }
+
+#[macro_export]
+macro_rules! log_and_get_err {
+    ($format_str:expr) => {{
+        let msg = format!($format_str);
+        error!(msg);
+        Err(MyError::Other(msg))
+    }};
+
+    ($format_str:expr, $($x:expr),+) => {{
+        let msg = format!($format_str, $($x),+);
+        error!(msg);
+        Err(MyError::Other(msg))
+    }};
+}
+
+#[macro_export]
+macro_rules! obj_missing_from_lib {
+    () => {
+        $crate::log_and_get_err!("Failed to find obj in GameObjLib")
+    };
+}

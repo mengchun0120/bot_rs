@@ -32,7 +32,7 @@ pub fn update_ai(
     }
 
     for (entity, mut weapon_comp, mut ai_comp, mut transform) in aibot_query.iter_mut() {
-        let Ok(obj) = game_obj_lib.get_mut(&entity) else {
+        let Some(obj) = game_obj_lib.get_mut(&entity) else {
             continue;
         };
 

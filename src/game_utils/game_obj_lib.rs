@@ -1,5 +1,4 @@
 use crate::game::GameObj;
-use crate::misc::MyError;
 use bevy::prelude::*;
 use std::collections::HashMap;
 
@@ -17,13 +16,8 @@ impl GameObjLib {
     }
 
     #[inline]
-    pub fn get_mut(&mut self, entity: &Entity) -> Result<&mut GameObj, MyError> {
-        let Some(obj) = self.0.get_mut(entity) else {
-            let msg = format!("Cannot find GameObj {}", entity);
-            error!(msg);
-            return Err(MyError::NotFound(msg));
-        };
-        Ok(obj)
+    pub fn get_mut(&mut self, entity: &Entity) -> Option<&mut GameObj> {
+        self.0.get_mut(entity)
     }
 
     #[inline]
