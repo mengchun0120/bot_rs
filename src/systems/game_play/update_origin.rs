@@ -15,7 +15,7 @@ pub fn update_origin(
     mut despawn_pool: ResMut<DespawnPool>,
     mut commands: Commands,
 ) {
-    let Ok(player) = game_obj_lib.get(&player_query.entity()) else {
+    let Some(player) = game_obj_lib.get(&player_query.entity()) else {
         return;
     };
     let old_origin = world_info.origin();
@@ -35,7 +35,7 @@ pub fn update_origin(
     );
 
     for entity in game_map.map_iter(&region) {
-        let Ok(obj) = game_obj_lib.get(&entity) else {
+        let Some(obj) = game_obj_lib.get(&entity) else {
             continue;
         };
 

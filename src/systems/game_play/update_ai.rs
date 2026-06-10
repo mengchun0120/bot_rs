@@ -23,7 +23,7 @@ pub fn update_ai(
     let Some(player_entity) = game_info.get_player() else {
         return;
     };
-    let Ok(player) = game_obj_lib.get(&player_entity).cloned() else {
+    let Some(player) = game_obj_lib.get(&player_entity).cloned() else {
         return;
     };
 

@@ -1,6 +1,5 @@
 use crate::config::{
-    GameConfig, GenMapAlgorithmConfig, GenMapConfig, IslandGenMapAlgorithm,
-    NamedGameObjConfig,
+    GameConfig, GenMapAlgorithmConfig, GenMapConfig, IslandGenMapAlgorithm, NamedGameObjConfig,
 };
 use crate::misc::MyError;
 use crate::systems::gen_map::gen_map_utils::gen_bots;

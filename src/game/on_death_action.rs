@@ -17,7 +17,11 @@ pub fn on_death(
     new_obj_queue: &mut NewObjQueue,
     commands: &mut Commands,
 ) -> Result<(), MyError> {
-    let obj = game_obj_lib.get(&entity).cloned()?;
+    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
+        let msg = "Failed to find obj in GameObjLib".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    };
     let obj_config = game_lib.get_game_obj_config(obj.config_index);
     let on_death_actions = obj_config.get_on_death_actions()?;
 

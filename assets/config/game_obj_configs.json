@@ -221,7 +221,7 @@
                 "z": 0.0,
                 "collide_span": 20.0,
                 "duration": 30.0,
-                "effect": "Invincible"
+                "effect_config": "Invincible"
             }
         }
     },
@@ -234,7 +234,7 @@
                 "z": 0.0,
                 "collide_span": 20.0,
                 "duration": 30.0,
-                "effect": "HpFiller"
+                "effect_config": "HpFiller"
             }
         }
     },
@@ -247,7 +247,7 @@
                 "z": 0.0,
                 "collide_span": 20.0,
                 "duration": 30.0,
-                "effect": {
+                "effect_config": {
                     "SpeedBooster": 1.5
                 }
             }
@@ -262,7 +262,7 @@
                 "z": 0.0,
                 "collide_span": 20.0,
                 "duration": 30.0,
-                "effect": {
+                "effect_config": {
                     "FastShooter": 2.0
                 }
             }

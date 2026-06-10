@@ -14,7 +14,7 @@ pub fn update_missiles(
     time: Res<Time>,
 ) {
     for (entity, mut transform, mut missile_comp) in missile_query.iter_mut() {
-        let Ok(obj) = game_obj_lib.get(&entity).cloned() else {
+        let Some(obj) = game_obj_lib.get(&entity).cloned() else {
             continue;
         };
 

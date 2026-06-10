@@ -9,7 +9,7 @@ pub fn cleanup(
     mut game_info: ResMut<GameInfo>,
 ) {
     for entity in despawn_pool.iter() {
-        let Ok(obj) = game_obj_lib.get(entity).cloned() else {
+        let Some(obj) = game_obj_lib.get(entity).cloned() else {
             continue;
         };
 

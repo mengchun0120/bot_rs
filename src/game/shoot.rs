@@ -18,7 +18,11 @@ pub fn try_shoot(
         return Ok(());
     }
 
-    let obj = game_obj_lib.get(&entity).cloned()?;
+    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
+        let msg = "Faield to find obj in GameObjLib".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    };
     let base_velocity = base_speed * obj.direction;
 
     for i in 0..weapon_comp.fire_points.len() {

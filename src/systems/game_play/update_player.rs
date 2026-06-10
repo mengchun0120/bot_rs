@@ -17,7 +17,8 @@ pub fn update_player(
         return;
     };
 
-    let Ok(obj) = game_obj_lib.get(&entity) else {
+    let Some(obj) = game_obj_lib.get(&entity) else {
+        error!("Failed to find player in GameObjLib");
         return;
     };
 

@@ -62,7 +62,7 @@ pub struct GoodieConfig {
     pub z: f32,
     pub collide_span: f32,
     pub duration: f32,
-    pub effect: GoodieEffect,
+    pub effect_config: GoodieEffectConfig,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -105,7 +105,7 @@ pub struct PierceConfig {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub enum GoodieEffect {
+pub enum GoodieEffectConfig {
     Invincible,
     SpeedBooster(f32),
     FastShooter(f32),

@@ -29,7 +29,7 @@ pub fn update_ai_bots(
 ) {
     for (entity, mut transform, mut visibility, mut weapon_comp, ai_comp) in ai_bot_query.iter_mut()
     {
-        let Ok(obj) = game_obj_lib.get(&entity) else {
+        let Some(obj) = game_obj_lib.get(&entity) else {
             continue;
         };
 

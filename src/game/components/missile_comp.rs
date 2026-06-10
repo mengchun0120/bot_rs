@@ -97,7 +97,11 @@ impl EnemySearchAbility {
         transform: &mut Transform,
         game_obj_lib: &mut GameObjLib,
     ) -> Result<(), MyError> {
-        let target_pos = game_obj_lib.get(target).map(|o| o.pos)?;
+        let Some(target_pos) = game_obj_lib.get(target).map(|o| o.pos) else {
+            let msg = "Failed to find obj in GameObjLib".to_string();
+            error!(msg);
+            return Err(MyError::Other(msg));
+        };
         let obj = game_obj_lib.get_mut(entity)?;
 
         obj.direction = (target_pos - obj.pos).normalize();
@@ -113,7 +117,11 @@ impl EnemySearchAbility {
         game_map: &GameMap,
         game_obj_lib: &mut GameObjLib,
     ) -> Result<(), MyError> {
-        let obj = game_obj_lib.get(entity).cloned()?;
+        let Some(obj) = game_obj_lib.get(entity).cloned() else {
+            let msg = "Failed to find obj in GameObjLib".to_string();
+            error!(msg);
+            return Err(MyError::Other(msg));
+        };
         let search_region = RectRegion::new(
             obj.pos.x - self.search_span,
             obj.pos.y - self.search_span,
@@ -124,7 +132,7 @@ impl EnemySearchAbility {
         self.potential_targets.clear();
 
         for e in game_map.map_iter(&map_region) {
-            let Ok(obj2) = game_obj_lib.get(&e) else {
+            let Some(obj2) = game_obj_lib.get(&e) else {
                 continue;
             };
 
@@ -159,7 +167,11 @@ impl EnemySearchAbility {
             return Ok(None);
         };
 
-        let obj = game_obj_lib.get(&target)?;
+        let Some(obj) = game_obj_lib.get(&target) else {
+            let msg = "Failed to find obj in GameObjLib".to_string();
+            error!(msg);
+            return Err(MyError::Other(msg));
+        };
 
         if obj.state != GameObjState::Alive {
             self.cur_target = None;
@@ -198,7 +210,11 @@ impl PierceAbility {
             return Ok(MoveResult::NotMoved);
         }
 
-        let obj = game_obj_lib.get(&entity).cloned()?;
+        let Some(obj) = game_obj_lib.get(&entity).cloned() else {
+            let msg = "Failed to find obj in GameObjLib".to_string();
+            error!(msg);
+            return Err(MyError::Other(msg));
+        };
         let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
 
         if !world_info.check_pos_visible(&new_pos) {

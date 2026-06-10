@@ -12,13 +12,8 @@ impl GameObjLib {
     }
 
     #[inline]
-    pub fn get(&self, entity: &Entity) -> Result<&GameObj, MyError> {
-        let Some(obj) = self.0.get(entity) else {
-            let msg = format!("Cannot find GameObj {}", entity);
-            error!(msg);
-            return Err(MyError::NotFound(msg));
-        };
-        Ok(obj)
+    pub fn get(&self, entity: &Entity) -> Option<&GameObj> {
+        self.0.get(entity)
     }
 
     #[inline]

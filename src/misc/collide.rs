@@ -68,7 +68,7 @@ pub fn check_collide_objs(
             continue;
         }
 
-        let Ok(obj2) = game_obj_lib.get(&e) else {
+        let Some(obj2) = game_obj_lib.get(&e) else {
             continue;
         };
         if !obj2.is_collidable() {

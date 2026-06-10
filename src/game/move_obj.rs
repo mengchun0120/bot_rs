@@ -30,7 +30,11 @@ pub fn move_bot(
         return Ok(MoveResult::NotMoved);
     }
 
-    let obj = game_obj_lib.get(&entity).cloned()?;
+    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
+        let msg = "Failed to find obj in GameObjLib".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    };
     let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
     let collided = check_collide(
         Some(entity),
@@ -106,7 +110,11 @@ pub fn move_missile(
         return Ok(MoveResult::NotMoved);
     }
 
-    let obj = game_obj_lib.get(&entity).cloned()?;
+    let Some(obj) = game_obj_lib.get(&entity).cloned() else {
+        let msg = "Failed to find obj in GameObjLib".to_string();
+        error!(msg);
+        return Err(MyError::Other(msg));
+    };
     let new_pos = obj.pos + obj.direction * speed * time.delta_secs();
 
     if !world_info.check_pos_visible(&new_pos) {
@@ -237,7 +245,7 @@ fn get_collided_missiles(
     );
 
     for entity in game_map.map_iter(&region) {
-        if let Ok(obj) = game_obj_lib.get(&entity)
+        if let Some(obj) = game_obj_lib.get(&entity)
             && obj.obj_type == GameObjType::Missile
             && obj.state == GameObjState::Alive
             && obj.side != side
@@ -267,7 +275,7 @@ fn capture_goodies(
     );
 
     for entity in game_map.map_iter(&region) {
-        if let Ok(obj) = game_obj_lib.get(&entity)
+        if let Some(obj) = game_obj_lib.get(&entity)
             && obj.obj_type == GameObjType::Goodie
             && obj.state == GameObjState::Alive
             && check_collide_obj(pos, collide_span, &obj.pos, obj.collide_span)

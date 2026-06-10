@@ -10,8 +10,8 @@ pub use game_config::GameConfig;
 pub use game_map_config::{GameMapConfig, GameMapObjConfig};
 pub use game_obj_config::{
     BotConfig, DamageConfig, EnemySearchConfig, GameObjConfig, GameObjSide, GoodieConfig,
-    GoodieEffect, MissileConfig, MissileFeature, NamedGameObjConfig, OnDeathAction, PierceConfig,
-    PlayFrameConfig, SpawnMissileConfig, TileConfig,
+    GoodieEffectConfig, MissileConfig, MissileFeature, NamedGameObjConfig, OnDeathAction,
+    PierceConfig, PlayFrameConfig, SpawnMissileConfig, TileConfig,
 };
 pub use gen_map_config::{GenMapAlgorithmConfig, GenMapConfig, IslandGenMapAlgorithm};
 pub use weapon_config::{GunComponentConfig, GunConfig, WeaponConfig};
